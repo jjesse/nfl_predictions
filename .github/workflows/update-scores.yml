@@ -31,6 +31,13 @@ jobs:
         npm init -y
         npm install node-fetch
     
+    - name: Clean up tracking of unwanted files
+      run: |
+        # Remove any npm files from git tracking if they exist
+        git rm --cached package.json package-lock.json node_modules -r 2>/dev/null || true
+        # Ensure .gitignore is respected
+        git reset HEAD .
+    
     - name: Update NFL scores
       run: node .github/scripts/update-scores.js
       env:
@@ -39,11 +46,13 @@ jobs:
     - name: Check for changes
       id: verify-changed-files
       run: |
-        # Only check if the NFL schedule file has changes
-        if git diff --quiet nfl-schedule.js; then
+        # Check if nfl-schedule.js has been modified
+        if git diff --exit-code nfl-schedule.js > /dev/null 2>&1; then
           echo "changed=false" >> $GITHUB_OUTPUT
+          echo "No changes detected in nfl-schedule.js"
         else
           echo "changed=true" >> $GITHUB_OUTPUT
+          echo "Changes detected in nfl-schedule.js"
         fi
     
     - name: Commit and push changes
@@ -51,9 +60,15 @@ jobs:
       run: |
         git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
-        # Only add the NFL schedule file, not node_modules
+        # Stage only the NFL schedule file
         git add nfl-schedule.js
+        # Check if there's actually something to commit
+        if git diff --cached --exit-code > /dev/null 2>&1; then
+          echo "No staged changes to commit"
+          exit 0
+        fi
         git commit -m "Auto-update NFL scores - $(date)"
         # Pull the latest changes to avoid non-fast-forward error
-        git pull --rebase origin main
-        git push
+        git fetch origin main
+        git rebase origin/main
+        git push origin main

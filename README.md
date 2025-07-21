@@ -152,6 +152,7 @@ You can also manually update game results by editing the game objects in the `ga
 - `nfl-schedule.js` - NFL schedule and team data
 - `.github/workflows/update-scores.yml` - GitHub Actions workflow for automated score updates
 - `.github/scripts/update-scores.js` - Node.js script that fetches scores from ESPN API
+- `.gitignore` - Excludes temporary files and dependencies from version control
 - `README.md` - This documentation
 
 ## Contributing
