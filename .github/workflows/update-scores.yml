@@ -52,4 +52,6 @@ jobs:
         git config --local user.name "github-actions[bot]"
         git add .
         git commit -m "Auto-update NFL scores - $(date)"
+        # Pull the latest changes to avoid non-fast-forward error
+        git pull --rebase origin main
         git push
