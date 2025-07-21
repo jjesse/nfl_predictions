@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFL Prediction Tracker 2025-2026</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>NFL Prediction Tracker 2025-2026</h1>
+            <div class="stats-summary">
+                <div class="stat">
+                    <span class="stat-label">Total Games:</span>
+                    <span id="total-games">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Predictions Made:</span>
+                    <span id="predictions-made">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Correct Predictions:</span>
+                    <span id="correct-predictions">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Accuracy:</span>
+                    <span id="accuracy">0%</span>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <nav class="prediction-tabs">
+                <button class="tab-btn active" data-tab="weekly">Weekly Predictions</button>
+                <button class="tab-btn" data-tab="preseason">Pre-Season Predictions</button>
+                <button class="tab-btn" data-tab="comparison">Season Comparison</button>
+            </nav>
+
+            <!-- Weekly Predictions Tab -->
+            <div id="weekly-tab" class="tab-content active">
+                <div class="filters">
+                    <select id="week-filter">
+                        <option value="">All Weeks</option>
+                    </select>
+                    <select id="team-filter">
+                        <option value="">All Teams</option>
+                    </select>
+                    <button id="preseason-predictions-btn">Preseason Predictions</button>
+                    <button id="bulk-predict-btn">Make Week Predictions</button>
+                    <button id="clear-all-predictions">Clear All Predictions</button>
+                </div>
+
+                <div class="games-container">
+                    <div id="games-list">
+                        <!-- Games will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pre-Season Predictions Tab -->
+            <div id="preseason-tab" class="tab-content">
+                <div class="preseason-predictions">
+                    <div class="preseason-section">
+                        <h3>AFC Division Winners</h3>
+                        <div class="division-predictions">
+                            <div class="division">
+                                <label>AFC East Winner:</label>
+                                <select id="afc-east-winner">
+                                    <option value="">Select Team</option>
+                                    <option value="BUF">Buffalo Bills</option>
+                                    <option value="MIA">Miami Dolphins</option>
+                                    <option value="NE">New England Patriots</option>
+                                    <option value="NYJ">New York Jets</option>
+                                </select>
+                            </div>
+                            <div class="division">
+                                <label>AFC North Winner:</label>
+                                <select id="afc-north-winner">
+                                    <option value="">Select Team</option>
+                                    <option value="BAL">Baltimore Ravens</option>
+                                    <option value="CIN">Cincinnati Bengals</option>
+                                    <option value="CLE">Cleveland Browns</option>
+                                    <option value="PIT">Pittsburgh Steelers</option>
+                                </select>
+                            </div>
+                            <div class="division">
+                                <label>AFC South Winner:</label>
+                                <select id="afc-south-winner">
+                                    <option value="">Select Team</option>
+                                    <option value="HOU">Houston Texans</option>
+                                    <option value="IND">Indianapolis Colts</option>
+                                    <option value="JAX">Jacksonville Jaguars</option>
+                                    <option value="TEN">Tennessee Titans</option>
+                                </select>
+                            </div>
+                            <div class="division">
+                                <label>AFC West Winner:</label>
+                                <select id="afc-west-winner">
+                                    <option value="">Select Team</option>
+                                    <option value="DEN">Denver Broncos</option>
+                                    <option value="KC">Kansas City Chiefs</option>
+                                    <option value="LV">Las Vegas Raiders</option>
+                                    <option value="LAC">Los Angeles Chargers</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="preseason-section">
+                        <h3>NFC Division Winners</h3>
+                        <div class="division-predictions">
+                            <div class="division">
+                                <label>NFC East Winner:</label>
+                                <select id="nfc-east-winner">
+                                    <option value="">Select Team</option>
+                                    <option value="DAL">Dallas Cowboys</option>
+                                    <option value="NYG">New York Giants</option>
+                                    <option value="PHI">Philadelphia Eagles</option>
+                                    <option value="WAS">Washington Commanders</option>
+                                </select>
+                            </div>
+                            <div class="division">
+                                <label>NFC North Winner:</label>
+                                <select id="nfc-north-winner">
+                                    <option value="">Select Team</option>
+                                    <option value="CHI">Chicago Bears</option>
+                                    <option value="DET">Detroit Lions</option>
+                                    <option value="GB">Green Bay Packers</option>
+                                    <option value="MIN">Minnesota Vikings</option>
+                                </select>
+                            </div>
+                            <div class="division">
+                                <label>NFC South Winner:</label>
+                                <select id="nfc-south-winner">
+                                    <option value="">Select Team</option>
+                                    <option value="ATL">Atlanta Falcons</option>
+                                    <option value="CAR">Carolina Panthers</option>
+                                    <option value="NO">New Orleans Saints</option>
+                                    <option value="TB">Tampa Bay Buccaneers</option>
+                                </select>
+                            </div>
+                            <div class="division">
+                                <label>NFC West Winner:</label>
+                                <select id="nfc-west-winner">
+                                    <option value="">Select Team</option>
+                                    <option value="ARI">Arizona Cardinals</option>
+                                    <option value="LAR">Los Angeles Rams</option>
+                                    <option value="SF">San Francisco 49ers</option>
+                                    <option value="SEA">Seattle Seahawks</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="preseason-section">
+                        <h3>Wild Card Teams (3 per conference)</h3>
+                        <div class="wildcard-predictions">
+                            <div class="conference">
+                                <h4>AFC Wild Cards</h4>
+                                <select id="afc-wildcard-1">
+                                    <option value="">AFC Wild Card #1</option>
+                                </select>
+                                <select id="afc-wildcard-2">
+                                    <option value="">AFC Wild Card #2</option>
+                                </select>
+                                <select id="afc-wildcard-3">
+                                    <option value="">AFC Wild Card #3</option>
+                                </select>
+                            </div>
+                            <div class="conference">
+                                <h4>NFC Wild Cards</h4>
+                                <select id="nfc-wildcard-1">
+                                    <option value="">NFC Wild Card #1</option>
+                                </select>
+                                <select id="nfc-wildcard-2">
+                                    <option value="">NFC Wild Card #2</option>
+                                </select>
+                                <select id="nfc-wildcard-3">
+                                    <option value="">NFC Wild Card #3</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="preseason-section">
+                        <h3>Championship Predictions</h3>
+                        <div class="championship-predictions">
+                            <div class="championship">
+                                <label>AFC Championship Winner:</label>
+                                <select id="afc-champion">
+                                    <option value="">Select AFC Team</option>
+                                </select>
+                            </div>
+                            <div class="championship">
+                                <label>NFC Championship Winner:</label>
+                                <select id="nfc-champion">
+                                    <option value="">Select NFC Team</option>
+                                </select>
+                            </div>
+                            <div class="championship">
+                                <label>Super Bowl Champion:</label>
+                                <select id="super-bowl-champion">
+                                    <option value="">Select Team</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="preseason-actions">
+                        <button id="save-preseason-predictions">Save Pre-Season Predictions</button>
+                        <button id="clear-preseason-predictions">Clear All Pre-Season Predictions</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Season Comparison Tab -->
+            <div id="comparison-tab" class="tab-content">
+                <div class="comparison-dashboard">
+                    <h3>Season Prediction Comparison</h3>
+                    <div id="comparison-content">
+                        <!-- Comparison data will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preseason Predictions Modal -->
+            <div id="preseason-prediction-modal" class="modal">
+                <div class="modal-content large-modal">
+                    <div class="modal-header">
+                        <h2>2025-2026 Preseason Predictions</h2>
+                        <span class="close preseason-close">&times;</span>
+                    </div>
+                    <div class="modal-body">
+                        <div class="preseason-sections">
+                            <div class="preseason-section">
+                                <h3>Super Bowl & Championships</h3>
+                                <div class="prediction-row">
+                                    <label>Super Bowl Champion:</label>
+                                    <select id="superbowl-winner">
+                                        <option value="">Select Team</option>
+                                    </select>
+                                </div>
+                                <div class="prediction-row">
+                                    <label>AFC Champion:</label>
+                                    <select id="afc-champion">
+                                        <option value="">Select Team</option>
+                                    </select>
+                                </div>
+                                <div class="prediction-row">
+                                    <label>NFC Champion:</label>
+                                    <select id="nfc-champion">
+                                        <option value="">Select Team</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="preseason-section">
+                                <h3>AFC Playoff Teams</h3>
+                                <div class="division-predictions">
+                                    <div class="division">
+                                        <h4>AFC East</h4>
+                                        <select id="afc-east-winner">
+                                            <option value="">Division Winner</option>
+                                        </select>
+                                    </div>
+                                    <div class="division">
+                                        <h4>AFC North</h4>
+                                        <select id="afc-north-winner">
+                                            <option value="">Division Winner</option>
+                                        </select>
+                                    </div>
+                                    <div class="division">
+                                        <h4>AFC South</h4>
+                                        <select id="afc-south-winner">
+                                            <option value="">Division Winner</option>
+                                        </select>
+                                    </div>
+                                    <div class="division">
+                                        <h4>AFC West</h4>
+                                        <select id="afc-west-winner">
+                                            <option value="">Division Winner</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="wildcard-section">
+                                    <h4>AFC Wild Cards</h4>
+                                    <select id="afc-wildcard-1"><option value="">Wild Card #1</option></select>
+                                    <select id="afc-wildcard-2"><option value="">Wild Card #2</option></select>
+                                    <select id="afc-wildcard-3"><option value="">Wild Card #3</option></select>
+                                </div>
+                            </div>
+
+                            <div class="preseason-section">
+                                <h3>NFC Playoff Teams</h3>
+                                <div class="division-predictions">
+                                    <div class="division">
+                                        <h4>NFC East</h4>
+                                        <select id="nfc-east-winner">
+                                            <option value="">Division Winner</option>
+                                        </select>
+                                    </div>
+                                    <div class="division">
+                                        <h4>NFC North</h4>
+                                        <select id="nfc-north-winner">
+                                            <option value="">Division Winner</option>
+                                        </select>
+                                    </div>
+                                    <div class="division">
+                                        <h4>NFC South</h4>
+                                        <select id="nfc-south-winner">
+                                            <option value="">Division Winner</option>
+                                        </select>
+                                    </div>
+                                    <div class="division">
+                                        <h4>NFC West</h4>
+                                        <select id="nfc-west-winner">
+                                            <option value="">Division Winner</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="wildcard-section">
+                                    <h4>NFC Wild Cards</h4>
+                                    <select id="nfc-wildcard-1"><option value="">Wild Card #1</option></select>
+                                    <select id="nfc-wildcard-2"><option value="">Wild Card #2</option></select>
+                                    <select id="nfc-wildcard-3"><option value="">Wild Card #3</option></select>
+                                </div>
+                            </div>
+
+                            <div class="preseason-section">
+                                <h3>Season Records</h3>
+                                <div class="prediction-row">
+                                    <label>Best Record Team:</label>
+                                    <select id="best-record-team">
+                                        <option value="">Select Team</option>
+                                    </select>
+                                </div>
+                                <div class="prediction-row">
+                                    <label>Worst Record Team:</label>
+                                    <select id="worst-record-team">
+                                        <option value="">Select Team</option>
+                                    </select>
+                                </div>
+                                <div class="prediction-row">
+                                    <label>Most Surprising Team:</label>
+                                    <select id="surprise-team">
+                                        <option value="">Select Team</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-actions">
+                            <button id="save-preseason-predictions">Save Preseason Predictions</button>
+                            <button id="cancel-preseason-predictions">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bulk Prediction Modal -->
+            <div id="bulk-prediction-modal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Make Predictions for Week <span id="modal-week-number"></span></h2>
+                        <span class="close">&times;</span>
+                    </div>
+                    <div class="modal-body">
+                        <div id="week-games-list">
+                            <!-- Week games will be populated here -->
+                        </div>
+                        <div class="modal-actions">
+                            <button id="save-week-predictions">Save All Predictions</button>
+                            <button id="cancel-week-predictions">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="nfl-schedule.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+name: Update NFL Scores
+
+on:
+  schedule:
+    # Runs every Tuesday at 6 AM UTC (midnight CT, 1 AM ET)
+    - cron: '0 6 * * 2'
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  update-scores:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+    
+    - name: Install dependencies
+      run: |
+        npm init -y
+        npm install node-fetch
+    
+    - name: Update NFL scores
+      run: node .github/scripts/update-scores.js
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Check for changes
+      id: verify-changed-files
+      run: |
+        if [ -n "$(git status --porcelain)" ]; then
+          echo "changed=true" >> $GITHUB_OUTPUT
+        else
+          echo "changed=false" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Commit and push changes
+      if: steps.verify-changed-files.outputs.changed == 'true'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add .
+        git commit -m "Auto-update NFL scores - $(date)"
+        git push
