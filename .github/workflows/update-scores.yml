@@ -39,10 +39,11 @@ jobs:
     - name: Check for changes
       id: verify-changed-files
       run: |
-        if [ -n "$(git status --porcelain)" ]; then
-          echo "changed=true" >> $GITHUB_OUTPUT
-        else
+        # Only check if the NFL schedule file has changes
+        if git diff --quiet nfl-schedule.js; then
           echo "changed=false" >> $GITHUB_OUTPUT
+        else
+          echo "changed=true" >> $GITHUB_OUTPUT
         fi
     
     - name: Commit and push changes
@@ -50,7 +51,8 @@ jobs:
       run: |
         git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
-        git add .
+        # Only add the NFL schedule file, not node_modules
+        git add nfl-schedule.js
         git commit -m "Auto-update NFL scores - $(date)"
         # Pull the latest changes to avoid non-fast-forward error
         git pull --rebase origin main
