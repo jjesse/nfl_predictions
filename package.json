@@ -1,0 +1,15 @@
+{
+  "name": "nfl_predictions",
+  "version": "1.0.0",
+  "description": "A web application for tracking your NFL game predictions throughout the 2025-2026 season. Built with vanilla HTML, CSS, and JavaScript, designed to be deployed on GitHub Pages.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  }
+}
