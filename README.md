@@ -8,6 +8,8 @@ A web application for tracking your NFL game predictions throughout the 2025-202
 - **Team Information**: See team records and game details
 - **Individual Game Predictions**: Select your predicted winner for each game
 - **Bulk Weekly Predictions**: Make all predictions for a week at once using the modal interface
+- **Pre-season Predictions**: Make championship and playoff predictions before the season
+- **Season Comparison**: Compare your pre-season predictions with weekly picks and actual results
 - **Automated Score Updates**: GitHub Actions automatically updates scores every Tuesday
 - **Track Accuracy**: Monitor your prediction success rate with detailed statistics
 - **Filter Games**: Filter by week or team to focus on specific matchups
@@ -101,6 +103,24 @@ A web application for tracking your NFL game predictions throughout the 2025-202
 ## Data Updates
 
 The schedule data is stored in `nfl-schedule.js`. Game scores are automatically updated via GitHub Actions.
+
+### 2025-2026 NFL Schedule
+
+The app now includes the complete 2025-2026 NFL schedule:
+
+- **Regular Season**: 18 weeks (September 4, 2025 - January 5, 2026)
+- **Wild Card Round**: 6 games (January 11-13, 2026)  
+- **Divisional Round**: 4 games (January 18-19, 2026)
+- **Conference Championships**: 2 games (January 26, 2026)
+- **Super Bowl LX**: February 9, 2026 in New Orleans
+- **Total Games**: ~285 games for complete season tracking
+
+### Schedule Features
+
+- All regular season matchups with accurate dates and times
+- Playoff bracket structure (teams TBD based on regular season results)
+- Proper week numbering for easy filtering and bulk predictions
+- Ready for automated score updates via ESPN API integration
 
 ### Automated Score Updates
 

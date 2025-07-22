@@ -85,6 +85,28 @@ class NFLPredictionTracker {
         });
     }
 
+    populateFilters() {
+        // Populate week filter
+        const weekFilter = document.getElementById('week-filter');
+        const weeks = getWeeksList();
+        weeks.forEach(week => {
+            const option = document.createElement('option');
+            option.value = week;
+            option.textContent = `Week ${week}`;
+            weekFilter.appendChild(option);
+        });
+
+        // Populate team filter
+        const teamFilter = document.getElementById('team-filter');
+        const teams = getTeamList();
+        teams.forEach(team => {
+            const option = document.createElement('option');
+            option.value = team.code;
+            option.textContent = team.name;
+            teamFilter.appendChild(option);
+        });
+    }
+
     switchTab(tab) {
         this.currentTab = tab;
         
@@ -106,22 +128,96 @@ class NFLPredictionTracker {
         }
     }
 
+    showBulkPredictionModal() {
+        const weekFilter = document.getElementById('week-filter');
+        const selectedWeek = weekFilter.value;
+        
+        if (!selectedWeek) {
+            alert('Please select a week first to make bulk predictions.');
+            return;
+        }
+
+        document.getElementById('modal-week-number').textContent = selectedWeek;
+        this.populateWeekGames(parseInt(selectedWeek));
+        document.getElementById('bulk-prediction-modal').style.display = 'block';
+    }
+
+    closeBulkPredictionModal() {
+        document.getElementById('bulk-prediction-modal').style.display = 'none';
+        this.bulkPredictions = {};
+    }
+
+    populateWeekGames(week) {
+        const weekGames = nflSchedule.games.filter(game => game.week === week);
+        const container = document.getElementById('week-games-list');
+        container.innerHTML = '';
+
+        weekGames.forEach(game => {
+            const gameDiv = document.createElement('div');
+            gameDiv.className = 'bulk-game-item';
+            gameDiv.innerHTML = `
+                <div class="bulk-game-teams">
+                    <span class="away-team">${nflSchedule.teams[game.awayTeam].name}</span>
+                    <span class="vs">@</span>
+                    <span class="home-team">${nflSchedule.teams[game.homeTeam].name}</span>
+                </div>
+                <div class="bulk-prediction">
+                    <select id="bulk-prediction-${game.id}" onchange="app.setBulkPrediction(${game.id}, this.value)">
+                        <option value="">Select Winner</option>
+                        <option value="${game.awayTeam}" ${this.predictions[game.id] === game.awayTeam ? 'selected' : ''}>
+                            ${nflSchedule.teams[game.awayTeam].name}
+                        </option>
+                        <option value="${game.homeTeam}" ${this.predictions[game.id] === game.homeTeam ? 'selected' : ''}>
+                            ${nflSchedule.teams[game.homeTeam].name}
+                        </option>
+                    </select>
+                </div>
+            `;
+            container.appendChild(gameDiv);
+            
+            // Set initial bulk prediction if one exists
+            if (this.predictions[game.id]) {
+                this.bulkPredictions[game.id] = this.predictions[game.id];
+            }
+        });
+    }
+
+    setBulkPrediction(gameId, teamCode) {
+        if (teamCode) {
+            this.bulkPredictions[gameId] = teamCode;
+        } else {
+            delete this.bulkPredictions[gameId];
+        }
+    }
+
+    saveWeekPredictions() {
+        // Apply all bulk predictions to the main predictions object
+        Object.assign(this.predictions, this.bulkPredictions);
+        this.savePredictions();
+        this.updateStats();
+        this.renderGames();
+        this.closeBulkPredictionModal();
+        
+        const weekCount = Object.keys(this.bulkPredictions).length;
+        alert(`Successfully saved ${weekCount} predictions!`);
+    }
+
     populatePreseasonDropdowns() {
         const afcTeams = ['BAL', 'BUF', 'CIN', 'CLE', 'DEN', 'HOU', 'IND', 'JAX', 'KC', 'LV', 'LAC', 'MIA', 'NE', 'NYJ', 'PIT', 'TEN'];
         const nfcTeams = ['ARI', 'ATL', 'CAR', 'CHI', 'DAL', 'DET', 'GB', 'LAR', 'MIN', 'NO', 'NYG', 'PHI', 'SF', 'SEA', 'TB', 'WAS'];
 
         // Populate wild card dropdowns
-        this.populateTeamDropdown('afc-wildcard-1', afcTeams);
-        this.populateTeamDropdown('afc-wildcard-2', afcTeams);
-        this.populateTeamDropdown('afc-wildcard-3', afcTeams);
-        this.populateTeamDropdown('nfc-wildcard-1', nfcTeams);
-        this.populateTeamDropdown('nfc-wildcard-2', nfcTeams);
-        this.populateTeamDropdown('nfc-wildcard-3', nfcTeams);
+        this.populateTeamDropdown('preseason-afc-wildcard-1', afcTeams);
+        this.populateTeamDropdown('preseason-afc-wildcard-2', afcTeams);
+        this.populateTeamDropdown('preseason-afc-wildcard-3', afcTeams);
+        this.populateTeamDropdown('preseason-nfc-wildcard-1', nfcTeams);
+        this.populateTeamDropdown('preseason-nfc-wildcard-2', nfcTeams);
+        this.populateTeamDropdown('preseason-nfc-wildcard-3', nfcTeams);
 
         // Populate championship dropdowns
-        this.populateTeamDropdown('afc-champion', afcTeams);
-        this.populateTeamDropdown('nfc-champion', nfcTeams);
-        this.populateTeamDropdown('super-bowl-champion', [...afcTeams, ...nfcTeams]);
+        this.populateTeamDropdown('preseason-afc-champion', afcTeams);
+        this.populateTeamDropdown('preseason-nfc-champion', nfcTeams);
+        this.populateTeamDropdown('preseason-super-bowl-champion', [...afcTeams, ...nfcTeams]);
     }
 
     populateTeamDropdown(elementId, teams) {
@@ -142,33 +238,33 @@ class NFLPredictionTracker {
     savePreseasonPredictions() {
         const predictions = {
             divisionWinners: {
-                'afc-east': document.getElementById('afc-east-winner').value,
-                'afc-north': document.getElementById('afc-north-winner').value,
-                'afc-south': document.getElementById('afc-south-winner').value,
-                'afc-west': document.getElementById('afc-west-winner').value,
-                'nfc-east': document.getElementById('nfc-east-winner').value,
-                'nfc-north': document.getElementById('nfc-north-winner').value,
-                'nfc-south': document.getElementById('nfc-south-winner').value,
-                'nfc-west': document.getElementById('nfc-west-winner').value
+                'afc-east': document.getElementById('preseason-afc-east-winner').value,
+                'afc-north': document.getElementById('preseason-afc-north-winner').value,
+                'afc-south': document.getElementById('preseason-afc-south-winner').value,
+                'afc-west': document.getElementById('preseason-afc-west-winner').value,
+                'nfc-east': document.getElementById('preseason-nfc-east-winner').value,
+                'nfc-north': document.getElementById('preseason-nfc-north-winner').value,
+                'nfc-south': document.getElementById('preseason-nfc-south-winner').value,
+                'nfc-west': document.getElementById('preseason-nfc-west-winner').value
             },
             wildCards: {
-                'afc-1': document.getElementById('afc-wildcard-1').value,
-                'afc-2': document.getElementById('afc-wildcard-2').value,
-                'afc-3': document.getElementById('afc-wildcard-3').value,
-                'nfc-1': document.getElementById('nfc-wildcard-1').value,
-                'nfc-2': document.getElementById('nfc-wildcard-2').value,
-                'nfc-3': document.getElementById('nfc-wildcard-3').value
+                'afc-1': document.getElementById('preseason-afc-wildcard-1').value,
+                'afc-2': document.getElementById('preseason-afc-wildcard-2').value,
+                'afc-3': document.getElementById('preseason-afc-wildcard-3').value,
+                'nfc-1': document.getElementById('preseason-nfc-wildcard-1').value,
+                'nfc-2': document.getElementById('preseason-nfc-wildcard-2').value,
+                'nfc-3': document.getElementById('preseason-nfc-wildcard-3').value
             },
             championships: {
-                'afc-champion': document.getElementById('afc-champion').value,
-                'nfc-champion': document.getElementById('nfc-champion').value,
-                'super-bowl': document.getElementById('super-bowl-champion').value
+                'afc-champion': document.getElementById('preseason-afc-champion').value,
+                'nfc-champion': document.getElementById('preseason-nfc-champion').value,
+                'super-bowl': document.getElementById('preseason-super-bowl-champion').value
             },
             timestamp: new Date().toISOString()
         };
 
         this.preseasonPredictions = predictions;
-        this.savePreseasonPredictions();
+        this.savePreseasonPredictionsToStorage();
         alert('Pre-season predictions saved successfully!');
         this.renderComparison();
     }
@@ -286,11 +382,6 @@ class NFLPredictionTracker {
 
     savePreseasonPredictionsToStorage() {
         localStorage.setItem('nfl-preseason-predictions', JSON.stringify(this.preseasonPredictions));
-    }
-
-    // Fix the method name conflict
-    savePreseasonPredictions() {
-        this.savePreseasonPredictionsToStorage();
     }
 
     getPreseasonTeamPrediction(game) {
