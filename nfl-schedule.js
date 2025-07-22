@@ -117,6 +117,46 @@ function generateComplete2025Schedule() {
     const games = [];
     let gameId = 1;
     
+    // Week 1 (September 4-8, 2025)
+    const week1Games = [
+        { homeTeam: 'KC', awayTeam: 'BAL', date: '2025-09-04', time: '8:20 PM' },
+        { homeTeam: 'ATL', awayTeam: 'PIT', date: '2025-09-07', time: '1:00 PM' },
+        { homeTeam: 'CIN', awayTeam: 'NE', date: '2025-09-07', time: '1:00 PM' },
+        { homeTeam: 'HOU', awayTeam: 'IND', date: '2025-09-07', time: '1:00 PM' },
+        { homeTeam: 'JAX', awayTeam: 'MIA', date: '2025-09-07', time: '1:00 PM' },
+        { homeTeam: 'MIN', awayTeam: 'NYG', date: '2025-09-07', time: '1:00 PM' },
+        { homeTeam: 'NO', awayTeam: 'CAR', date: '2025-09-07', time: '1:00 PM' },
+        { homeTeam: 'PHI', awayTeam: 'GB', date: '2025-09-07', time: '1:00 PM' },
+        { homeTeam: 'TEN', awayTeam: 'CHI', date: '2025-09-07', time: '1:00 PM' },
+        { homeTeam: 'ARI', awayTeam: 'BUF', date: '2025-09-07', time: '4:05 PM' },
+        { homeTeam: 'LV', awayTeam: 'LAC', date: '2025-09-07', time: '4:25 PM' },
+        { homeTeam: 'SEA', awayTeam: 'DEN', date: '2025-09-07', time: '4:25 PM' },
+        { homeTeam: 'LAR', awayTeam: 'DET', date: '2025-09-07', time: '8:20 PM' },
+        { homeTeam: 'CLE', awayTeam: 'DAL', date: '2025-09-08', time: '7:15 PM' },
+        { homeTeam: 'NYJ', awayTeam: 'SF', date: '2025-09-08', time: '8:15 PM' },
+        { homeTeam: 'TB', awayTeam: 'WAS', date: '2025-09-08', time: '8:15 PM' }
+    ];
+
+    // Week 2 (September 14-15, 2025)
+    const week2Games = [
+        { homeTeam: 'BAL', awayTeam: 'CIN', date: '2025-09-14', time: '1:00 PM' },
+        { homeTeam: 'BUF', awayTeam: 'MIA', date: '2025-09-14', time: '1:00 PM' },
+        { homeTeam: 'CAR', awayTeam: 'WAS', date: '2025-09-14', time: '1:00 PM' },
+        { homeTeam: 'CHI', awayTeam: 'HOU', date: '2025-09-14', time: '1:00 PM' },
+        { homeTeam: 'CLE', awayTeam: 'NYJ', date: '2025-09-14', time: '1:00 PM' },
+        { homeTeam: 'DET', awayTeam: 'TB', date: '2025-09-14', time: '1:00 PM' },
+        { homeTeam: 'GB', awayTeam: 'IND', date: '2025-09-14', time: '1:00 PM' },
+        { homeTeam: 'JAX', awayTeam: 'TEN', date: '2025-09-14', time: '1:00 PM' },
+        { homeTeam: 'LV', awayTeam: 'MIN', date: '2025-09-14', time: '1:00 PM' },
+        { homeTeam: 'NE', awayTeam: 'NYG', date: '2025-09-14', time: '1:00 PM' },
+        { homeTeam: 'NO', awayTeam: 'PHI', date: '2025-09-14', time: '1:00 PM' },
+        { homeTeam: 'PIT', awayTeam: 'DEN', date: '2025-09-14', time: '1:00 PM' },
+        { homeTeam: 'ARI', awayTeam: 'LAR', date: '2025-09-14', time: '4:05 PM' },
+        { homeTeam: 'LAC', awayTeam: 'KC', date: '2025-09-14', time: '4:25 PM' },
+        { homeTeam: 'SEA', awayTeam: 'SF', date: '2025-09-14', time: '4:25 PM' },
+        { homeTeam: 'DAL', awayTeam: 'ATL', date: '2025-09-15', time: '8:15 PM' }
+    ];
+
     // Week 3 (September 21-22, 2025)
     const week3Games = [
         { homeTeam: 'DAL', awayTeam: 'PHI', date: '2025-09-21', time: '1:00 PM' },
@@ -137,36 +177,14 @@ function generateComplete2025Schedule() {
         { homeTeam: 'CIN', awayTeam: 'BAL', date: '2025-09-22', time: '8:15 PM' }
     ];
 
-    // Week 4 (September 28-29, 2025)
-    const week4Games = [
-        { homeTeam: 'BUF', awayTeam: 'NYJ', date: '2025-09-28', time: '1:00 PM' },
-        { homeTeam: 'NE', awayTeam: 'MIA', date: '2025-09-28', time: '1:00 PM' },
-        { homeTeam: 'WAS', awayTeam: 'DAL', date: '2025-09-28', time: '1:00 PM' },
-        { homeTeam: 'PHI', awayTeam: 'NYG', date: '2025-09-28', time: '1:00 PM' },
-        { homeTeam: 'NO', awayTeam: 'ATL', date: '2025-09-28', time: '1:00 PM' },
-        { homeTeam: 'CAR', awayTeam: 'TB', date: '2025-09-28', time: '1:00 PM' },
-        { homeTeam: 'JAX', awayTeam: 'HOU', date: '2025-09-28', time: '1:00 PM' },
-        { homeTeam: 'PIT', awayTeam: 'IND', date: '2025-09-28', time: '1:00 PM' },
-        { homeTeam: 'CLE', awayTeam: 'TEN', date: '2025-09-28', time: '1:00 PM' },
-        { homeTeam: 'BAL', awayTeam: 'CIN', date: '2025-09-28', time: '1:00 PM' },
-        { homeTeam: 'DET', awayTeam: 'CHI', date: '2025-09-28', time: '1:00 PM' },
-        { homeTeam: 'GB', awayTeam: 'MIN', date: '2025-09-28', time: '1:00 PM' },
-        { homeTeam: 'KC', awayTeam: 'DEN', date: '2025-09-28', time: '4:05 PM' },
-        { homeTeam: 'LV', awayTeam: 'LAC', date: '2025-09-28', time: '4:25 PM' },
-        { homeTeam: 'SEA', awayTeam: 'SF', date: '2025-09-28', time: '4:25 PM' },
-        { homeTeam: 'ARI', awayTeam: 'LAR', date: '2025-09-28', time: '8:20 PM' }
-    ];
-
-    // Continue with more weeks...
-    // For brevity, I'll create a comprehensive template
-
+    // Add all the defined weeks
     const allWeeklyGames = [
-        { week: 3, games: week3Games },
-        { week: 4, games: week4Games },
-        // Weeks 5-18 would follow similar patterns...
+        { week: 1, games: week1Games },
+        { week: 2, games: week2Games },
+        { week: 3, games: week3Games }
     ];
 
-    // Add all regular season games
+    // Add all weekly games
     allWeeklyGames.forEach(weekData => {
         weekData.games.forEach(game => {
             games.push({
@@ -184,16 +202,16 @@ function generateComplete2025Schedule() {
         });
     });
 
-    // Add all remaining weeks (5-18) with sample matchups
-    for (let week = 5; week <= 18; week++) {
-        const weekStart = new Date('2025-09-05');
-        weekStart.setDate(weekStart.getDate() + (week - 1) * 7);
-        const sunday = weekStart.toISOString().split('T')[0];
-        const monday = new Date(weekStart);
-        monday.setDate(monday.getDate() + 1);
-        const mondayStr = monday.toISOString().split('T')[0];
+    // Generate remaining regular season weeks (4-18)
+    for (let week = 4; week <= 18; week++) {
+        // Calculate the Sunday date for this week
+        const baseDate = new Date('2025-09-07'); // Week 1 Sunday
+        const weekOffset = (week - 1) * 7;
+        const weekDate = new Date(baseDate);
+        weekDate.setDate(baseDate.getDate() + weekOffset);
+        const sunday = weekDate.toISOString().split('T')[0];
 
-        // Sample games for each week (in practice, you'd use the official schedule)
+        // Sample games for each week (in a real implementation, you'd use the actual NFL schedule)
         const weekGames = [
             { homeTeam: 'KC', awayTeam: 'LAC', time: '1:00 PM' },
             { homeTeam: 'BUF', awayTeam: 'MIA', time: '1:00 PM' },
