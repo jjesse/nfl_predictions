@@ -109,6 +109,15 @@ class NFLPredictionTracker {
                 this.closeBulkPredictionModal();
             }
         });
+
+        // CSV Export event listeners
+        document.getElementById('export-predictions-csv').addEventListener('click', () => {
+            this.exportPredictionsToCSV();
+        });
+
+        document.getElementById('export-preseason-csv').addEventListener('click', () => {
+            this.exportPreseasonToCSV();
+        });
     }
 
     populateFilters() {
@@ -1172,6 +1181,195 @@ class NFLPredictionTracker {
             this.renderGames();
             this.updateStats();
         }
+    }
+
+    // CSV Export Functions
+    exportPredictionsToCSV() {
+        const csvData = [];
+        
+        // Add header row
+        csvData.push([
+            'Game ID',
+            'Week',
+            'Date',
+            'Time',
+            'Away Team',
+            'Home Team',
+            'My Prediction',
+            'Predicted Team Name',
+            'Actual Winner',
+            'Home Score',
+            'Away Score',
+            'Game Status',
+            'Prediction Correct',
+            'Week Type'
+        ]);
+
+        // Add data rows
+        nflSchedule.games.forEach(game => {
+            const myPrediction = this.predictions[game.id];
+            const predictedTeamName = myPrediction ? nflSchedule.teams[myPrediction]?.name : '';
+            const actualWinner = game.winner ? nflSchedule.teams[game.winner]?.name : '';
+            const isCorrect = game.status === 'final' && myPrediction === game.winner ? 'Yes' : 
+                             game.status === 'final' && myPrediction && myPrediction !== game.winner ? 'No' : 
+                             myPrediction ? 'Pending' : 'No Prediction';
+            
+            const weekType = game.week <= 18 ? 'Regular Season' : 
+                            game.week === 19 ? 'Wild Card' :
+                            game.week === 20 ? 'Divisional' :
+                            game.week === 21 ? 'Conference Championship' :
+                            game.week === 22 ? 'Super Bowl' : 'Playoff';
+
+            csvData.push([
+                game.id,
+                game.week,
+                game.date,
+                game.time,
+                game.awayTeam === 'TBD' ? 'TBD' : nflSchedule.teams[game.awayTeam]?.name,
+                game.homeTeam === 'TBD' ? 'TBD' : nflSchedule.teams[game.homeTeam]?.name,
+                myPrediction || '',
+                predictedTeamName,
+                actualWinner,
+                game.homeScore || '',
+                game.awayScore || '',
+                game.status,
+                isCorrect,
+                weekType
+            ]);
+        });
+
+        this.downloadCSV(csvData, 'nfl_predictions_2025-2026.csv');
+    }
+
+    exportPreseasonToCSV() {
+        const csvData = [];
+        
+        // Add header row
+        csvData.push([
+            'Category',
+            'Position',
+            'Team Code',
+            'Team Name',
+            'Conference',
+            'Prediction Type'
+        ]);
+
+        // Division Winners
+        if (this.preseasonPredictions.divisionWinners) {
+            Object.entries(this.preseasonPredictions.divisionWinners).forEach(([division, teamCode]) => {
+                if (teamCode) {
+                    const divisionName = division.replace('-', ' ').toUpperCase();
+                    const conference = division.startsWith('afc') ? 'AFC' : 'NFC';
+                    csvData.push([
+                        'Division Winner',
+                        divisionName,
+                        teamCode,
+                        nflSchedule.teams[teamCode]?.name || teamCode,
+                        conference,
+                        'Preseason'
+                    ]);
+                }
+            });
+        }
+
+        // Wild Cards
+        if (this.preseasonPredictions.wildCards) {
+            Object.entries(this.preseasonPredictions.wildCards).forEach(([slot, teamCode]) => {
+                if (teamCode) {
+                    const conference = slot.startsWith('afc') ? 'AFC' : 'NFC';
+                    const position = slot.replace('afc-', '').replace('nfc-', '').replace('-', ' ').toUpperCase();
+                    csvData.push([
+                        'Wild Card',
+                        position,
+                        teamCode,
+                        nflSchedule.teams[teamCode]?.name || teamCode,
+                        conference,
+                        'Preseason'
+                    ]);
+                }
+            });
+        }
+
+        // Championships
+        if (this.preseasonPredictions.championships) {
+            Object.entries(this.preseasonPredictions.championships).forEach(([type, teamCode]) => {
+                if (teamCode) {
+                    let category, conference;
+                    if (type === 'afc-champion') {
+                        category = 'AFC Champion';
+                        conference = 'AFC';
+                    } else if (type === 'nfc-champion') {
+                        category = 'NFC Champion';
+                        conference = 'NFC';
+                    } else if (type === 'super-bowl') {
+                        category = 'Super Bowl Champion';
+                        conference = teamCode.startsWith('A') ? 'AFC' : 'NFC'; // Rough estimate
+                    }
+                    
+                    csvData.push([
+                        category,
+                        'Winner',
+                        teamCode,
+                        nflSchedule.teams[teamCode]?.name || teamCode,
+                        conference,
+                        'Preseason'
+                    ]);
+                }
+            });
+        }
+
+        // Add summary stats
+        csvData.push([]); // Empty row
+        csvData.push(['Summary Statistics', '', '', '', '', '']);
+        csvData.push(['Total Predictions Made', Object.keys(this.predictions).length, '', '', '', '']);
+        
+        const completedGames = nflSchedule.games.filter(g => g.status === 'final' && g.winner);
+        const correctPredictions = completedGames.filter(g => this.predictions[g.id] === g.winner).length;
+        const predictedFinalGames = completedGames.filter(g => this.predictions[g.id]);
+        const accuracy = predictedFinalGames.length > 0 ? Math.round((correctPredictions / predictedFinalGames.length) * 100) : 0;
+        
+        csvData.push(['Completed Games', completedGames.length, '', '', '', '']);
+        csvData.push(['Correct Predictions', correctPredictions, '', '', '', '']);
+        csvData.push(['Prediction Accuracy', `${accuracy}%`, '', '', '', '']);
+        csvData.push(['Export Date', new Date().toISOString().split('T')[0], '', '', '', '']);
+
+        this.downloadCSV(csvData, 'nfl_preseason_predictions_2025-2026.csv');
+    }
+
+    downloadCSV(data, filename) {
+        // Convert array to CSV string
+        const csvContent = data.map(row => 
+            row.map(field => {
+                // Escape quotes and wrap in quotes if contains comma, quote, or newline
+                const stringField = String(field);
+                if (stringField.includes(',') || stringField.includes('"') || stringField.includes('\n')) {
+                    return '"' + stringField.replace(/"/g, '""') + '"';
+                }
+                return stringField;
+            }).join(',')
+        ).join('\n');
+
+        // Create blob and download link
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        
+        if (navigator.msSaveBlob) {
+            // IE 10+
+            navigator.msSaveBlob(blob, filename);
+        } else {
+            // Other browsers
+            const url = URL.createObjectURL(blob);
+            link.href = url;
+            link.download = filename;
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        // Show success message
+        alert(`${filename} has been downloaded successfully! You can now import it into Google Sheets.`);
     }
 }
 

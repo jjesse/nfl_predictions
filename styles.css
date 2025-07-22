@@ -799,6 +799,20 @@ header h1 {
     color: #666;
 }
 
+#export-predictions-csv,
+#export-preseason-csv {
+    background-color: #17a2b8;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#export-predictions-csv:hover,
+#export-preseason-csv:hover {
+    background-color: #138496;
+}
+
 @media (max-width: 768px) {
     .conference-standings {
         flex-direction: column;
