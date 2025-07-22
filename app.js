@@ -12,10 +12,12 @@ class NFLPredictionTracker {
         this.setupEventListeners();
         this.populateFilters();
         this.populatePreseasonDropdowns();
+        this.populateResultsFilters();
         this.renderGames();
         this.updateStats();
         this.loadPreseasonUI();
         this.renderComparison();
+        this.renderStandings();
     }
 
     setupEventListeners() {
@@ -33,6 +35,15 @@ class NFLPredictionTracker {
 
         document.getElementById('team-filter').addEventListener('change', (e) => {
             this.filterGames();
+        });
+
+        // Results tab filters
+        document.getElementById('results-week-filter').addEventListener('change', (e) => {
+            this.renderResults();
+        });
+
+        document.getElementById('results-status-filter').addEventListener('change', (e) => {
+            this.renderResults();
         });
 
         document.getElementById('clear-all-predictions').addEventListener('click', () => {
@@ -122,6 +133,199 @@ class NFLPredictionTracker {
         });
     }
 
+    populateResultsFilters() {
+        // Populate results week filter
+        const resultsWeekFilter = document.getElementById('results-week-filter');
+        const weeks = getWeeksList();
+        weeks.forEach(week => {
+            const option = document.createElement('option');
+            option.value = week;
+            option.textContent = `Week ${week}`;
+            resultsWeekFilter.appendChild(option);
+        });
+    }
+
+    renderResults() {
+        const weekFilter = document.getElementById('results-week-filter').value;
+        const statusFilter = document.getElementById('results-status-filter').value;
+        
+        let filteredGames = nflSchedule.games.filter(game => {
+            const weekMatch = !weekFilter || game.week == weekFilter;
+            const statusMatch = !statusFilter || game.status === statusFilter;
+            return weekMatch && statusMatch;
+        });
+
+        const resultsContainer = document.getElementById('results-list');
+        resultsContainer.innerHTML = '';
+
+        if (filteredGames.length === 0) {
+            resultsContainer.innerHTML = '<p style="text-align: center; color: #666;">No games match the selected filters.</p>';
+            return;
+        }
+
+        filteredGames.forEach(game => {
+            const gameElement = this.createResultsGameElement(game);
+            resultsContainer.appendChild(gameElement);
+        });
+    }
+
+    createResultsGameElement(game) {
+        const gameDiv = document.createElement('div');
+        gameDiv.className = 'results-game-card';
+        
+        const myPrediction = this.predictions[game.id];
+        const predictionResult = this.getPredictionResultText(game, myPrediction);
+        
+        gameDiv.innerHTML = `
+            <div class="game-header">
+                <div class="game-info">
+                    <span class="week-badge">Week ${game.week}</span>
+                    <span>${game.date}</span>
+                    <span>${game.time}</span>
+                </div>
+                <div class="game-status status-${game.status}">
+                    ${this.getStatusText(game.status)}
+                </div>
+            </div>
+            
+            <div class="teams-container">
+                <div class="team away-team ${game.winner === game.awayTeam ? 'winner' : ''}">
+                    <div class="team-name">
+                        ${nflSchedule.teams[game.awayTeam].name}
+                        ${game.winner === game.awayTeam ? '<span class="winner-badge">W</span>' : ''}
+                    </div>
+                    <div class="team-score">
+                        ${game.awayScore !== null ? game.awayScore : '-'}
+                    </div>
+                </div>
+                
+                <div class="vs">@</div>
+                
+                <div class="team home-team ${game.winner === game.homeTeam ? 'winner' : ''}">
+                    <div class="team-name">
+                        ${nflSchedule.teams[game.homeTeam].name}
+                        ${game.winner === game.homeTeam ? '<span class="winner-badge">W</span>' : ''}
+                    </div>
+                    <div class="team-score">
+                        ${game.homeScore !== null ? game.homeScore : '-'}
+                    </div>
+                </div>
+            </div>
+            
+            ${predictionResult ? `<div class="prediction-result-summary">${predictionResult}</div>` : ''}
+        `;
+
+        return gameDiv;
+    }
+
+    getPredictionResultText(game, prediction) {
+        if (!prediction) {
+            return '';
+        }
+
+        if (game.status === 'upcoming') {
+            return `<span class="prediction-pending">Predicted: ${nflSchedule.teams[prediction].name}</span>`;
+        } else if (game.status === 'final' && game.winner) {
+            const isCorrect = prediction === game.winner;
+            return `<span class="prediction-${isCorrect ? 'correct' : 'incorrect'}">
+                Predicted: ${nflSchedule.teams[prediction].name} | 
+                ${isCorrect ? '✓ Correct!' : '✗ Incorrect'}
+            </span>`;
+        }
+
+        return '';
+    }
+
+    renderStandings() {
+        this.renderConferenceStandings('AFC', 'afc-standings');
+        this.renderConferenceStandings('NFC', 'nfc-standings');
+    }
+
+    renderConferenceStandings(conference, containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        // Get teams for this conference
+        const conferenceTeams = Object.keys(nflSchedule.teams).filter(teamCode => {
+            if (conference === 'AFC') {
+                return ['BAL', 'BUF', 'CIN', 'CLE', 'DEN', 'HOU', 'IND', 'JAX', 'KC', 'LV', 'LAC', 'MIA', 'NE', 'NYJ', 'PIT', 'TEN'].includes(teamCode);
+            } else {
+                return ['ARI', 'ATL', 'CAR', 'CHI', 'DAL', 'DET', 'GB', 'LAR', 'MIN', 'NO', 'NYG', 'PHI', 'SF', 'SEA', 'TB', 'WAS'].includes(teamCode);
+            }
+        });
+
+        // Sort teams by record (wins descending, then losses ascending)
+        conferenceTeams.sort((a, b) => {
+            const teamA = nflSchedule.teams[a];
+            const teamB = nflSchedule.teams[b];
+            
+            if (teamA.record.wins !== teamB.record.wins) {
+                return teamB.record.wins - teamA.record.wins; // More wins first
+            }
+            return teamA.record.losses - teamB.record.losses; // Fewer losses first
+        });
+
+        // Group by divisions
+        const divisions = {
+            'AFC': {
+                'East': ['BUF', 'MIA', 'NE', 'NYJ'],
+                'North': ['BAL', 'CIN', 'CLE', 'PIT'],
+                'South': ['HOU', 'IND', 'JAX', 'TEN'],
+                'West': ['DEN', 'KC', 'LV', 'LAC']
+            },
+            'NFC': {
+                'East': ['DAL', 'NYG', 'PHI', 'WAS'],
+                'North': ['CHI', 'DET', 'GB', 'MIN'],
+                'South': ['ATL', 'CAR', 'NO', 'TB'],
+                'West': ['ARI', 'LAR', 'SF', 'SEA']
+            }
+        };
+
+        let html = '<div class="divisions-grid">';
+        
+        Object.entries(divisions[conference]).forEach(([divisionName, divisionTeams]) => {
+            // Sort division teams by record
+            const sortedDivisionTeams = divisionTeams.sort((a, b) => {
+                const teamA = nflSchedule.teams[a];
+                const teamB = nflSchedule.teams[b];
+                
+                if (teamA.record.wins !== teamB.record.wins) {
+                    return teamB.record.wins - teamA.record.wins;
+                }
+                return teamA.record.losses - teamB.record.losses;
+            });
+
+            html += `
+                <div class="division-standings">
+                    <h4>${conference} ${divisionName}</h4>
+                    <div class="standings-list">
+            `;
+
+            sortedDivisionTeams.forEach((teamCode, index) => {
+                const team = nflSchedule.teams[teamCode];
+                const winPercentage = team.record.wins + team.record.losses > 0 
+                    ? (team.record.wins / (team.record.wins + team.record.losses) * 100).toFixed(1)
+                    : '0.0';
+
+                html += `
+                    <div class="standing-item ${index === 0 ? 'division-leader' : ''}">
+                        <span class="team-name">${team.name}</span>
+                        <span class="record">${team.record.wins}-${team.record.losses}</span>
+                        <span class="win-pct">${winPercentage}%</span>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+                </div>
+            `;
+        });
+
+        html += '</div>';
+        container.innerHTML = html;
+    }
+
     switchTab(tab) {
         this.currentTab = tab;
         
@@ -140,6 +344,10 @@ class NFLPredictionTracker {
         // Refresh content if needed
         if (tab === 'comparison') {
             this.renderComparison();
+        } else if (tab === 'results') {
+            this.renderResults();
+        } else if (tab === 'standings') {
+            this.renderStandings();
         }
     }
 

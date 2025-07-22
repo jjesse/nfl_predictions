@@ -602,6 +602,154 @@ header h1 {
     font-weight: bold;
 }
 
+/* Results Tab Styles */
+.results-game-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #007bff;
+}
+
+.results-game-card .team.winner {
+    background-color: #e8f5e8;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.week-badge {
+    background-color: #007bff;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.prediction-result-summary {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.prediction-result-summary .prediction-correct {
+    color: #28a745;
+}
+
+.prediction-result-summary .prediction-incorrect {
+    color: #dc3545;
+}
+
+.prediction-result-summary .prediction-pending {
+    color: #ffc107;
+}
+
+/* Standings Tab Styles */
+.standings-container {
+    background: white;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.conference-standings {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+}
+
+.conference h3 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+}
+
+.divisions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.division-standings {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    border: 1px solid #e9ecef;
+}
+
+.division-standings h4 {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #495057;
+    font-size: 1.1rem;
+}
+
+.standings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.standing-item {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 10px;
+    padding: 10px;
+    background: white;
+    border-radius: 6px;
+    align-items: center;
+    border: 1px solid #e9ecef;
+}
+
+.standing-item.division-leader {
+    border-left: 4px solid #28a745;
+    background-color: #f8fff8;
+}
+
+.standing-item .team-name {
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.standing-item .record {
+    text-align: center;
+    font-weight: bold;
+    color: #495057;
+}
+
+.standing-item .win-pct {
+    text-align: center;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+    .conference-standings {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .divisions-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .standing-item {
+        grid-template-columns: 1fr;
+        gap: 5px;
+        text-align: center;
+    }
+    
+    .results-game-card {
+        padding: 15px;
+    }
+}
+
 @media (max-width: 768px) {
     .container {
         padding: 10px;
