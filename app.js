@@ -69,11 +69,26 @@ class NFLPredictionTracker {
         });
 
         // Update championship dropdowns when division winners change
-        ['afc-east-winner', 'afc-north-winner', 'afc-south-winner', 'afc-west-winner',
-         'nfc-east-winner', 'nfc-north-winner', 'nfc-south-winner', 'nfc-west-winner'].forEach(id => {
-            document.getElementById(id).addEventListener('change', () => {
-                this.updateChampionshipDropdowns();
-            });
+        ['preseason-afc-east-winner', 'preseason-afc-north-winner', 'preseason-afc-south-winner', 'preseason-afc-west-winner',
+         'preseason-nfc-east-winner', 'preseason-nfc-north-winner', 'preseason-nfc-south-winner', 'preseason-nfc-west-winner',
+         'preseason-afc-wildcard-1', 'preseason-afc-wildcard-2', 'preseason-afc-wildcard-3',
+         'preseason-nfc-wildcard-1', 'preseason-nfc-wildcard-2', 'preseason-nfc-wildcard-3'].forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('change', () => {
+                    this.updatePreseasonConstraints();
+                });
+            }
+        });
+
+        // Update Super Bowl when championship winners change
+        ['preseason-afc-champion', 'preseason-nfc-champion'].forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('change', () => {
+                    this.updateSuperBowlOptions();
+                });
+            }
         });
 
         // Close modal when clicking outside
@@ -235,7 +250,166 @@ class NFLPredictionTracker {
         // For now, keeping it simple with all teams
     }
 
+    updatePreseasonConstraints() {
+        this.updateWildCardConstraints();
+        this.updateChampionshipConstraints();
+        this.updateSuperBowlOptions();
+    }
+
+    updateWildCardConstraints() {
+        // Get all selected playoff teams
+        const afcDivisionWinners = [
+            document.getElementById('preseason-afc-east-winner').value,
+            document.getElementById('preseason-afc-north-winner').value,
+            document.getElementById('preseason-afc-south-winner').value,
+            document.getElementById('preseason-afc-west-winner').value
+        ].filter(team => team);
+
+        const nfcDivisionWinners = [
+            document.getElementById('preseason-nfc-east-winner').value,
+            document.getElementById('preseason-nfc-north-winner').value,
+            document.getElementById('preseason-nfc-south-winner').value,
+            document.getElementById('preseason-nfc-west-winner').value
+        ].filter(team => team);
+
+        // Update AFC wild card options
+        this.updateWildCardDropdown('preseason-afc-wildcard-1', 'AFC', afcDivisionWinners);
+        this.updateWildCardDropdown('preseason-afc-wildcard-2', 'AFC', afcDivisionWinners);
+        this.updateWildCardDropdown('preseason-afc-wildcard-3', 'AFC', afcDivisionWinners);
+
+        // Update NFC wild card options
+        this.updateWildCardDropdown('preseason-nfc-wildcard-1', 'NFC', nfcDivisionWinners);
+        this.updateWildCardDropdown('preseason-nfc-wildcard-2', 'NFC', nfcDivisionWinners);
+        this.updateWildCardDropdown('preseason-nfc-wildcard-3', 'NFC', nfcDivisionWinners);
+    }
+
+    updateWildCardDropdown(dropdownId, conference, divisionWinners) {
+        const dropdown = document.getElementById(dropdownId);
+        if (!dropdown) return;
+
+        const currentValue = dropdown.value;
+        
+        // Get all selected wild cards for this conference
+        const wildcardIds = conference === 'AFC' 
+            ? ['preseason-afc-wildcard-1', 'preseason-afc-wildcard-2', 'preseason-afc-wildcard-3']
+            : ['preseason-nfc-wildcard-1', 'preseason-nfc-wildcard-2', 'preseason-nfc-wildcard-3'];
+        
+        const selectedWildCards = wildcardIds
+            .filter(id => id !== dropdownId)
+            .map(id => document.getElementById(id).value)
+            .filter(value => value);
+
+        // Get available teams (conference teams - division winners - other selected wild cards)
+        const conferenceTeams = conference === 'AFC' 
+            ? ['BAL', 'BUF', 'CIN', 'CLE', 'DEN', 'HOU', 'IND', 'JAX', 'KC', 'LV', 'LAC', 'MIA', 'NE', 'NYJ', 'PIT', 'TEN']
+            : ['ARI', 'ATL', 'CAR', 'CHI', 'DAL', 'DET', 'GB', 'LAR', 'MIN', 'NO', 'NYG', 'PHI', 'SF', 'SEA', 'TB', 'WAS'];
+
+        const unavailableTeams = [...divisionWinners, ...selectedWildCards];
+        const availableTeams = conferenceTeams.filter(team => !unavailableTeams.includes(team));
+
+        // Rebuild dropdown options
+        dropdown.innerHTML = `<option value="">${conference} Wild Card</option>`;
+        availableTeams.forEach(teamCode => {
+            const option = document.createElement('option');
+            option.value = teamCode;
+            option.textContent = nflSchedule.teams[teamCode].name;
+            if (teamCode === currentValue) {
+                option.selected = true;
+            }
+            dropdown.appendChild(option);
+        });
+    }
+
+    updateChampionshipConstraints() {
+        // Get all AFC playoff teams (division winners + wild cards)
+        const afcPlayoffTeams = [
+            document.getElementById('preseason-afc-east-winner').value,
+            document.getElementById('preseason-afc-north-winner').value,
+            document.getElementById('preseason-afc-south-winner').value,
+            document.getElementById('preseason-afc-west-winner').value,
+            document.getElementById('preseason-afc-wildcard-1').value,
+            document.getElementById('preseason-afc-wildcard-2').value,
+            document.getElementById('preseason-afc-wildcard-3').value
+        ].filter(team => team);
+
+        // Get all NFC playoff teams (division winners + wild cards)
+        const nfcPlayoffTeams = [
+            document.getElementById('preseason-nfc-east-winner').value,
+            document.getElementById('preseason-nfc-north-winner').value,
+            document.getElementById('preseason-nfc-south-winner').value,
+            document.getElementById('preseason-nfc-west-winner').value,
+            document.getElementById('preseason-nfc-wildcard-1').value,
+            document.getElementById('preseason-nfc-wildcard-2').value,
+            document.getElementById('preseason-nfc-wildcard-3').value
+        ].filter(team => team);
+
+        // Update AFC Championship dropdown
+        this.updateChampionshipDropdown('preseason-afc-champion', afcPlayoffTeams, 'AFC');
+        
+        // Update NFC Championship dropdown
+        this.updateChampionshipDropdown('preseason-nfc-champion', nfcPlayoffTeams, 'NFC');
+    }
+
+    updateChampionshipDropdown(dropdownId, availableTeams, conference) {
+        const dropdown = document.getElementById(dropdownId);
+        if (!dropdown) return;
+
+        const currentValue = dropdown.value;
+        
+        // Rebuild dropdown options
+        dropdown.innerHTML = `<option value="">Select ${conference} Champion</option>`;
+        availableTeams.forEach(teamCode => {
+            const option = document.createElement('option');
+            option.value = teamCode;
+            option.textContent = nflSchedule.teams[teamCode].name;
+            if (teamCode === currentValue && availableTeams.includes(currentValue)) {
+                option.selected = true;
+            }
+            dropdown.appendChild(option);
+        });
+
+        // Clear selection if current team is no longer available
+        if (currentValue && !availableTeams.includes(currentValue)) {
+            dropdown.value = '';
+        }
+    }
+
+    updateSuperBowlOptions() {
+        const afcChamp = document.getElementById('preseason-afc-champion').value;
+        const nfcChamp = document.getElementById('preseason-nfc-champion').value;
+        const superBowlDropdown = document.getElementById('preseason-super-bowl-champion');
+        
+        if (!superBowlDropdown) return;
+
+        const currentValue = superBowlDropdown.value;
+        const availableChamps = [afcChamp, nfcChamp].filter(team => team);
+
+        // Rebuild Super Bowl dropdown
+        superBowlDropdown.innerHTML = '<option value="">Select Super Bowl Champion</option>';
+        availableChamps.forEach(teamCode => {
+            const option = document.createElement('option');
+            option.value = teamCode;
+            option.textContent = nflSchedule.teams[teamCode].name;
+            if (teamCode === currentValue) {
+                option.selected = true;
+            }
+            superBowlDropdown.appendChild(option);
+        });
+
+        // Clear selection if current team is no longer available
+        if (currentValue && !availableChamps.includes(currentValue)) {
+            superBowlDropdown.value = '';
+        }
+    }
+
     savePreseasonPredictions() {
+        // Validate predictions before saving
+        const validation = this.validatePreseasonPredictions();
+        if (!validation.isValid) {
+            alert(`Please fix the following issues:\n\n${validation.errors.join('\n')}`);
+            return;
+        }
+
         const predictions = {
             divisionWinners: {
                 'afc-east': document.getElementById('preseason-afc-east-winner').value,
@@ -269,12 +443,86 @@ class NFLPredictionTracker {
         this.renderComparison();
     }
 
+    validatePreseasonPredictions() {
+        const errors = [];
+
+        // Check for duplicate AFC wild cards
+        const afcWildCards = [
+            document.getElementById('preseason-afc-wildcard-1').value,
+            document.getElementById('preseason-afc-wildcard-2').value,
+            document.getElementById('preseason-afc-wildcard-3').value
+        ].filter(team => team);
+
+        const afcWildCardDuplicates = afcWildCards.filter((team, index) => afcWildCards.indexOf(team) !== index);
+        if (afcWildCardDuplicates.length > 0) {
+            errors.push('AFC Wild Card teams cannot be duplicated');
+        }
+
+        // Check for duplicate NFC wild cards
+        const nfcWildCards = [
+            document.getElementById('preseason-nfc-wildcard-1').value,
+            document.getElementById('preseason-nfc-wildcard-2').value,
+            document.getElementById('preseason-nfc-wildcard-3').value
+        ].filter(team => team);
+
+        const nfcWildCardDuplicates = nfcWildCards.filter((team, index) => nfcWildCards.indexOf(team) !== index);
+        if (nfcWildCardDuplicates.length > 0) {
+            errors.push('NFC Wild Card teams cannot be duplicated');
+        }
+
+        // Check AFC Championship winner is from AFC playoff teams
+        const afcChampion = document.getElementById('preseason-afc-champion').value;
+        if (afcChampion) {
+            const afcPlayoffTeams = [
+                document.getElementById('preseason-afc-east-winner').value,
+                document.getElementById('preseason-afc-north-winner').value,
+                document.getElementById('preseason-afc-south-winner').value,
+                document.getElementById('preseason-afc-west-winner').value,
+                ...afcWildCards
+            ].filter(team => team);
+
+            if (!afcPlayoffTeams.includes(afcChampion)) {
+                errors.push('AFC Champion must be selected from your AFC playoff teams');
+            }
+        }
+
+        // Check NFC Championship winner is from NFC playoff teams
+        const nfcChampion = document.getElementById('preseason-nfc-champion').value;
+        if (nfcChampion) {
+            const nfcPlayoffTeams = [
+                document.getElementById('preseason-nfc-east-winner').value,
+                document.getElementById('preseason-nfc-north-winner').value,
+                document.getElementById('preseason-nfc-south-winner').value,
+                document.getElementById('preseason-nfc-west-winner').value,
+                ...nfcWildCards
+            ].filter(team => team);
+
+            if (!nfcPlayoffTeams.includes(nfcChampion)) {
+                errors.push('NFC Champion must be selected from your NFC playoff teams');
+            }
+        }
+
+        // Check Super Bowl winner is from championship winners
+        const superBowlWinner = document.getElementById('preseason-super-bowl-champion').value;
+        if (superBowlWinner) {
+            const championshipWinners = [afcChampion, nfcChampion].filter(team => team);
+            if (!championshipWinners.includes(superBowlWinner)) {
+                errors.push('Super Bowl Champion must be either your AFC or NFC Champion');
+            }
+        }
+
+        return {
+            isValid: errors.length === 0,
+            errors: errors
+        };
+    }
+
     loadPreseasonUI() {
         if (!this.preseasonPredictions.divisionWinners) return;
 
         // Load division winners
         Object.entries(this.preseasonPredictions.divisionWinners).forEach(([division, team]) => {
-            const select = document.getElementById(`${division}-winner`);
+            const select = document.getElementById(`preseason-${division}-winner`);
             if (select && team) {
                 select.value = team;
             }
@@ -282,7 +530,7 @@ class NFLPredictionTracker {
 
         // Load wild cards
         Object.entries(this.preseasonPredictions.wildCards).forEach(([slot, team]) => {
-            const select = document.getElementById(`${slot.replace('-', '-wildcard-')}`);
+            const select = document.getElementById(`preseason-${slot.replace('-', '-wildcard-')}`);
             if (select && team) {
                 select.value = team;
             }
@@ -290,11 +538,14 @@ class NFLPredictionTracker {
 
         // Load championships
         Object.entries(this.preseasonPredictions.championships).forEach(([type, team]) => {
-            const select = document.getElementById(type.replace('super-bowl', 'super-bowl-champion'));
+            const select = document.getElementById(`preseason-${type.replace('super-bowl', 'super-bowl-champion')}`);
             if (select && team) {
                 select.value = team;
             }
         });
+
+        // Update constraints after loading all values
+        this.updatePreseasonConstraints();
     }
 
     clearPreseasonPredictions() {
