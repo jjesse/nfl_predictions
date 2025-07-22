@@ -118,7 +118,7 @@ class NFLPredictionTracker {
         weeks.forEach(week => {
             const option = document.createElement('option');
             option.value = week;
-            option.textContent = `Week ${week}`;
+            option.textContent = getWeekDisplayName(week);
             weekFilter.appendChild(option);
         });
 
@@ -913,12 +913,21 @@ class NFLPredictionTracker {
     createGameElement(game) {
         const gameDiv = document.createElement('div');
         gameDiv.className = 'game-card';
+        
+        // Add special styling for playoff games
+        if (game.isPlayoffGame) {
+            gameDiv.classList.add('playoff-game');
+        }
+        
+        const weekDisplay = game.isPlayoffGame ? game.gameDescription : `Week ${game.week}`;
+        
         gameDiv.innerHTML = `
             <div class="game-header">
                 <div class="game-info">
-                    <span>Week ${game.week}</span>
+                    <span class="week-info">${weekDisplay}</span>
                     <span>${game.date}</span>
                     <span>${game.time}</span>
+                    ${game.isPlayoffGame ? `<span class="playoff-badge">${game.playoffRound}</span>` : ''}
                 </div>
                 <div class="game-status status-${game.status}">
                     ${this.getStatusText(game.status)}
@@ -928,11 +937,11 @@ class NFLPredictionTracker {
             <div class="teams-container">
                 <div class="team away-team">
                     <div class="team-name">
-                        ${nflSchedule.teams[game.awayTeam].name}
+                        ${game.awayTeam === 'TBD' ? 'TBD' : nflSchedule.teams[game.awayTeam].name}
                         ${game.winner === game.awayTeam ? '<span class="winner-badge">Winner</span>' : ''}
                     </div>
                     <div class="team-record">
-                        ${this.getTeamRecord(game.awayTeam)}
+                        ${game.awayTeam === 'TBD' ? '' : this.getTeamRecord(game.awayTeam)}
                     </div>
                     <div class="team-score">
                         ${game.awayScore !== null ? game.awayScore : '-'}
@@ -943,11 +952,11 @@ class NFLPredictionTracker {
                 
                 <div class="team home-team">
                     <div class="team-name">
-                        ${nflSchedule.teams[game.homeTeam].name}
+                        ${game.homeTeam === 'TBD' ? 'TBD' : nflSchedule.teams[game.homeTeam].name}
                         ${game.winner === game.homeTeam ? '<span class="winner-badge">Winner</span>' : ''}
                     </div>
                     <div class="team-record">
-                        ${this.getTeamRecord(game.homeTeam)}
+                        ${game.homeTeam === 'TBD' ? '' : this.getTeamRecord(game.homeTeam)}
                     </div>
                     <div class="team-score">
                         ${game.homeScore !== null ? game.homeScore : '-'}
@@ -956,24 +965,40 @@ class NFLPredictionTracker {
             </div>
             
             <div class="prediction-section">
-                <div class="prediction-controls">
-                    <label for="prediction-${game.id}">My Prediction:</label>
-                    <select id="prediction-${game.id}" onchange="app.makePrediction(${game.id}, this.value)">
-                        <option value="">Select Winner</option>
-                        <option value="${game.awayTeam}" ${this.predictions[game.id] === game.awayTeam ? 'selected' : ''}>
-                            ${nflSchedule.teams[game.awayTeam].name}
-                        </option>
-                        <option value="${game.homeTeam}" ${this.predictions[game.id] === game.homeTeam ? 'selected' : ''}>
-                            ${nflSchedule.teams[game.homeTeam].name}
-                        </option>
-                    </select>
-                </div>
+                ${this.renderPredictionControls(game)}
                 ${this.renderPredictionResult(game)}
                 ${this.renderPreseasonComparison(game)}
             </div>
         `;
 
         return gameDiv;
+    }
+
+    renderPredictionControls(game) {
+        // Don't show prediction controls for TBD games
+        if (game.homeTeam === 'TBD' || game.awayTeam === 'TBD') {
+            return `
+                <div class="prediction-controls disabled">
+                    <label>Prediction:</label>
+                    <span class="tbd-notice">Teams will be determined after ${game.week <= 19 ? 'regular season' : 'previous playoff round'} completes</span>
+                </div>
+            `;
+        }
+
+        return `
+            <div class="prediction-controls">
+                <label for="prediction-${game.id}">My Prediction:</label>
+                <select id="prediction-${game.id}" onchange="app.makePrediction(${game.id}, this.value)">
+                    <option value="">Select Winner</option>
+                    <option value="${game.awayTeam}" ${this.predictions[game.id] === game.awayTeam ? 'selected' : ''}>
+                        ${nflSchedule.teams[game.awayTeam].name}
+                    </option>
+                    <option value="${game.homeTeam}" ${this.predictions[game.id] === game.homeTeam ? 'selected' : ''}>
+                        ${nflSchedule.teams[game.homeTeam].name}
+                    </option>
+                </select>
+            </div>
+        `;
     }
 
     renderPredictionResult(game) {

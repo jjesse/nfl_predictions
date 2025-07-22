@@ -247,18 +247,18 @@ function generateComplete2025Schedule() {
         });
     }
 
-    // Add Playoff Games
+    // Add Playoff Games with special week handling
     // Wild Card Round (Week 19)
     const wildCardGames = [
-        { date: '2026-01-11', time: '1:00 PM' },
-        { date: '2026-01-11', time: '4:30 PM' },
-        { date: '2026-01-11', time: '8:15 PM' },
-        { date: '2026-01-12', time: '1:00 PM' },
-        { date: '2026-01-12', time: '4:30 PM' },
-        { date: '2026-01-12', time: '8:15 PM' }
+        { date: '2026-01-11', time: '1:00 PM', round: 'Wild Card' },
+        { date: '2026-01-11', time: '4:30 PM', round: 'Wild Card' },
+        { date: '2026-01-11', time: '8:15 PM', round: 'Wild Card' },
+        { date: '2026-01-12', time: '1:00 PM', round: 'Wild Card' },
+        { date: '2026-01-12', time: '4:30 PM', round: 'Wild Card' },
+        { date: '2026-01-12', time: '8:15 PM', round: 'Wild Card' }
     ];
 
-    wildCardGames.forEach(game => {
+    wildCardGames.forEach((game, index) => {
         games.push({
             id: gameId++,
             week: 19,
@@ -269,19 +269,22 @@ function generateComplete2025Schedule() {
             homeScore: null,
             awayScore: null,
             status: 'upcoming',
-            winner: null
+            winner: null,
+            playoffRound: game.round,
+            gameDescription: `${game.round} Game ${index + 1}`,
+            isPlayoffGame: true
         });
     });
 
     // Divisional Round (Week 20)
     const divisionalGames = [
-        { date: '2026-01-18', time: '1:00 PM' },
-        { date: '2026-01-18', time: '4:30 PM' },
-        { date: '2026-01-19', time: '1:00 PM' },
-        { date: '2026-01-19', time: '4:30 PM' }
+        { date: '2026-01-18', time: '1:00 PM', round: 'Divisional' },
+        { date: '2026-01-18', time: '4:30 PM', round: 'Divisional' },
+        { date: '2026-01-19', time: '1:00 PM', round: 'Divisional' },
+        { date: '2026-01-19', time: '4:30 PM', round: 'Divisional' }
     ];
 
-    divisionalGames.forEach(game => {
+    divisionalGames.forEach((game, index) => {
         games.push({
             id: gameId++,
             week: 20,
@@ -292,14 +295,17 @@ function generateComplete2025Schedule() {
             homeScore: null,
             awayScore: null,
             status: 'upcoming',
-            winner: null
+            winner: null,
+            playoffRound: game.round,
+            gameDescription: `${game.round} Game ${index + 1}`,
+            isPlayoffGame: true
         });
     });
 
     // Conference Championships (Week 21)
     [
-        { date: '2026-01-26', time: '3:00 PM' }, // AFC Championship
-        { date: '2026-01-26', time: '6:30 PM' }  // NFC Championship
+        { date: '2026-01-26', time: '3:00 PM', round: 'AFC Championship' },
+        { date: '2026-01-26', time: '6:30 PM', round: 'NFC Championship' }
     ].forEach(game => {
         games.push({
             id: gameId++,
@@ -311,7 +317,10 @@ function generateComplete2025Schedule() {
             homeScore: null,
             awayScore: null,
             status: 'upcoming',
-            winner: null
+            winner: null,
+            playoffRound: game.round,
+            gameDescription: game.round,
+            isPlayoffGame: true
         });
     });
 
@@ -326,7 +335,10 @@ function generateComplete2025Schedule() {
         homeScore: null,
         awayScore: null,
         status: 'upcoming',
-        winner: null
+        winner: null,
+        playoffRound: 'Super Bowl',
+        gameDescription: 'Super Bowl LX',
+        isPlayoffGame: true
     });
 
     return games;
@@ -334,3 +346,45 @@ function generateComplete2025Schedule() {
 
 // Replace the existing games array with the complete schedule
 const completeSchedule = generateComplete2025Schedule();
+
+// Function to get week display name
+function getWeekDisplayName(week) {
+    if (week <= 18) {
+        return `Week ${week}`;
+    } else if (week === 19) {
+        return 'Wild Card Weekend';
+    } else if (week === 20) {
+        return 'Divisional Round';
+    } else if (week === 21) {
+        return 'Conference Championships';
+    } else if (week === 22) {
+        return 'Super Bowl';
+    }
+    return `Week ${week}`;
+}
+
+// Function to check if playoff teams can be determined
+function canDeterminePlayoffTeams() {
+    // Check if regular season is complete (all weeks 1-18 games have results)
+    const regularSeasonGames = nflSchedule.games.filter(game => game.week <= 18);
+    const completedRegularSeason = regularSeasonGames.every(game => game.status === 'final');
+    return completedRegularSeason;
+}
+
+// Function to automatically populate playoff matchups
+function populatePlayoffMatchups() {
+    if (!canDeterminePlayoffTeams()) {
+        return false; // Can't determine teams yet
+    }
+    
+    // This would contain logic to:
+    // 1. Calculate division winners and wild card teams
+    // 2. Seed teams 1-7 in each conference
+    // 3. Set wild card matchups (2v7, 3v6, 4v5 in each conference)
+    // 4. Update TBD teams in the schedule
+    
+    // For now, this is a placeholder - in a real implementation,
+    // you'd calculate standings and set the actual matchups
+    console.log('Playoff matchups would be determined here based on regular season results');
+    return true;
+}
