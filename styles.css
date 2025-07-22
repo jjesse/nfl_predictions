@@ -656,76 +656,109 @@ header h1 {
 }
 
 .conference-standings {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
+    display: flex;
+    gap: 30px;
+    margin: 20px 0;
+}
+
+.conference {
+    flex: 1;
 }
 
 .conference h3 {
     text-align: center;
-    margin-bottom: 20px;
     color: #333;
     border-bottom: 2px solid #007bff;
     padding-bottom: 10px;
+    margin-bottom: 20px;
 }
 
-.divisions-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
+.divisions {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
 }
 
 .division-standings {
-    background-color: #f8f9fa;
+    background: white;
+    border: 1px solid #ddd;
     border-radius: 8px;
-    padding: 15px;
-    border: 1px solid #e9ecef;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .division-standings h4 {
-    text-align: center;
-    margin-bottom: 15px;
+    background: #f8f9fa;
+    margin: 0;
+    padding: 12px 15px;
+    font-size: 1rem;
+    font-weight: 600;
     color: #495057;
-    font-size: 1.1rem;
+    border-bottom: 1px solid #dee2e6;
 }
 
-.standings-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+.standings-table {
+    width: 100%;
 }
 
-.standing-item {
+.standings-header {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
-    gap: 10px;
-    padding: 10px;
-    background: white;
-    border-radius: 6px;
-    align-items: center;
-    border: 1px solid #e9ecef;
-}
-
-.standing-item.division-leader {
-    border-left: 4px solid #28a745;
-    background-color: #f8fff8;
-}
-
-.standing-item .team-name {
-    font-weight: bold;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    background: #343a40;
+    color: white;
+    font-weight: 600;
     font-size: 0.9rem;
 }
 
-.standing-item .record {
+.standings-header > div {
+    padding: 10px 8px;
     text-align: center;
-    font-weight: bold;
-    color: #495057;
 }
 
-.standing-item .win-pct {
+.team-column {
+    text-align: left !important;
+    padding-left: 15px !important;
+}
+
+.standings-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.2s;
+}
+
+.standings-row:hover {
+    background-color: #f8f9fa;
+}
+
+.standings-row.division-leader {
+    background-color: #e3f2fd;
+    font-weight: 600;
+}
+
+.standings-row.division-leader:hover {
+    background-color: #bbdefb;
+}
+
+.standings-row > div {
+    padding: 10px 8px;
     text-align: center;
-    color: #6c757d;
     font-size: 0.9rem;
+}
+
+.team-rank {
+    color: #666;
+    margin-right: 8px;
+    font-weight: 500;
+}
+
+.team-name {
+    font-weight: 500;
+}
+
+.record-column {
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
 }
 
 /* Playoff Game Styles */
@@ -768,23 +801,23 @@ header h1 {
 
 @media (max-width: 768px) {
     .conference-standings {
-        grid-template-columns: 1fr;
-        gap: 30px;
+        flex-direction: column;
+        gap: 20px;
     }
     
-    .divisions-grid {
-        grid-template-columns: 1fr;
+    .divisions {
         gap: 15px;
     }
     
-    .standing-item {
-        grid-template-columns: 1fr;
-        gap: 5px;
-        text-align: center;
+    .standings-header,
+    .standings-row {
+        grid-template-columns: 2fr 0.8fr 0.8fr 1fr;
+        font-size: 0.8rem;
     }
     
-    .results-game-card {
-        padding: 15px;
+    .standings-header > div,
+    .standings-row > div {
+        padding: 8px 4px;
     }
 }
 

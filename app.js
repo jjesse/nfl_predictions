@@ -237,93 +237,95 @@ class NFLPredictionTracker {
     }
 
     renderStandings() {
-        this.renderConferenceStandings('AFC', 'afc-standings');
-        this.renderConferenceStandings('NFC', 'nfc-standings');
+        // Calculate team records from game results
+        const teamRecords = this.calculateTeamRecords();
+        
+        // AFC Divisions
+        this.renderDivisionStandings('AFC East', ['BUF', 'MIA', 'NE', 'NYJ'], teamRecords, 'afc-east-standings');
+        this.renderDivisionStandings('AFC North', ['BAL', 'CIN', 'CLE', 'PIT'], teamRecords, 'afc-north-standings');
+        this.renderDivisionStandings('AFC South', ['HOU', 'IND', 'JAX', 'TEN'], teamRecords, 'afc-south-standings');
+        this.renderDivisionStandings('AFC West', ['DEN', 'KC', 'LV', 'LAC'], teamRecords, 'afc-west-standings');
+        
+        // NFC Divisions
+        this.renderDivisionStandings('NFC East', ['DAL', 'NYG', 'PHI', 'WAS'], teamRecords, 'nfc-east-standings');
+        this.renderDivisionStandings('NFC North', ['CHI', 'DET', 'GB', 'MIN'], teamRecords, 'nfc-north-standings');
+        this.renderDivisionStandings('NFC South', ['ATL', 'CAR', 'NO', 'TB'], teamRecords, 'nfc-south-standings');
+        this.renderDivisionStandings('NFC West', ['ARI', 'LAR', 'SF', 'SEA'], teamRecords, 'nfc-west-standings');
     }
 
-    renderConferenceStandings(conference, containerId) {
+    renderDivisionStandings(divisionName, teamCodes, teamRecords, containerId) {
         const container = document.getElementById(containerId);
         if (!container) return;
 
-        // Get teams for this conference
-        const conferenceTeams = Object.keys(nflSchedule.teams).filter(teamCode => {
-            if (conference === 'AFC') {
-                return ['BAL', 'BUF', 'CIN', 'CLE', 'DEN', 'HOU', 'IND', 'JAX', 'KC', 'LV', 'LAC', 'MIA', 'NE', 'NYJ', 'PIT', 'TEN'].includes(teamCode);
-            } else {
-                return ['ARI', 'ATL', 'CAR', 'CHI', 'DAL', 'DET', 'GB', 'LAR', 'MIN', 'NO', 'NYG', 'PHI', 'SF', 'SEA', 'TB', 'WAS'].includes(teamCode);
-            }
-        });
-
-        // Sort teams by record (wins descending, then losses ascending)
-        conferenceTeams.sort((a, b) => {
-            const teamA = nflSchedule.teams[a];
-            const teamB = nflSchedule.teams[b];
+        // Sort teams by wins (descending), then by losses (ascending)
+        const sortedTeams = teamCodes.sort((a, b) => {
+            const recordA = teamRecords[a] || { wins: 0, losses: 0 };
+            const recordB = teamRecords[b] || { wins: 0, losses: 0 };
             
-            if (teamA.record.wins !== teamB.record.wins) {
-                return teamB.record.wins - teamA.record.wins; // More wins first
+            if (recordA.wins !== recordB.wins) {
+                return recordB.wins - recordA.wins; // More wins = higher
             }
-            return teamA.record.losses - teamB.record.losses; // Fewer losses first
+            return recordA.losses - recordB.losses; // Fewer losses = higher
         });
 
-        // Group by divisions
-        const divisions = {
-            'AFC': {
-                'East': ['BUF', 'MIA', 'NE', 'NYJ'],
-                'North': ['BAL', 'CIN', 'CLE', 'PIT'],
-                'South': ['HOU', 'IND', 'JAX', 'TEN'],
-                'West': ['DEN', 'KC', 'LV', 'LAC']
-            },
-            'NFC': {
-                'East': ['DAL', 'NYG', 'PHI', 'WAS'],
-                'North': ['CHI', 'DET', 'GB', 'MIN'],
-                'South': ['ATL', 'CAR', 'NO', 'TB'],
-                'West': ['ARI', 'LAR', 'SF', 'SEA']
-            }
-        };
+        let standingsHTML = `
+            <div class="standings-header">
+                <div class="team-column">Team</div>
+                <div class="record-column">W</div>
+                <div class="record-column">L</div>
+                <div class="record-column">PCT</div>
+            </div>
+        `;
 
-        let html = '<div class="divisions-grid">';
-        
-        Object.entries(divisions[conference]).forEach(([divisionName, divisionTeams]) => {
-            // Sort division teams by record
-            const sortedDivisionTeams = divisionTeams.sort((a, b) => {
-                const teamA = nflSchedule.teams[a];
-                const teamB = nflSchedule.teams[b];
-                
-                if (teamA.record.wins !== teamB.record.wins) {
-                    return teamB.record.wins - teamA.record.wins;
-                }
-                return teamA.record.losses - teamB.record.losses;
-            });
-
-            html += `
-                <div class="division-standings">
-                    <h4>${conference} ${divisionName}</h4>
-                    <div class="standings-list">
-            `;
-
-            sortedDivisionTeams.forEach((teamCode, index) => {
-                const team = nflSchedule.teams[teamCode];
-                const winPercentage = team.record.wins + team.record.losses > 0 
-                    ? (team.record.wins / (team.record.wins + team.record.losses) * 100).toFixed(1)
-                    : '0.0';
-
-                html += `
-                    <div class="standing-item ${index === 0 ? 'division-leader' : ''}">
-                        <span class="team-name">${team.name}</span>
-                        <span class="record">${team.record.wins}-${team.record.losses}</span>
-                        <span class="win-pct">${winPercentage}%</span>
+        sortedTeams.forEach((teamCode, index) => {
+            const record = teamRecords[teamCode] || { wins: 0, losses: 0 };
+            const totalGames = record.wins + record.losses;
+            const winPercentage = totalGames > 0 ? (record.wins / totalGames).toFixed(3) : '.000';
+            
+            // Add position styling (1st place gets different styling)
+            const positionClass = index === 0 ? 'division-leader' : '';
+            
+            standingsHTML += `
+                <div class="standings-row ${positionClass}">
+                    <div class="team-column">
+                        <span class="team-rank">${index + 1}.</span>
+                        <span class="team-name">${nflSchedule.teams[teamCode].name}</span>
                     </div>
-                `;
-            });
-
-            html += `
-                    </div>
+                    <div class="record-column">${record.wins}</div>
+                    <div class="record-column">${record.losses}</div>
+                    <div class="record-column">${winPercentage}</div>
                 </div>
             `;
         });
 
-        html += '</div>';
-        container.innerHTML = html;
+        container.innerHTML = standingsHTML;
+    }
+
+    calculateTeamRecords() {
+        const records = {};
+        
+        // Initialize all teams with 0-0 record
+        Object.keys(nflSchedule.teams).forEach(teamCode => {
+            records[teamCode] = { wins: 0, losses: 0 };
+        });
+
+        // Count wins/losses from completed games
+        nflSchedule.games.forEach(game => {
+            if (game.status === 'final' && game.winner) {
+                // Winner gets a win
+                if (records[game.winner]) {
+                    records[game.winner].wins++;
+                }
+                
+                // Loser gets a loss
+                const loser = game.winner === game.homeTeam ? game.awayTeam : game.homeTeam;
+                if (records[loser]) {
+                    records[loser].losses++;
+                }
+            }
+        });
+
+        return records;
     }
 
     switchTab(tab) {
