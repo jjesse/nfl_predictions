@@ -193,3 +193,124 @@ Feel free to submit issues or pull requests to improve the application.
 ## License
 
 This project is open source and available under the MIT License.
+
+## Cloud Storage & Long-Term Storage Options
+
+The NFL Prediction Tracker offers multiple storage solutions to ensure your predictions are never lost and can be accessed across devices.
+
+### Local Storage (Default)
+- **Automatic**: All predictions saved to browser localStorage
+- **Pros**: Fast, works offline, no setup required
+- **Cons**: Limited to single browser/device, can be cleared
+
+### Cloud Storage Options
+
+#### 1. GitHub Gists Integration (Recommended)
+- **Setup**: Connect your GitHub account for automatic backup
+- **Features**: 
+  - Version history of all predictionssu
+  - Access from any device with GitHub login
+  - Automatic daily backups
+  - Free with GitHub account
+- **Privacy**: Private gists keep your predictions secure
+
+#### 2. Firebase/Firestore Integration
+- **Setup**: Connect to Google Firebase for real-time sync
+- **Features**:
+  - Real-time synchronization across devices
+  - User authentication system
+  - Offline capability with sync when online
+  - Team sharing and collaboration features
+- **Cost**: Free tier available, paid plans for heavy usage
+
+#### 3. Supabase Integration (Open Source)
+- **Setup**: Self-hosted or managed Supabase instance
+- **Features**:
+  - PostgreSQL database backend
+  - Real-time subscriptions
+  - Row-level security
+  - Open source alternative to Firebase
+- **Cost**: Free tier available, competitive pricing
+
+#### 4. Enhanced Export/Import System
+- **Manual Backup**: Export all data to JSON/CSV files
+- **Automated Backups**: Schedule automatic exports
+- **Cross-Platform**: Import data between browsers/devices
+- **Version Control**: Track changes over time
+
+### Storage Configuration
+
+Access storage settings through the **Settings** tab:
+
+1. **Choose Storage Provider**: Select your preferred cloud service
+2. **Authenticate**: Connect your account (GitHub/Google/Supabase)
+3. **Configure Sync**: Set automatic backup frequency
+4. **Privacy Settings**: Control data sharing and visibility
+5. **Export Options**: Schedule automated backups
+
+### Data Synchronization
+
+- **Real-time Sync**: Changes sync instantly across devices (Firebase/Supabase)
+- **Periodic Backup**: Automatic backups at configurable intervals
+- **Manual Sync**: Force sync at any time
+- **Conflict Resolution**: Smart merging of predictions from multiple devices
+
+### Security & Privacy
+
+- **Encryption**: All cloud data encrypted in transit and at rest
+- **Access Control**: You control who can view your predictions
+- **Data Ownership**: Your data remains yours, easy export/deletion
+- **GDPR Compliant**: Full data portability and deletion rights
+
+### Setup Instructions
+
+#### GitHub Gists Setup (Easiest)
+1. Go to Settings tab → Cloud Storage
+2. Click "Connect GitHub Account"
+3. Authorize the application
+4. Choose backup frequency (daily recommended)
+5. Your predictions automatically sync to private gists
+
+#### Firebase Setup (Most Features)
+1. Create a Firebase project at https://console.firebase.google.com
+2. Enable Firestore and Authentication
+3. Copy your Firebase config to Settings → Cloud Storage
+4. Enable Google Authentication
+5. All predictions sync in real-time
+
+#### Supabase Setup (Open Source)
+1. Create account at https://supabase.com or self-host
+2. Create new project and database
+3. Copy connection details to Settings → Cloud Storage
+4. Configure authentication method
+5. Real-time sync activated
+
+### Migration & Backup
+
+- **Import Existing Data**: Upload previous exports or migrate from localStorage
+- **Bulk Operations**: Import/export entire seasons or specific date ranges
+- **Data Validation**: Automatic validation during import process
+- **Rollback**: Restore from any previous backup version
+
+### Offline Capabilities
+
+- **Local Cache**: All data cached locally for offline access
+- **Sync on Reconnect**: Automatic sync when internet connection restored
+- **Conflict Detection**: Smart handling of offline changes
+- **Queue Management**: Pending changes queued until sync possible
+
+### Team Features (Firebase/Supabase)
+
+- **Group Predictions**: Create prediction leagues with friends
+- **Leaderboards**: Compare accuracy across group members
+- **Shared Pools**: Collaborative playoff brackets
+- **Real-time Updates**: See friends' predictions in real-time
+- **Discussion**: Comment on predictions and games
+
+### Advanced Features
+
+- **API Access**: RESTful API for custom integrations
+- **Webhooks**: Get notified of prediction updates
+- **Analytics**: Detailed statistics across multiple seasons
+- **Machine Learning**: AI-powered prediction suggestions based on history
+- **Third-party Integrations**: Connect to ESPN, Yahoo, or other sports platforms
