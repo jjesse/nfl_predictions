@@ -2,6 +2,7 @@ class NFLPredictionTracker {
     constructor() {
         this.predictions = this.loadPredictions();
         this.preseasonPredictions = this.loadPreseasonPredictions();
+        this.teamRecordPredictions = this.loadTeamRecordPredictions();
         this.filteredGames = [...nflSchedule.games];
         this.bulkPredictions = {};
         this.currentTab = 'weekly';
@@ -16,6 +17,7 @@ class NFLPredictionTracker {
         this.renderGames();
         this.updateStats();
         this.loadPreseasonUI();
+        this.loadTeamRecordUI();
         this.renderComparison();
         this.renderStandings();
     }
@@ -117,6 +119,29 @@ class NFLPredictionTracker {
 
         document.getElementById('export-preseason-csv').addEventListener('click', () => {
             this.exportPreseasonToCSV();
+        });
+
+        // Team record prediction event listeners
+        Object.keys(nflSchedule.teams).forEach(teamCode => {
+            const winsInput = document.getElementById(`record-${teamCode}-wins`);
+            const lossesInput = document.getElementById(`record-${teamCode}-losses`);
+            
+            if (winsInput && lossesInput) {
+                winsInput.addEventListener('change', (e) => {
+                    this.updateTeamRecordPrediction(teamCode, 'wins', parseInt(e.target.value) || 0);
+                    this.validateRecordInputs(teamCode);
+                });
+                
+                lossesInput.addEventListener('change', (e) => {
+                    this.updateTeamRecordPrediction(teamCode, 'losses', parseInt(e.target.value) || 0);
+                    this.validateRecordInputs(teamCode);
+                });
+            }
+        });
+
+        // Standings comparison button
+        document.getElementById('view-standings-comparison').addEventListener('click', () => {
+            this.renderStandingsComparison();
         });
     }
 
@@ -359,6 +384,8 @@ class NFLPredictionTracker {
             this.renderResults();
         } else if (tab === 'standings') {
             this.renderStandings();
+        } else if (tab === 'standings-comparison') {
+            this.renderStandingsComparison();
         }
     }
 
@@ -621,6 +648,63 @@ class NFLPredictionTracker {
         }
     }
 
+    updateTeamRecordPrediction(teamCode, type, value) {
+        if (!this.teamRecordPredictions[teamCode]) {
+            this.teamRecordPredictions[teamCode] = { wins: 0, losses: 0 };
+        }
+        
+        this.teamRecordPredictions[teamCode][type] = value;
+        this.saveTeamRecordPredictions();
+    }
+
+    validateRecordInputs(teamCode) {
+        const winsInput = document.getElementById(`record-${teamCode}-wins`);
+        const lossesInput = document.getElementById(`record-${teamCode}-losses`);
+        
+        if (!winsInput || !lossesInput) return;
+        
+        const wins = parseInt(winsInput.value) || 0;
+        const losses = parseInt(lossesInput.value) || 0;
+        const total = wins + losses;
+        
+        // Reset styling
+        winsInput.style.borderColor = '';
+        lossesInput.style.borderColor = '';
+        
+        if (total > 17) {
+            // Too many games - highlight in red
+            winsInput.style.borderColor = '#dc3545';
+            lossesInput.style.borderColor = '#dc3545';
+            winsInput.title = 'Total games cannot exceed 17';
+            lossesInput.title = 'Total games cannot exceed 17';
+        } else if (total === 17) {
+            // Perfect - highlight in green
+            winsInput.style.borderColor = '#28a745';
+            lossesInput.style.borderColor = '#28a745';
+            winsInput.title = 'Record complete (17 games)';
+            lossesInput.title = 'Record complete (17 games)';
+        } else if (total > 0) {
+            // Partial - highlight in yellow
+            winsInput.style.borderColor = '#ffc107';
+            lossesInput.style.borderColor = '#ffc107';
+            winsInput.title = `${17 - total} games remaining`;
+            lossesInput.title = `${17 - total} games remaining`;
+        }
+    }
+
+    loadTeamRecordUI() {
+        Object.entries(this.teamRecordPredictions).forEach(([teamCode, record]) => {
+            const winsInput = document.getElementById(`record-${teamCode}-wins`);
+            const lossesInput = document.getElementById(`record-${teamCode}-losses`);
+            
+            if (winsInput && lossesInput) {
+                winsInput.value = record.wins || '';
+                lossesInput.value = record.losses || '';
+                this.validateRecordInputs(teamCode);
+            }
+        });
+    }
+
     savePreseasonPredictions() {
         // Validate predictions before saving
         const validation = this.validatePreseasonPredictions();
@@ -653,6 +737,7 @@ class NFLPredictionTracker {
                 'nfc-champion': document.getElementById('preseason-nfc-champion').value,
                 'super-bowl': document.getElementById('preseason-super-bowl-champion').value
             },
+            teamRecords: { ...this.teamRecordPredictions },
             timestamp: new Date().toISOString()
         };
 
@@ -769,619 +854,116 @@ class NFLPredictionTracker {
 
     clearPreseasonPredictions() {
         this.preseasonPredictions = {};
+        this.teamRecordPredictions = {};
         localStorage.removeItem('nfl-preseason-predictions');
+        localStorage.removeItem('nfl-team-record-predictions');
         
         // Clear UI
         document.querySelectorAll('#preseason-tab select').forEach(select => {
             select.value = '';
         });
         
+        // Clear team record inputs
+        Object.keys(nflSchedule.teams).forEach(teamCode => {
+            const winsInput = document.getElementById(`record-${teamCode}-wins`);
+            const lossesInput = document.getElementById(`record-${teamCode}-losses`);
+            
+            if (winsInput && lossesInput) {
+                winsInput.value = '';
+                lossesInput.value = '';
+                winsInput.style.borderColor = '';
+                lossesInput.style.borderColor = '';
+            }
+        });
+        
         this.renderComparison();
     }
 
-    renderComparison() {
-        const container = document.getElementById('comparison-content');
+    renderStandingsComparison() {
+        // Switch to a new tab or modal for standings comparison
+        this.switchTab('standings-comparison');
+        
+        const container = document.getElementById('standings-comparison-content');
         if (!container) return;
 
-        if (!this.preseasonPredictions.divisionWinners) {
-            container.innerHTML = '<p style="text-align: center; color: #666;">Make your pre-season predictions first to see comparisons!</p>';
-            return;
-        }
+        const actualRecords = this.calculateTeamRecords();
+        const divisions = getTeamsByDivision();
+        
+        let html = '';
+        let totalTeamsPredicted = 0;
+        let exactMatches = 0;
+        let closeMatches = 0;
+        let totalAccuracyScore = 0;
 
-        let html = `
-            <div class="comparison-item comparison-header">
-                <div>Category</div>
-                <div>Pre-Season Pick</div>
-                <div>Current Status</div>
-                <div>Result</div>
-            </div>
-        `;
-
-        // Add division comparisons
-        Object.entries(this.preseasonPredictions.divisionWinners).forEach(([division, predictedTeam]) => {
-            if (!predictedTeam) return;
-            
-            const divisionName = division.replace('-', ' ').toUpperCase() + ' Winner';
-            const teamName = nflSchedule.teams[predictedTeam]?.name || predictedTeam;
-            
-            html += `
-                <div class="comparison-item">
-                    <div class="comparison-category">${divisionName}</div>
-                    <div>${teamName}</div>
-                    <div class="prediction-pending">Season in progress</div>
-                    <div class="prediction-pending">TBD</div>
-                </div>
-            `;
-        });
-
-        // Add championship comparisons
-        if (this.preseasonPredictions.championships['super-bowl']) {
-            const superBowlPick = nflSchedule.teams[this.preseasonPredictions.championships['super-bowl']]?.name;
-            html += `
-                <div class="comparison-item">
-                    <div class="comparison-category">Super Bowl Champion</div>
-                    <div>${superBowlPick}</div>
-                    <div class="prediction-pending">Season in progress</div>
-                    <div class="prediction-pending">TBD</div>
-                </div>
-            `;
-        }
-
-        // Add some weekly prediction accuracy summary
-        const totalPredictions = Object.keys(this.predictions).length;
-        const completedGames = nflSchedule.games.filter(g => g.status === 'final' && g.winner);
-        const correctWeekly = completedGames.filter(g => this.predictions[g.id] === g.winner).length;
-        const weeklyAccuracy = completedGames.length > 0 ? Math.round((correctWeekly / completedGames.length) * 100) : 0;
-
+        // Add header
         html += `
-            <div class="comparison-item" style="border-top: 2px solid #007bff; margin-top: 20px; padding-top: 20px;">
-                <div class="comparison-category">Weekly Predictions</div>
-                <div>${totalPredictions} total picks</div>
-                <div>${correctWeekly}/${completedGames.length} correct</div>
-                <div class="${weeklyAccuracy >= 60 ? 'prediction-correct' : weeklyAccuracy >= 40 ? 'prediction-pending' : 'prediction-incorrect'}">${weeklyAccuracy}% accuracy</div>
+            <div class="comparison-header">
+                <div class="comparison-team-row">
+                    <div>Team</div>
+                    <div>Predicted</div>
+                    <div>Actual</div>
+                    <div>Accuracy</div>
+                </div>
             </div>
         `;
 
-        container.innerHTML = html;
-    }
-
-    loadPreseasonPredictions() {
-        const saved = localStorage.getItem('nfl-preseason-predictions');
-        return saved ? JSON.parse(saved) : {};
-    }
-
-    savePreseasonPredictionsToStorage() {
-        localStorage.setItem('nfl-preseason-predictions', JSON.stringify(this.preseasonPredictions));
-    }
-
-    getPreseasonTeamPrediction(game) {
-        // Check if this team was predicted to be good/bad in preseason
-        const homeTeam = game.homeTeam;
-        const awayTeam = game.awayTeam;
-        
-        let preseasonFavorite = null;
-        
-        // Check Super Bowl winner
-        if (this.preseasonPredictions['superbowl-winner'] === homeTeam) {
-            preseasonFavorite = homeTeam;
-        } else if (this.preseasonPredictions['superbowl-winner'] === awayTeam) {
-            preseasonFavorite = awayTeam;
-        }
-        
-        // Check conference champions
-        if (!preseasonFavorite) {
-            if (this.preseasonPredictions['afc-champion'] === homeTeam || this.preseasonPredictions['nfc-champion'] === homeTeam) {
-                preseasonFavorite = homeTeam;
-            } else if (this.preseasonPredictions['afc-champion'] === awayTeam || this.preseasonPredictions['nfc-champion'] === awayTeam) {
-                preseasonFavorite = awayTeam;
-            }
-        }
-        
-        // Check division winners
-        if (!preseasonFavorite) {
-            const divisionWinners = [
-                'afc-east-winner', 'afc-north-winner', 'afc-south-winner', 'afc-west-winner',
-                'nfc-east-winner', 'nfc-north-winner', 'nfc-south-winner', 'nfc-west-winner'
-            ];
-            
-            for (const division of divisionWinners) {
-                if (this.preseasonPredictions[division] === homeTeam) {
-                    preseasonFavorite = homeTeam;
-                    break;
-                } else if (this.preseasonPredictions[division] === awayTeam) {
-                    preseasonFavorite = awayTeam;
-                    break;
-                }
-            }
-        }
-        
-        return preseasonFavorite;
-    }
-
-    filterGames() {
-        const weekFilter = document.getElementById('week-filter').value;
-        const teamFilter = document.getElementById('team-filter').value;
-
-        this.filteredGames = nflSchedule.games.filter(game => {
-            const weekMatch = !weekFilter || game.week == weekFilter;
-            const teamMatch = !teamFilter || game.homeTeam === teamFilter || game.awayTeam === teamFilter;
-            return weekMatch && teamMatch;
-        });
-
-        this.renderGames();
-    }
-
-    renderGames() {
-        const gamesContainer = document.getElementById('games-list');
-        gamesContainer.innerHTML = '';
-
-        this.filteredGames.forEach(game => {
-            const gameElement = this.createGameElement(game);
-            gamesContainer.appendChild(gameElement);
-        });
-    }
-
-    createGameElement(game) {
-        const gameDiv = document.createElement('div');
-        gameDiv.className = 'game-card';
-        
-        // Add special styling for playoff games
-        if (game.isPlayoffGame) {
-            gameDiv.classList.add('playoff-game');
-        }
-        
-        const weekDisplay = game.isPlayoffGame ? game.gameDescription : `Week ${game.week}`;
-        
-        gameDiv.innerHTML = `
-            <div class="game-header">
-                <div class="game-info">
-                    <span class="week-info">${weekDisplay}</span>
-                    <span>${game.date}</span>
-                    <span>${game.time}</span>
-                    ${game.isPlayoffGame ? `<span class="playoff-badge">${game.playoffRound}</span>` : ''}
-                </div>
-                <div class="game-status status-${game.status}">
-                    ${this.getStatusText(game.status)}
-                </div>
-            </div>
-            
-            <div class="teams-container">
-                <div class="team away-team">
-                    <div class="team-name">
-                        ${game.awayTeam === 'TBD' ? 'TBD' : nflSchedule.teams[game.awayTeam].name}
-                        ${game.winner === game.awayTeam ? '<span class="winner-badge">Winner</span>' : ''}
-                    </div>
-                    <div class="team-record">
-                        ${game.awayTeam === 'TBD' ? '' : this.getTeamRecord(game.awayTeam)}
-                    </div>
-                    <div class="team-score">
-                        ${game.awayScore !== null ? game.awayScore : '-'}
-                    </div>
-                </div>
+        // Process each conference and division
+        ['afc', 'nfc'].forEach(conference => {
+            ['east', 'north', 'south', 'west'].forEach(division => {
+                const divisionName = `${conference.toUpperCase()} ${division.charAt(0).toUpperCase() + division.slice(1)}`;
+                const teams = divisions[conference][division];
                 
-                <div class="vs">@</div>
-                
-                <div class="team home-team">
-                    <div class="team-name">
-                        ${game.homeTeam === 'TBD' ? 'TBD' : nflSchedule.teams[game.homeTeam].name}
-                        ${game.winner === game.homeTeam ? '<span class="winner-badge">Winner</span>' : ''}
-                    </div>
-                    <div class="team-record">
-                        ${game.homeTeam === 'TBD' ? '' : this.getTeamRecord(game.homeTeam)}
-                    </div>
-                    <div class="team-score">
-                        ${game.homeScore !== null ? game.homeScore : '-'}
-                    </div>
-                </div>
-            </div>
-            
-            <div class="prediction-section">
-                ${this.renderPredictionControls(game)}
-                ${this.renderPredictionResult(game)}
-                ${this.renderPreseasonComparison(game)}
-            </div>
-        `;
+                html += `
+                    <div class="comparison-division">
+                        <h4>${divisionName}</h4>
+                `;
 
-        return gameDiv;
-    }
-
-    renderPredictionControls(game) {
-        // Don't show prediction controls for TBD games
-        if (game.homeTeam === 'TBD' || game.awayTeam === 'TBD') {
-            return `
-                <div class="prediction-controls disabled">
-                    <label>Prediction:</label>
-                    <span class="tbd-notice">Teams will be determined after ${game.week <= 19 ? 'regular season' : 'previous playoff round'} completes</span>
-                </div>
-            `;
-        }
-
-        return `
-            <div class="prediction-controls">
-                <label for="prediction-${game.id}">My Prediction:</label>
-                <select id="prediction-${game.id}" onchange="app.makePrediction(${game.id}, this.value)">
-                    <option value="">Select Winner</option>
-                    <option value="${game.awayTeam}" ${this.predictions[game.id] === game.awayTeam ? 'selected' : ''}>
-                        ${nflSchedule.teams[game.awayTeam].name}
-                    </option>
-                    <option value="${game.homeTeam}" ${this.predictions[game.id] === game.homeTeam ? 'selected' : ''}>
-                        ${nflSchedule.teams[game.homeTeam].name}
-                    </option>
-                </select>
-            </div>
-        `;
-    }
-
-    renderPredictionResult(game) {
-        const prediction = this.predictions[game.id];
-        
-        if (!prediction) {
-            return '';
-        }
-
-        if (game.status === 'upcoming') {
-            return `
-                <div class="prediction-result pending">
-                    Predicted: ${nflSchedule.teams[prediction].name}
-                </div>
-            `;
-        } else if (game.status === 'final' && game.winner) {
-            const isCorrect = prediction === game.winner;
-            return `
-                <div class="prediction-result ${isCorrect ? 'correct' : 'incorrect'}">
-                    Predicted: ${nflSchedule.teams[prediction].name} | 
-                    Actual: ${nflSchedule.teams[game.winner].name} | 
-                    ${isCorrect ? '✓ Correct!' : '✗ Incorrect'}
-                </div>
-            `;
-        }
-
-        return '';
-    }
-
-    renderPreseasonComparison(game) {
-        const preseasonFavorite = this.getPreseasonTeamPrediction(game);
-        const weeklyPrediction = this.predictions[game.id];
-        
-        if (!preseasonFavorite && !weeklyPrediction) {
-            return '';
-        }
-
-        let comparisonText = '';
-        let comparisonClass = '';
-
-        if (preseasonFavorite && weeklyPrediction) {
-            if (preseasonFavorite === weeklyPrediction) {
-                comparisonText = `Preseason & Weekly: Both picked ${nflSchedule.teams[preseasonFavorite].name}`;
-                comparisonClass = 'preseason-match';
-            } else {
-                comparisonText = `Preseason: ${nflSchedule.teams[preseasonFavorite].name} | Weekly: ${nflSchedule.teams[weeklyPrediction].name}`;
-                comparisonClass = 'preseason-different';
-            }
-        } else if (preseasonFavorite) {
-            comparisonText = `Preseason pick: ${nflSchedule.teams[preseasonFavorite].name}`;
-            comparisonClass = 'preseason-only';
-        }
-
-        // If game is final, show how both predictions did
-        if (game.status === 'final' && game.winner) {
-            const preseasonCorrect = preseasonFavorite === game.winner;
-            const weeklyCorrect = weeklyPrediction === game.winner;
-            
-            let resultText = '';
-            if (preseasonFavorite && weeklyPrediction) {
-                resultText = ` | Preseason: ${preseasonCorrect ? '✓' : '✗'} | Weekly: ${weeklyCorrect ? '✓' : '✗'}`;
-            } else if (preseasonFavorite) {
-                resultText = ` | Preseason: ${preseasonCorrect ? '✓' : '✗'}`;
-            }
-            comparisonText += resultText;
-        }
-
-        return comparisonText ? `
-            <div class="preseason-comparison ${comparisonClass}">
-                ${comparisonText}
-            </div>
-        ` : '';
-    }
-
-    getStatusText(status) {
-        switch (status) {
-            case 'upcoming': return 'Upcoming';
-            case 'live': return 'Live';
-            case 'final': return 'Final';
-            default: return status;
-        }
-    }
-
-    getTeamRecord(teamCode) {
-        const record = nflSchedule.teams[teamCode].record;
-        return `${record.wins}-${record.losses}`;
-    }
-
-    makePrediction(gameId, teamCode) {
-        if (teamCode) {
-            this.predictions[gameId] = teamCode;
-        } else {
-            delete this.predictions[gameId];
-        }
-        
-        this.savePredictions();
-        this.updateStats();
-        
-        // Re-render only the prediction result for this game
-        const game = nflSchedule.games.find(g => g.id === gameId);
-        if (game) {
-            const gameCard = document.querySelector(`#prediction-${gameId}`).closest('.game-card');
-            const predictionSection = gameCard.querySelector('.prediction-section');
-            const resultDiv = predictionSection.querySelector('.prediction-result');
-            
-            if (resultDiv) {
-                resultDiv.remove();
-            }
-            
-            const newResultHTML = this.renderPredictionResult(game);
-            if (newResultHTML) {
-                predictionSection.insertAdjacentHTML('beforeend', newResultHTML);
-            }
-        }
-    }
-
-    updateStats() {
-        const totalGames = nflSchedule.games.length;
-        const predictionsMade = Object.keys(this.predictions).length;
-        
-        const finalGames = nflSchedule.games.filter(game => game.status === 'final' && game.winner);
-        const correctPredictions = finalGames.filter(game => 
-            this.predictions[game.id] === game.winner
-        ).length;
-        
-        const predictedFinalGames = finalGames.filter(game => this.predictions[game.id]);
-        const accuracy = predictedFinalGames.length > 0 
-            ? Math.round((correctPredictions / predictedFinalGames.length) * 100)
-            : 0;
-
-        document.getElementById('total-games').textContent = totalGames;
-        document.getElementById('predictions-made').textContent = predictionsMade;
-        document.getElementById('correct-predictions').textContent = correctPredictions;
-        document.getElementById('accuracy').textContent = `${accuracy}%`;
-    }
-
-    clearAllPredictions() {
-        this.predictions = {};
-        this.savePredictions();
-        this.renderGames();
-        this.updateStats();
-    }
-
-    loadPredictions() {
-        const saved = localStorage.getItem('nfl-predictions');
-        return saved ? JSON.parse(saved) : {};
-    }
-
-    savePredictions() {
-        localStorage.setItem('nfl-predictions', JSON.stringify(this.predictions));
-    }
-
-    // Method to update game results (for testing or manual updates)
-    updateGameResult(gameId, homeScore, awayScore) {
-        const game = nflSchedule.games.find(g => g.id === gameId);
-        if (game) {
-            game.homeScore = homeScore;
-            game.awayScore = awayScore;
-            game.status = 'final';
-            game.winner = homeScore > awayScore ? game.homeTeam : game.awayTeam;
-            
-            // Update team records
-            const winningTeam = game.winner;
-            const losingTeam = game.winner === game.homeTeam ? game.awayTeam : game.homeTeam;
-            
-            nflSchedule.teams[winningTeam].record.wins++;
-            nflSchedule.teams[losingTeam].record.losses++;
-            
-            this.renderGames();
-            this.updateStats();
-        }
-    }
-
-    // CSV Export Functions
-    exportPredictionsToCSV() {
-        const csvData = [];
-        
-        // Add header row
-        csvData.push([
-            'Game ID',
-            'Week',
-            'Date',
-            'Time',
-            'Away Team',
-            'Home Team',
-            'My Prediction',
-            'Predicted Team Name',
-            'Actual Winner',
-            'Home Score',
-            'Away Score',
-            'Game Status',
-            'Prediction Correct',
-            'Week Type'
-        ]);
-
-        // Add data rows
-        nflSchedule.games.forEach(game => {
-            const myPrediction = this.predictions[game.id];
-            const predictedTeamName = myPrediction ? nflSchedule.teams[myPrediction]?.name : '';
-            const actualWinner = game.winner ? nflSchedule.teams[game.winner]?.name : '';
-            const isCorrect = game.status === 'final' && myPrediction === game.winner ? 'Yes' : 
-                             game.status === 'final' && myPrediction && myPrediction !== game.winner ? 'No' : 
-                             myPrediction ? 'Pending' : 'No Prediction';
-            
-            const weekType = game.week <= 18 ? 'Regular Season' : 
-                            game.week === 19 ? 'Wild Card' :
-                            game.week === 20 ? 'Divisional' :
-                            game.week === 21 ? 'Conference Championship' :
-                            game.week === 22 ? 'Super Bowl' : 'Playoff';
-
-            csvData.push([
-                game.id,
-                game.week,
-                game.date,
-                game.time,
-                game.awayTeam === 'TBD' ? 'TBD' : nflSchedule.teams[game.awayTeam]?.name,
-                game.homeTeam === 'TBD' ? 'TBD' : nflSchedule.teams[game.homeTeam]?.name,
-                myPrediction || '',
-                predictedTeamName,
-                actualWinner,
-                game.homeScore || '',
-                game.awayScore || '',
-                game.status,
-                isCorrect,
-                weekType
-            ]);
-        });
-
-        this.downloadCSV(csvData, 'nfl_predictions_2025-2026.csv');
-    }
-
-    exportPreseasonToCSV() {
-        const csvData = [];
-        
-        // Add header row
-        csvData.push([
-            'Category',
-            'Position',
-            'Team Code',
-            'Team Name',
-            'Conference',
-            'Prediction Type'
-        ]);
-
-        // Division Winners
-        if (this.preseasonPredictions.divisionWinners) {
-            Object.entries(this.preseasonPredictions.divisionWinners).forEach(([division, teamCode]) => {
-                if (teamCode) {
-                    const divisionName = division.replace('-', ' ').toUpperCase();
-                    const conference = division.startsWith('afc') ? 'AFC' : 'NFC';
-                    csvData.push([
-                        'Division Winner',
-                        divisionName,
-                        teamCode,
-                        nflSchedule.teams[teamCode]?.name || teamCode,
-                        conference,
-                        'Preseason'
-                    ]);
-                }
-            });
-        }
-
-        // Wild Cards
-        if (this.preseasonPredictions.wildCards) {
-            Object.entries(this.preseasonPredictions.wildCards).forEach(([slot, teamCode]) => {
-                if (teamCode) {
-                    const conference = slot.startsWith('afc') ? 'AFC' : 'NFC';
-                    const position = slot.replace('afc-', '').replace('nfc-', '').replace('-', ' ').toUpperCase();
-                    csvData.push([
-                        'Wild Card',
-                        position,
-                        teamCode,
-                        nflSchedule.teams[teamCode]?.name || teamCode,
-                        conference,
-                        'Preseason'
-                    ]);
-                }
-            });
-        }
-
-        // Championships
-        if (this.preseasonPredictions.championships) {
-            Object.entries(this.preseasonPredictions.championships).forEach(([type, teamCode]) => {
-                if (teamCode) {
-                    let category, conference;
-                    if (type === 'afc-champion') {
-                        category = 'AFC Champion';
-                        conference = 'AFC';
-                    } else if (type === 'nfc-champion') {
-                        category = 'NFC Champion';
-                        conference = 'NFC';
-                    } else if (type === 'super-bowl') {
-                        category = 'Super Bowl Champion';
-                        conference = teamCode.startsWith('A') ? 'AFC' : 'NFC'; // Rough estimate
-                    }
+                teams.forEach(teamCode => {
+                    const predictedRecord = this.teamRecordPredictions[teamCode];
+                    const actualRecord = actualRecords[teamCode] || { wins: 0, losses: 0 };
                     
-                    csvData.push([
-                        category,
-                        'Winner',
-                        teamCode,
-                        nflSchedule.teams[teamCode]?.name || teamCode,
-                        conference,
-                        'Preseason'
-                    ]);
-                }
+                    let predictedDisplay = 'Not predicted';
+                    let accuracyDisplay = '-';
+                    let accuracyClass = '';
+
+                    if (predictedRecord && (predictedRecord.wins > 0 || predictedRecord.losses > 0)) {
+                        totalTeamsPredicted++;
+                        predictedDisplay = `${predictedRecord.wins || 0}-${predictedRecord.losses || 0}`;
+                        
+                        if (predictedRecord.wins + predictedRecord.losses === 17) {
+                            const accuracy = calculateRecordAccuracy(
+                                predictedRecord.wins, 
+                                predictedRecord.losses, 
+                                actualRecord.wins, 
+                                actualRecord.losses
+                            );
+                            
+                            accuracyDisplay = accuracy.message;
+                            accuracyClass = `${accuracy.type}-match`;
+                            
+                            if (accuracy.type === 'exact') exactMatches++;
+                            if (accuracy.type === 'close' || accuracy.type === 'exact') closeMatches++;
+                            if (accuracy.score !== undefined) totalAccuracyScore += accuracy.score;
+                        }
+                    }
+
+                    const actualDisplay = `${actualRecord.wins}-${actualRecord.losses}`;
+
+                    html += `
+                        <div class="comparison-team-row">
+                            <div class="comparison-team-name">${nflSchedule.teams[teamCode].name}</div>
+                            <div class="predicted-record">${predictedDisplay}</div>
+                            <div class="actual-record">${actualDisplay}</div>
+                            <div class="record-accuracy ${accuracyClass}">${accuracyDisplay}</div>
+                        </div>
+                    `;
+                });
+
+                html += '</div>';
             });
-        }
+        });
 
-        // Add summary stats
-        csvData.push([]); // Empty row
-        csvData.push(['Summary Statistics', '', '', '', '', '']);
-        csvData.push(['Total Predictions Made', Object.keys(this.predictions).length, '', '', '', '']);
-        
-        const completedGames = nflSchedule.games.filter(g => g.status === 'final' && g.winner);
-        const correctPredictions = completedGames.filter(g => this.predictions[g.id] === g.winner).length;
-        const predictedFinalGames = completedGames.filter(g => this.predictions[g.id]);
-        const accuracy = predictedFinalGames.length > 0 ? Math.round((correctPredictions / predictedFinalGames.length) * 100) : 0;
-        
-        csvData.push(['Completed Games', completedGames.length, '', '', '', '']);
-        csvData.push(['Correct Predictions', correctPredictions, '', '', '', '']);
-        csvData.push(['Prediction Accuracy', `${accuracy}%`, '', '', '', '']);
-        csvData.push(['Export Date', new Date().toISOString().split('T')[0], '', '', '', '']);
-
-        this.downloadCSV(csvData, 'nfl_preseason_predictions_2025-2026.csv');
-    }
-
-    downloadCSV(data, filename) {
-        // Convert array to CSV string
-        const csvContent = data.map(row => 
-            row.map(field => {
-                // Escape quotes and wrap in quotes if contains comma, quote, or newline
-                const stringField = String(field);
-                if (stringField.includes(',') || stringField.includes('"') || stringField.includes('\n')) {
-                    return '"' + stringField.replace(/"/g, '""') + '"';
-                }
-                return stringField;
-            }).join(',')
-        ).join('\n');
-
-        // Create blob and download link
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        
-        if (navigator.msSaveBlob) {
-            // IE 10+
-            navigator.msSaveBlob(blob, filename);
-        } else {
-            // Other browsers
-            const url = URL.createObjectURL(blob);
-            link.href = url;
-            link.download = filename;
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-        }
-
-        // Show success message
-        alert(`${filename} has been downloaded successfully! You can now import it into Google Sheets.`);
-    }
-}
-
-// Initialize the app when the page loads
-let app;
-document.addEventListener('DOMContentLoaded', () => {
-    app = new NFLPredictionTracker();
-});
-
-// Example function to simulate game results (for testing)
-function simulateGameResult(gameId, homeScore, awayScore) {
-    if (app) {
-        app.updateGameResult(gameId, homeScore, awayScore);
-    }
-}
+        // Add summary statistics
+        const averageAccuracy = totalTeamsPredicted > 0 ? Math.round(totalAccuracyScore / totalTeamsPredicted) : 0;
+        const exactPercentage = totalTeamsPredicted > 0 ? Math.round((exactMatches / totalTeamsPredicted) * 100) : 0;
+        const closePercentage = totalTeamsPredicted > 0 ? Math.round((closeMatches / totalTeamsPredicted)

@@ -8,7 +8,10 @@ A web application for tracking your NFL game predictions throughout the 2025-202
 - **Team Information**: See team records and game details
 - **Individual Game Predictions**: Select your predicted winner for each game
 - **Bulk Weekly Predictions**: Make all predictions for a week at once using the modal interface
-- **Pre-season Predictions**: Make championship and playoff predictions before the season
+- **Pre-season Predictions**: 
+  - Make championship and playoff predictions before the season
+  - **Predict Team Records**: Set your predicted win-loss record for each team
+  - **Standings Comparison**: Compare your predicted records against actual standings
 - **Season Comparison**: Compare your pre-season predictions with weekly picks and actual results
 - **Automated Score Updates**: GitHub Actions automatically updates scores every Tuesday
 - **Track Accuracy**: Monitor your prediction success rate with detailed statistics
@@ -25,8 +28,16 @@ A web application for tracking your NFL game predictions throughout the 2025-202
    - Click "Make Week Predictions" button
    - Fill out all predictions for that week in the modal
    - Save all predictions at once
-4. **Track Results**: Once games are completed and scores are updated, see if your predictions were correct
-5. **Monitor Stats**: Check your overall prediction accuracy in the header stats
+4. **Make Pre-season Record Predictions**:
+   - Click "Pre-season Predictions" button
+   - Set your predicted win-loss record for each team
+   - Save your predictions before the season starts
+5. **View Standings Comparison**:
+   - Access through the "Pre-season Predictions" modal
+   - Compare your predicted records with actual team standings
+   - See accuracy of your record predictions
+6. **Track Results**: Once games are completed and scores are updated, see if your predictions were correct
+7. **Monitor Stats**: Check your overall prediction accuracy in the header stats
 
 ## Game Information Displayed
 

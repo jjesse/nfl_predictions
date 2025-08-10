@@ -388,3 +388,52 @@ function populatePlayoffMatchups() {
     console.log('Playoff matchups would be determined here based on regular season results');
     return true;
 }
+
+// Function to get teams organized by division
+function getTeamsByDivision() {
+    return {
+        afc: {
+            east: ['BUF', 'MIA', 'NE', 'NYJ'],
+            north: ['BAL', 'CIN', 'CLE', 'PIT'],
+            south: ['HOU', 'IND', 'JAX', 'TEN'],
+            west: ['DEN', 'KC', 'LV', 'LAC']
+        },
+        nfc: {
+            east: ['DAL', 'NYG', 'PHI', 'WAS'],
+            north: ['CHI', 'DET', 'GB', 'MIN'],
+            south: ['ATL', 'CAR', 'NO', 'TB'],
+            west: ['ARI', 'LAR', 'SF', 'SEA']
+        }
+    };
+}
+
+// Function to validate team record predictions
+function validateTeamRecord(wins, losses) {
+    const totalGames = wins + losses;
+    return totalGames === 17; // NFL regular season is 17 games
+}
+
+// Function to calculate record accuracy
+function calculateRecordAccuracy(predictedWins, predictedLosses, actualWins, actualLosses) {
+    const predictedTotal = predictedWins + predictedLosses;
+    const actualTotal = actualWins + actualLosses;
+    
+    // If seasons aren't complete, can't calculate full accuracy
+    if (predictedTotal !== 17 || actualTotal === 0) {
+        return { type: 'incomplete', message: 'Season incomplete' };
+    }
+    
+    const winDifference = Math.abs(predictedWins - actualWins);
+    const lossDifference = Math.abs(predictedLosses - actualLosses);
+    const totalDifference = winDifference + lossDifference;
+    
+    if (totalDifference === 0) {
+        return { type: 'exact', message: 'Exact match!', score: 100 };
+    } else if (totalDifference <= 2) {
+        return { type: 'close', message: `±${winDifference} games`, score: Math.max(75 - (totalDifference * 10), 50) };
+    } else if (totalDifference <= 4) {
+        return { type: 'fair', message: `±${winDifference} games`, score: Math.max(50 - (totalDifference * 5), 25) };
+    } else {
+        return { type: 'poor', message: `±${winDifference} games`, score: Math.max(25 - (totalDifference * 2), 0) };
+    }
+}
