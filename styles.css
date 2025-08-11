@@ -1342,3 +1342,337 @@ header h1 {
         grid-template-columns: 1fr;
     }
 }
+
+/* Settings Tab Styles */
+.settings-container {
+    background: white;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.settings-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+}
+
+.settings-section h4 {
+    margin-bottom: 15px;
+    color: #495057;
+    border-bottom: 2px solid #dee2e6;
+    padding-bottom: 10px;
+}
+
+.storage-options {
+    display: grid;
+    gap: 15px;
+}
+
+.storage-option {
+    padding: 15px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    background: white;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.storage-option:hover {
+    border-color: #007bff;
+}
+
+.storage-option.active {
+    border-color: #007bff;
+    background-color: #f8f9ff;
+}
+
+.storage-option label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 5px;
+    display: block;
+    cursor: pointer;
+}
+
+.storage-option p {
+    margin: 5px 0 10px 0;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.storage-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s;
+}
+
+.storage-btn:hover {
+    background-color: #0056b3;
+}
+
+.backup-controls,
+.data-controls,
+.privacy-controls,
+.preference-controls {
+    display: grid;
+    gap: 15px;
+}
+
+.backup-controls button,
+.data-controls button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.backup-controls button {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.backup-controls button:hover {
+    background-color: #138496;
+}
+
+.data-controls button {
+    background-color: #6c757d;
+    color: white;
+}
+
+.data-controls button:hover {
+    background-color: #545b62;
+}
+
+.danger-btn {
+    background-color: #dc3545 !important;
+}
+
+.danger-btn:hover {
+    background-color: #c82333 !important;
+}
+
+.privacy-controls label,
+.preference-controls label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.privacy-controls label:hover,
+.preference-controls label:hover {
+    background-color: #f8f9fa;
+}
+
+.preference-controls select {
+    flex: 1;
+    padding: 5px 8px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+}
+
+.sync-status {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.status-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 5px 0;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.status-item:last-child {
+    border-bottom: none;
+    margin-bottom: 15px;
+}
+
+.status-item span:first-child {
+    font-weight: 500;
+    color: #495057;
+}
+
+.status-item span:last-child {
+    color: #6c757d;
+}
+
+#force-sync {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#force-sync:hover {
+    background-color: #218838;
+}
+
+.app-info {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.app-info p {
+    margin-bottom: 10px;
+}
+
+.app-info a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.app-info a:hover {
+    text-decoration: underline;
+}
+
+/* Settings Modal Styles */
+.settings-modal .modal-content {
+    max-width: 600px;
+}
+
+.github-setup,
+.firebase-setup {
+    text-align: left;
+}
+
+.github-setup ol {
+    margin: 15px 0;
+    padding-left: 20px;
+}
+
+.github-setup input,
+.firebase-setup input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    margin: 10px 0;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.setup-status {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.backup-schedule .radio-group {
+    margin: 15px 0;
+}
+
+.backup-schedule .radio-group label {
+    display: block;
+    margin-bottom: 8px;
+    padding: 8px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.backup-schedule .radio-group label:hover {
+    background-color: #f8f9fa;
+}
+
+.backup-schedule .radio-group input {
+    margin-right: 8px;
+}
+
+/* Notification Styles */
+.notification {
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Dark Theme */
+.dark-theme {
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+}
+
+.dark-theme .settings-container,
+.dark-theme .settings-section,
+.dark-theme .storage-option,
+.dark-theme .sync-status,
+.dark-theme .app-info {
+    background-color: #2d2d2d;
+    border-color: #404040;
+    color: #e0e0e0;
+}
+
+.dark-theme .modal-content {
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .settings-container {
+        padding: 20px;
+    }
+    
+    .settings-section {
+        padding: 15px;
+    }
+    
+    .backup-controls,
+    .data-controls {
+        grid-template-columns: 1fr;
+    }
+    
+    .status-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    
+    .settings-modal .modal-content {
+        width: 95%;
+        margin: 10% auto;
+    }
+}

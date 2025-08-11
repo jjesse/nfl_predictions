@@ -521,22 +521,27 @@
                 </div>
             </div>
 
-            <!-- Standings Comparison Tab -->
-            <div id="standings-comparison-tab" class="tab-content">
-                <div class="standings-comparison-container">
-                    <h3>Predicted vs Actual Standings</h3>
-                    <div id="standings-comparison-content">
-                        <!-- Standings comparison will be populated here -->
-                    </div>
-                </div>
-            </div>
-
             <!-- Season Comparison Tab -->
             <div id="comparison-tab" class="tab-content">
                 <div class="comparison-dashboard">
                     <h3>Season Prediction Comparison</h3>
                     <div id="comparison-content">
                         <!-- Comparison data will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Standings Comparison Tab -->
+            <div id="standings-comparison-tab" class="tab-content">
+                <div class="standings-comparison-container">
+                    <h3>Predicted vs Actual Standings</h3>
+                    <div class="comparison-filters">
+                        <button id="show-all-teams" class="filter-btn active">All Teams</button>
+                        <button id="show-afc-only" class="filter-btn">AFC Only</button>
+                        <button id="show-nfc-only" class="filter-btn">NFC Only</button>
+                    </div>
+                    <div id="standings-comparison-content">
+                        <!-- Standings comparison will be populated here -->
                     </div>
                 </div>
             </div>
@@ -824,6 +829,114 @@
                         <div class="modal-actions">
                             <button id="save-week-predictions">Save All Predictions</button>
                             <button id="cancel-week-predictions">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GitHub Connection Modal -->
+            <div id="github-connection-modal" class="modal storage-modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Connect to GitHub Gists</h2>
+                        <span class="close github-close">&times;</span>
+                    </div>
+                    <div class="modal-body">
+                        <div class="connection-step">
+                            <h5>Step 1: Create Personal Access Token</h5>
+                            <p>Create a GitHub Personal Access Token with 'gist' permissions:</p>
+                            <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" class="auth-button">
+                                Create GitHub Token
+                            </a>
+                            <p style="margin-top: 10px; font-size: 0.9rem; color: #666;">
+                                Select only the "gist" scope when creating your token.
+                            </p>
+                        </div>
+                        
+                        <div class="connection-step">
+                            <h5>Step 2: Enter Your Token</h5>
+                            <input type="password" id="github-token" class="connection-input" 
+                                   placeholder="Enter your GitHub Personal Access Token">
+                            <input type="text" id="github-username" class="connection-input" 
+                                   placeholder="Enter your GitHub username (optional)">
+                        </div>
+
+                        <div id="github-connection-status" class="connection-status" style="display: none;">
+                            <span class="storage-status-indicator"></span>
+                            <span class="status-text"></span>
+                        </div>
+
+                        <div class="modal-actions">
+                            <button id="test-github-connection" class="btn-primary">Test Connection</button>
+                            <button id="save-github-config" class="btn-success">Save & Connect</button>
+                            <button id="cancel-github-config" class="btn-secondary">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Firebase Connection Modal -->
+            <div id="firebase-connection-modal" class="modal storage-modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Configure Firebase</h2>
+                        <span class="close firebase-close">&times;</span>
+                    </div>
+                    <div class="modal-body">
+                        <div class="connection-step">
+                            <h5>Step 1: Create Firebase Project</h5>
+                            <p>Create a new Firebase project and enable Firestore:</p>
+                            <a href="https://console.firebase.google.com/" target="_blank" class="auth-button firebase">
+                                Open Firebase Console
+                            </a>
+                        </div>
+                        
+                        <div class="connection-step">
+                            <h5>Step 2: Firebase Configuration</h5>
+                            <p>Copy your Firebase config from Project Settings → General → Your apps:</p>
+                            
+                            <div class="config-row">
+                                <label>API Key:</label>
+                                <input type="password" id="firebase-api-key" placeholder="Your Firebase API Key">
+                            </div>
+                            
+                            <div class="config-row">
+                                <label>Project ID:</label>
+                                <input type="text" id="firebase-project-id" placeholder="your-project-id">
+                            </div>
+                            
+                            <div class="config-row">
+                                <label>Auth Domain:</label>
+                                <input type="text" id="firebase-auth-domain" placeholder="your-project-id.firebaseapp.com">
+                            </div>
+                            
+                            <div class="config-row">
+                                <label>Database URL:</label>
+                                <input type="text" id="firebase-database-url" placeholder="https://your-project-id.firebaseio.com">
+                            </div>
+                        </div>
+
+                        <div class="connection-step">
+                            <h5>Step 3: Authentication Method</h5>
+                            <div class="config-row">
+                                <label>Auth Method:</label>
+                                <select id="firebase-auth-method">
+                                    <option value="anonymous">Anonymous</option>
+                                    <option value="google">Google Sign-In</option>
+                                    <option value="email">Email/Password</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="firebase-connection-status" class="connection-status" style="display: none;">
+                            <span class="storage-status-indicator"></span>
+                            <span class="status-text"></span>
+                        </div>
+
+                        <div class="modal-actions">
+                            <button id="test-firebase-connection" class="btn-primary">Test Connection</button>
+                            <button id="save-firebase-config" class="btn-success">Save & Connect</button>
+                            <button id="cancel-firebase-config" class="btn-secondary">Cancel</button>
                         </div>
                     </div>
                 </div>
