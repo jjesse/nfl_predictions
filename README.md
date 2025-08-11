@@ -29,15 +29,16 @@ A web application for tracking your NFL game predictions throughout the 2025-202
    - Fill out all predictions for that week in the modal
    - Save all predictions at once
 4. **Make Pre-season Record Predictions**:
-   - Click "Pre-season Predictions" button
+   - Click "Pre-season Predictions" tab
    - Set your predicted win-loss record for each team
    - Save your predictions before the season starts
 5. **View Standings Comparison**:
-   - Access through the "Pre-season Predictions" modal
+   - Access through the "Pre-season Predictions" tab
    - Compare your predicted records with actual team standings
    - See accuracy of your record predictions
 6. **Track Results**: Once games are completed and scores are updated, see if your predictions were correct
 7. **Monitor Stats**: Check your overall prediction accuracy in the header stats
+8. **Manage Data**: Use the Settings tab to backup, export, or sync your predictions
 
 ## Game Information Displayed
 
@@ -48,12 +49,40 @@ A web application for tracking your NFL game predictions throughout the 2025-202
 - Game status (Upcoming/Live/Final)
 - Winner indication
 
+## Navigation Tabs
+
+- **Weekly Predictions**: Make individual and bulk predictions for games
+- **Weekly Results**: View completed games and prediction accuracy
+- **Team Standings**: See current NFL standings by division
+- **Pre-Season Predictions**: Make championship and record predictions
+- **Season Comparison**: Compare pre-season vs weekly predictions
+- **Settings**: Manage data storage, backups, and app preferences
+
 ## Filters
 
 - **Week Filter**: Show games from a specific week
 - **Team Filter**: Show games involving a specific team
 - **Make Week Predictions**: Bulk prediction interface for selected week
 - **Clear All Predictions**: Reset all your predictions
+
+## Data Management & Storage
+
+### Local Storage (Default)
+- All predictions automatically saved to browser localStorage
+- Fast and works offline
+- Limited to single browser/device
+
+### Cloud Storage Options (Future)
+Access through the **Settings** tab to configure:
+
+1. **GitHub Gists**: Backup to private GitHub repositories
+2. **Export/Import**: Manual backup via JSON/CSV files
+3. **Data Management**: Clear or reset specific prediction types
+
+### Export Options
+- Export all predictions to CSV format
+- Export pre-season predictions separately
+- Full data backup in JSON format
 
 ## Deployment to GitHub Pages
 
@@ -177,9 +206,9 @@ You can also manually update game results by editing the game objects in the `ga
 
 ## Files Structure
 
-- `index.html` - Main application page
-- `styles.css` - Application styling  
-- `app.js` - Main application logic with bulk prediction functionality
+- `index.html` - Main application page with all tabs and modals
+- `styles.css` - Application styling and responsive design
+- `app.js` - Main application logic with prediction functionality
 - `nfl-schedule.js` - NFL schedule and team data
 - `.github/workflows/update-scores.yml` - GitHub Actions workflow for automated score updates
 - `.github/scripts/update-scores.js` - Node.js script that fetches scores from ESPN API

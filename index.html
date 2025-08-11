@@ -37,6 +37,7 @@
                 <button class="tab-btn" data-tab="standings">Team Standings</button>
                 <button class="tab-btn" data-tab="preseason">Pre-Season Predictions</button>
                 <button class="tab-btn" data-tab="comparison">Season Comparison</button>
+                <button class="tab-btn" data-tab="settings">Settings</button>
             </nav>
 
             <!-- Weekly Predictions Tab -->
@@ -536,6 +537,141 @@
                     <h3>Season Prediction Comparison</h3>
                     <div id="comparison-content">
                         <!-- Comparison data will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settings-tab" class="tab-content">
+                <div class="settings-container">
+                    <h3>Settings & Data Management</h3>
+                    
+                    <!-- Cloud Storage Section -->
+                    <div class="settings-section">
+                        <h4>Cloud Storage</h4>
+                        <div class="storage-options">
+                            <div class="storage-option">
+                                <input type="radio" id="storage-local" name="storage-type" value="local" checked>
+                                <label for="storage-local">Local Storage (Default)</label>
+                                <p>Store predictions in your browser only</p>
+                            </div>
+                            <div class="storage-option">
+                                <input type="radio" id="storage-github" name="storage-type" value="github">
+                                <label for="storage-github">GitHub Gists</label>
+                                <p>Backup to private GitHub gists</p>
+                                <button id="connect-github" class="storage-btn">Connect GitHub</button>
+                            </div>
+                            <div class="storage-option">
+                                <input type="radio" id="storage-firebase" name="storage-type" value="firebase">
+                                <label for="storage-firebase">Firebase</label>
+                                <p>Real-time sync across devices</p>
+                                <button id="connect-firebase" class="storage-btn">Configure Firebase</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Backup & Export Section -->
+                    <div class="settings-section">
+                        <h4>Backup & Export</h4>
+                        <div class="backup-controls">
+                            <button id="export-all-data">Export All Data (JSON)</button>
+                            <button id="export-predictions-backup">Export Predictions Backup</button>
+                            <button id="import-data">Import Data</button>
+                            <input type="file" id="import-file" accept=".json" style="display: none;">
+                            <button id="schedule-backup">Schedule Auto Backup</button>
+                        </div>
+                    </div>
+
+                    <!-- Data Management Section -->
+                    <div class="settings-section">
+                        <h4>Data Management</h4>
+                        <div class="data-controls">
+                            <button id="clear-all-data" class="danger-btn">Clear All Data</button>
+                            <button id="reset-predictions">Reset Predictions Only</button>
+                            <button id="reset-preseason">Reset Pre-Season Predictions</button>
+                        </div>
+                    </div>
+
+                    <!-- Privacy & Sharing Section -->
+                    <div class="settings-section">
+                        <h4>Privacy & Sharing</h4>
+                        <div class="privacy-controls">
+                            <label>
+                                <input type="checkbox" id="public-predictions">
+                                Make predictions public
+                            </label>
+                            <label>
+                                <input type="checkbox" id="allow-analytics">
+                                Allow anonymous usage analytics
+                            </label>
+                            <label>
+                                <input type="checkbox" id="share-accuracy">
+                                Share accuracy stats publicly
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- App Preferences Section -->
+                    <div class="settings-section">
+                        <h4>App Preferences</h4>
+                        <div class="preference-controls">
+                            <label>
+                                Default view:
+                                <select id="default-view">
+                                    <option value="weekly">Weekly Predictions</option>
+                                    <option value="results">Weekly Results</option>
+                                    <option value="standings">Team Standings</option>
+                                </select>
+                            </label>
+                            <label>
+                                <input type="checkbox" id="show-team-logos">
+                                Show team logos
+                            </label>
+                            <label>
+                                <input type="checkbox" id="auto-save">
+                                Auto-save predictions
+                            </label>
+                            <label>
+                                Theme:
+                                <select id="app-theme">
+                                    <option value="light">Light</option>
+                                    <option value="dark">Dark</option>
+                                    <option value="auto">Auto</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Sync Status Section -->
+                    <div class="settings-section">
+                        <h4>Sync Status</h4>
+                        <div class="sync-status">
+                            <div class="status-item">
+                                <span>Last Sync:</span>
+                                <span id="last-sync-time">Never</span>
+                            </div>
+                            <div class="status-item">
+                                <span>Storage Provider:</span>
+                                <span id="current-storage">Local Storage</span>
+                            </div>
+                            <div class="status-item">
+                                <span>Data Size:</span>
+                                <span id="data-size">0 KB</span>
+                            </div>
+                            <button id="force-sync">Force Sync Now</button>
+                        </div>
+                    </div>
+
+                    <!-- App Information Section -->
+                    <div class="settings-section">
+                        <h4>App Information</h4>
+                        <div class="app-info">
+                            <p><strong>Version:</strong> 1.0.0</p>
+                            <p><strong>Last Updated:</strong> 2024</p>
+                            <p><strong>Developer:</strong> NFL Prediction Tracker</p>
+                            <p><strong>License:</strong> MIT</p>
+                            <a href="https://github.com/yourusername/nfl_prediction_tracker" target="_blank">View on GitHub</a>
+                        </div>
                     </div>
                 </div>
             </div>
