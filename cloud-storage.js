@@ -32,6 +32,7 @@ class CloudStorageManager {
 
     async setProvider(providerName, config = {}) {
         try {
+            this.showNotification('Connecting to GitHub Gists...', 'info');
             this.config.provider = providerName;
             this.config = { ...this.config, ...config };
             this.saveConfig();
@@ -39,17 +40,25 @@ class CloudStorageManager {
             if (providerName !== 'local') {
                 this.currentProvider = this.providers[providerName];
                 if (this.currentProvider) {
-                    await this.currentProvider.configure(config);
+                    const result = await this.currentProvider.configure(this.config);
+                    if (result && result.gistId) {
+                        this.config.gistId = result.gistId;
+                        this.saveConfig();
+                        localStorage.setItem('cloud-storage-config', JSON.stringify(this.config));
+                        this.showNotification(`Connected to GitHub Gists as ${result.username}`, 'success');
+                    } else {
+                        this.showNotification('GitHub Gist connection failed: gistId not found', 'error');
+                        throw new Error('gistId not found');
+                    }
                 }
             } else {
                 this.currentProvider = null;
             }
 
-            this.showNotification('Storage provider updated successfully');
             return true;
         } catch (error) {
             console.error('Failed to set provider:', error);
-            this.showNotification('Failed to connect to storage provider', 'error');
+            this.showNotification(error.message || 'Failed to connect to storage provider', 'error');
             return false;
         }
     }
@@ -58,8 +67,13 @@ class CloudStorageManager {
         if (this.config.provider !== 'local') {
             try {
                 this.currentProvider = this.providers[this.config.provider];
-                await this.currentProvider.configure(this.config);
-                
+                const result = await this.currentProvider.configure(this.config);
+                if (result && result.gistId) {
+                    this.config.gistId = result.gistId;
+                    this.saveConfig();
+                    localStorage.setItem('cloud-storage-config', JSON.stringify(this.config));
+                    this.showNotification(`Connected to GitHub Gists as ${result.username}`, 'success');
+                }
                 if (this.config.syncEnabled) {
                     await this.syncFromCloud();
                 }
@@ -71,14 +85,22 @@ class CloudStorageManager {
     }
 
     async saveToCloud(data, type = 'predictions') {
-        if (!this.currentProvider) return false;
-
+        if (!this.currentProvider) {
+            this.showNotification('No cloud provider configured', 'error');
+            return false;
+        }
+        if (!this.config.gistId && this.config.provider === 'github') {
+            this.showNotification('No GitHub Gist ID found. Please connect first.', 'error');
+            return false;
+        }
         try {
             const success = await this.currentProvider.save(data, type);
             if (success) {
                 this.config.lastBackup = new Date().toISOString();
                 this.saveConfig();
-                this.showNotification('Data backed up to cloud');
+                this.showNotification('Data backed up to cloud', 'success');
+            } else {
+                this.showNotification('Failed to backup to cloud', 'error');
             }
             return success;
         } catch (error) {
@@ -89,10 +111,20 @@ class CloudStorageManager {
     }
 
     async loadFromCloud(type = 'predictions') {
-        if (!this.currentProvider) return null;
-
+        if (!this.currentProvider) {
+            this.showNotification('No cloud provider configured', 'error');
+            return null;
+        }
+        if (!this.config.gistId && this.config.provider === 'github') {
+            this.showNotification('No GitHub Gist ID found. Please connect first.', 'error');
+            return null;
+        }
         try {
-            return await this.currentProvider.load(type);
+            const data = await this.currentProvider.load(type);
+            if (!data) {
+                this.showNotification('No backup found in cloud', 'warning');
+            }
+            return data;
         } catch (error) {
             console.error('Cloud load failed:', error);
             this.showNotification('Failed to load from cloud', 'error');
@@ -447,8 +479,42 @@ class GitHubGistsProvider {
         if (!this.token) {
             throw new Error('GitHub token is required');
         }
-        // Optionally, test the token by making a simple API call
-        // ...could add a fetch to https://api.github.com/user with the token...
+        // Test the token by making a simple API call
+        try {
+            const response = await fetch('https://api.github.com/user', {
+                headers: {
+                    'Authorization': `token ${this.token}`
+                }
+            });
+            if (!response.ok) {
+                throw new Error('Invalid GitHub token');
+            }
+            const user = await response.json();
+            // If gistId is not set, create a new gist to get one
+            if (!this.gistId) {
+                const gistData = {
+                    description: 'NFL Predictions Cloud Backup',
+                    public: false,
+                    files: { 'init.txt': { content: 'NFL Prediction Tracker Cloud Storage Initialized' } }
+                };
+                const gistResponse = await fetch('https://api.github.com/gists', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `token ${this.token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(gistData)
+                });
+                if (!gistResponse.ok) {
+                    throw new Error('Failed to create GitHub Gist');
+                }
+                const gistResult = await gistResponse.json();
+                this.gistId = gistResult.id;
+            }
+            return { username: user.login, gistId: this.gistId };
+        } catch (error) {
+            throw new Error('Failed to connect to GitHub: ' + error.message);
+        }
     }
 
     async save(data, type) {
@@ -466,7 +532,6 @@ class GitHubGistsProvider {
             const url = this.gistId 
                 ? `https://api.github.com/gists/${this.gistId}`
                 : 'https://api.github.com/gists';
-            
             const method = this.gistId ? 'PATCH' : 'POST';
 
             const response = await fetch(url, {
@@ -484,7 +549,10 @@ class GitHubGistsProvider {
 
             const result = await response.json();
             this.gistId = result.id;
-            
+            // Save gistId to config/localStorage for future use
+            const config = JSON.parse(localStorage.getItem('cloud-storage-config') || '{}');
+            config.gistId = this.gistId;
+            localStorage.setItem('cloud-storage-config', JSON.stringify(config));
             return true;
         } catch (error) {
             console.error('GitHub Gist save failed:', error);
@@ -493,6 +561,9 @@ class GitHubGistsProvider {
     }
 
     async load(type) {
+        // Always get latest gistId from config/localStorage
+        const config = JSON.parse(localStorage.getItem('cloud-storage-config') || '{}');
+        this.gistId = config.gistId || this.gistId;
         if (!this.gistId) return null;
 
         try {
@@ -507,8 +578,6 @@ class GitHubGistsProvider {
             }
 
             const gist = await response.json();
-            
-            // Find the most recent file of the requested type
             const files = Object.values(gist.files)
                 .filter(file => file.filename.includes(type))
                 .sort((a, b) => b.filename.localeCompare(a.filename));
