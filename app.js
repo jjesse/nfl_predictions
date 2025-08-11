@@ -3,6 +3,7 @@ class NFLPredictionTracker {
         this.predictions = this.loadPredictions();
         this.preseasonPredictions = this.loadPreseasonPredictions();
         this.teamRecordPredictions = this.loadTeamRecordPredictions();
+        this.appPreferences = this.loadAppPreferences();
         this.filteredGames = [...nflSchedule.games];
         this.bulkPredictions = {};
         this.currentTab = 'weekly';
@@ -18,6 +19,7 @@ class NFLPredictionTracker {
         this.updateStats();
         this.loadPreseasonUI();
         this.loadTeamRecordUI();
+        this.loadAppPreferencesUI();
         this.renderComparison();
         this.renderStandings();
     }
@@ -170,6 +172,37 @@ class NFLPredictionTracker {
             radio.addEventListener('change', (e) => {
                 this.updateStorageType(e.target.value);
             });
+        });
+
+        // App preferences event listeners
+        document.getElementById('default-view')?.addEventListener('change', (e) => {
+            this.updatePreference('defaultView', e.target.value);
+        });
+
+        document.getElementById('show-team-logos')?.addEventListener('change', (e) => {
+            this.updatePreference('showTeamLogos', e.target.checked);
+        });
+
+        document.getElementById('auto-save')?.addEventListener('change', (e) => {
+            this.updatePreference('autoSave', e.target.checked);
+        });
+
+        document.getElementById('app-theme')?.addEventListener('change', (e) => {
+            this.updatePreference('theme', e.target.value);
+            this.applyTheme(e.target.value);
+        });
+
+        // Privacy preferences event listeners
+        document.getElementById('public-predictions')?.addEventListener('change', (e) => {
+            this.updatePreference('publicPredictions', e.target.checked);
+        });
+
+        document.getElementById('allow-analytics')?.addEventListener('change', (e) => {
+            this.updatePreference('allowAnalytics', e.target.checked);
+        });
+
+        document.getElementById('share-accuracy')?.addEventListener('change', (e) => {
+            this.updatePreference('shareAccuracy', e.target.checked);
         });
     }
 
@@ -436,8 +469,14 @@ class NFLPredictionTracker {
         } else {
             delete this.predictions[gameId];
         }
-        this.savePredictions();
-        this.updateStats();
+        
+        if (this.appPreferences.autoSave) {
+            this.savePredictions();
+            this.updateStats();
+        } else {
+            // Show save indicator if auto-save is off
+            this.showSaveIndicator();
+        }
     }
 
     // Storage methods
@@ -468,6 +507,95 @@ class NFLPredictionTracker {
         localStorage.setItem('nfl-team-record-predictions', JSON.stringify(this.teamRecordPredictions));
     }
 
+    // App Preferences methods
+    loadAppPreferences() {
+        const saved = localStorage.getItem('nfl-app-preferences');
+        const defaults = {
+            defaultView: 'weekly',
+            showTeamLogos: false,
+            autoSave: true,
+            theme: 'light',
+            publicPredictions: false,
+            allowAnalytics: false,
+            shareAccuracy: false
+        };
+        return saved ? { ...defaults, ...JSON.parse(saved) } : defaults;
+    }
+
+    saveAppPreferences() {
+        localStorage.setItem('nfl-app-preferences', JSON.stringify(this.appPreferences));
+    }
+
+    updatePreference(key, value) {
+        this.appPreferences[key] = value;
+        this.saveAppPreferences();
+        this.showNotification(`Preference "${key}" saved`, 'success');
+    }
+
+    loadAppPreferencesUI() {
+        // Load app preferences into UI
+        const defaultViewSelect = document.getElementById('default-view');
+        if (defaultViewSelect) {
+            defaultViewSelect.value = this.appPreferences.defaultView;
+        }
+
+        const showTeamLogosCheckbox = document.getElementById('show-team-logos');
+        if (showTeamLogosCheckbox) {
+            showTeamLogosCheckbox.checked = this.appPreferences.showTeamLogos;
+        }
+
+        const autoSaveCheckbox = document.getElementById('auto-save');
+        if (autoSaveCheckbox) {
+            autoSaveCheckbox.checked = this.appPreferences.autoSave;
+        }
+
+        const themeSelect = document.getElementById('app-theme');
+        if (themeSelect) {
+            themeSelect.value = this.appPreferences.theme;
+            this.applyTheme(this.appPreferences.theme);
+        }
+
+        // Load privacy preferences into UI
+        const publicPredictionsCheckbox = document.getElementById('public-predictions');
+        if (publicPredictionsCheckbox) {
+            publicPredictionsCheckbox.checked = this.appPreferences.publicPredictions;
+        }
+
+        const allowAnalyticsCheckbox = document.getElementById('allow-analytics');
+        if (allowAnalyticsCheckbox) {
+            allowAnalyticsCheckbox.checked = this.appPreferences.allowAnalytics;
+        }
+
+        const shareAccuracyCheckbox = document.getElementById('share-accuracy');
+        if (shareAccuracyCheckbox) {
+            shareAccuracyCheckbox.checked = this.appPreferences.shareAccuracy;
+        }
+
+        // Apply default view if specified
+        if (this.appPreferences.defaultView !== 'weekly') {
+            setTimeout(() => {
+                this.switchTab(this.appPreferences.defaultView);
+            }, 100);
+        }
+    }
+
+    applyTheme(theme) {
+        const body = document.body;
+        
+        // Remove existing theme classes
+        body.classList.remove('theme-light', 'theme-dark');
+        
+        if (theme === 'dark') {
+            body.classList.add('theme-dark');
+        } else if (theme === 'auto') {
+            // Use system preference
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            body.classList.add(prefersDark ? 'theme-dark' : 'theme-light');
+        } else {
+            body.classList.add('theme-light');
+        }
+    }
+
     clearAllPredictions() {
         this.predictions = {};
         this.savePredictions();
@@ -475,28 +603,368 @@ class NFLPredictionTracker {
         this.renderGames();
     }
 
-    updateStats() {
-        const totalGames = nflSchedule.games.length;
-        const predictionsMade = Object.keys(this.predictions).length;
+    clearAllData() {
+        const modal = this.createSettingsModal('Clear All Data', `
+            <p style="color: #dc3545; font-weight: bold;">⚠️ Warning: This will permanently delete ALL your data!</p>
+            <p>This includes:</p>
+            <ul>
+                <li>All weekly predictions</li>
+                <li>All pre-season predictions</li>
+                <li>All team record predictions</li>
+                <li>All settings and preferences</li>
+            </ul>
+            <p>Are you absolutely sure you want to continue?</p>
+        `, [
+            { text: 'Delete Everything', action: 'delete' },
+            { text: 'Cancel', action: 'cancel' }
+        ]);
+
+        modal.addEventListener('settings-action', (e) => {
+            if (e.detail === 'delete') {
+                this.predictions = {};
+                this.preseasonPredictions = {};
+                this.teamRecordPredictions = {};
+                this.appPreferences = this.loadAppPreferences(); // Reset to defaults
+                localStorage.clear();
+                this.refreshUI();
+                this.showNotification('All data cleared', 'success');
+            }
+            modal.remove();
+        });
+    }
+
+    resetPredictionsOnly() {
+        if (confirm('Clear all weekly game predictions? This cannot be undone.')) {
+            this.predictions = {};
+            this.savePredictions();
+            this.updateStats();
+            this.renderGames();
+            this.showNotification('Weekly predictions cleared', 'success');
+        }
+    }
+
+    resetPreseasonOnly() {
+        if (confirm('Clear all pre-season predictions? This cannot be undone.')) {
+            this.clearPreseasonPredictions();
+            this.showNotification('Pre-season predictions cleared', 'success');
+        }
+    }
+
+    forceSyncNow() {
+        // For now, just update the display
+        this.updateSyncStatus();
+        this.showNotification('Sync status updated', 'info');
+    }
+
+    updateStorageType(type) {
+        const currentStorage = document.getElementById('current-storage');
+        if (currentStorage) {
+            currentStorage.textContent = type === 'local' ? 'Local Storage' : 
+                                       type === 'github' ? 'GitHub Gists' : 
+                                       'Firebase';
+        }
+        this.updateSyncStatus();
+    }
+
+    // Helper methods
+    saveGitHubToken(token) {
+        localStorage.setItem('github-token', token);
+        document.getElementById('storage-github').checked = true;
+        this.updateStorageType('github');
+    }
+
+    saveFirebaseConfig(config) {
+        localStorage.setItem('firebase-config', JSON.stringify(config));
+        document.getElementById('storage-firebase').checked = true;
+        this.updateStorageType('firebase');
+    }
+
+    saveAllData() {
+        this.savePredictions();
+        this.savePreseasonPredictionsToStorage();
+        this.saveTeamRecordPredictions();
+        this.saveAppPreferences();
+    }
+
+    refreshUI() {
+        this.updateStats();
+        this.renderGames();
+        this.loadPreseasonUI();
+        this.loadTeamRecordUI();
+        this.loadAppPreferencesUI();
+        this.renderComparison();
+        this.renderStandings();
+    }
+
+    // Rendering methods
+    renderStandings() {
+        const teamRecords = this.calculateTeamRecords();
         
-        let correctPredictions = 0;
-        let completedGames = 0;
+        this.renderDivisionStandings('AFC East', ['BUF', 'MIA', 'NE', 'NYJ'], teamRecords, 'afc-east-standings');
+        this.renderDivisionStandings('AFC North', ['BAL', 'CIN', 'CLE', 'PIT'], teamRecords, 'afc-north-standings');
+        this.renderDivisionStandings('AFC South', ['HOU', 'IND', 'JAX', 'TEN'], teamRecords, 'afc-south-standings');
+        this.renderDivisionStandings('AFC West', ['DEN', 'KC', 'LV', 'LAC'], teamRecords, 'afc-west-standings');
+        
+        this.renderDivisionStandings('NFC East', ['DAL', 'NYG', 'PHI', 'WAS'], teamRecords, 'nfc-east-standings');
+        this.renderDivisionStandings('NFC North', ['CHI', 'DET', 'GB', 'MIN'], teamRecords, 'nfc-north-standings');
+        this.renderDivisionStandings('NFC South', ['ATL', 'CAR', 'NO', 'TB'], teamRecords, 'nfc-south-standings');
+        this.renderDivisionStandings('NFC West', ['ARI', 'LAR', 'SF', 'SEA'], teamRecords, 'nfc-west-standings');
+    }
+
+    renderDivisionStandings(divisionName, teamCodes, teamRecords, containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        const sortedTeams = teamCodes.sort((a, b) => {
+            const recordA = teamRecords[a] || { wins: 0, losses: 0 };
+            const recordB = teamRecords[b] || { wins: 0, losses: 0 };
+            
+            if (recordA.wins !== recordB.wins) {
+                return recordB.wins - recordA.wins;
+            }
+            return recordA.losses - recordB.losses;
+        });
+
+        let standingsHTML = `
+            <div class="standings-header">
+                <div class="team-column">Team</div>
+                <div class="record-column">W</div>
+                <div class="record-column">L</div>
+                <div class="record-column">PCT</div>
+            </div>
+        `;
+
+        sortedTeams.forEach((teamCode, index) => {
+            const record = teamRecords[teamCode] || { wins: 0, losses: 0 };
+            const totalGames = record.wins + record.losses;
+            const winPercentage = totalGames > 0 ? (record.wins / totalGames).toFixed(3) : '.000';
+            
+            const positionClass = index === 0 ? 'division-leader' : '';
+            
+            standingsHTML += `
+                <div class="standings-row ${positionClass}">
+                    <div class="team-column">
+                        <span class="team-rank">${index + 1}.</span>
+                        <span class="team-name">${nflSchedule.teams[teamCode].name}</span>
+                    </div>
+                    <div class="record-column">${record.wins}</div>
+                    <div class="record-column">${record.losses}</div>
+                    <div class="record-column">${winPercentage}</div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = standingsHTML;
+    }
+
+    calculateTeamRecords() {
+        const records = {};
+        
+        Object.keys(nflSchedule.teams).forEach(teamCode => {
+            records[teamCode] = { wins: 0, losses: 0 };
+        });
 
         nflSchedule.games.forEach(game => {
             if (game.status === 'final' && game.winner) {
-                completedGames++;
-                if (this.predictions[game.id] === game.winner) {
-                    correctPredictions++;
+                if (records[game.winner]) {
+                    records[game.winner].wins++;
+                }
+                
+                const loser = game.winner === game.homeTeam ? game.awayTeam : game.homeTeam;
+                if (records[loser]) {
+                    records[loser].losses++;
                 }
             }
         });
 
-        const accuracy = completedGames > 0 ? ((correctPredictions / completedGames) * 100).toFixed(1) : '0.0';
+        return records;
+    }
 
-        document.getElementById('total-games').textContent = totalGames;
-        document.getElementById('predictions-made').textContent = predictionsMade;
-        document.getElementById('correct-predictions').textContent = correctPredictions;
-        document.getElementById('accuracy').textContent = `${accuracy}%`;
+    renderComparison() {
+        const container = document.getElementById('comparison-content');
+        if (!container) return;
+
+        container.innerHTML = '<p>Comparison feature coming soon...</p>';
+    }
+
+    renderStandingsComparison() {
+        this.switchTab('standings-comparison');
+        // Implementation coming soon
+    }
+
+    // Settings functionality methods
+    connectGitHub() {
+        const modal = this.createSettingsModal('Connect to GitHub', `
+            <p>To backup your predictions to GitHub Gists, you'll need to:</p>
+            <ol>
+                <li>Create a GitHub Personal Access Token</li>
+                <li>Grant "gist" permissions to the token</li>
+                <li>Paste the token below</li>
+            </ol>
+            <div style="margin: 15px 0;">
+                <label for="github-token">GitHub Token:</label>
+                <input type="password" id="github-token" placeholder="Enter your GitHub token" style="width: 100%; padding: 8px; margin-top: 5px;">
+            </div>
+            <p style="font-size: 0.9rem; color: #666;">
+                <a href="https://github.com/settings/tokens" target="_blank">Create a token here</a> 
+                (select "gist" scope only)
+            </p>
+        `, [
+            { text: 'Connect', action: 'connect' },
+            { text: 'Cancel', action: 'cancel' }
+        ]);
+
+        modal.addEventListener('settings-action', (e) => {
+            if (e.detail === 'connect') {
+                const token = modal.querySelector('#github-token').value.trim();
+                if (token) {
+                    this.saveGitHubToken(token);
+                    this.showNotification('GitHub connected successfully!', 'success');
+                    modal.remove();
+                } else {
+                    this.showNotification('Please enter a valid GitHub token', 'error');
+                }
+            } else {
+                modal.remove();
+            }
+        });
+    }
+
+    connectFirebase() {
+        const modal = this.createSettingsModal('Connect to Firebase', `
+            <p>To sync with Firebase, you'll need your Firebase project configuration:</p>
+            <div style="margin: 15px 0;">
+                <label for="firebase-config">Firebase Config (JSON):</label>
+                <textarea id="firebase-config" placeholder='{"apiKey": "...", "authDomain": "...", ...}' 
+                         style="width: 100%; height: 120px; padding: 8px; margin-top: 5px; font-family: monospace;"></textarea>
+            </div>
+            <p style="font-size: 0.9rem; color: #666;">
+                Get your config from the Firebase Console → Project Settings → General tab
+            </p>
+        `, [
+            { text: 'Connect', action: 'connect' },
+            { text: 'Cancel', action: 'cancel' }
+        ]);
+
+        modal.addEventListener('settings-action', (e) => {
+            if (e.detail === 'connect') {
+                const config = modal.querySelector('#firebase-config').value.trim();
+                try {
+                    const firebaseConfig = JSON.parse(config);
+                    this.saveFirebaseConfig(firebaseConfig);
+                    this.showNotification('Firebase configuration saved!', 'success');
+                    modal.remove();
+                } catch (error) {
+                    this.showNotification('Invalid Firebase configuration JSON', 'error');
+                }
+            } else {
+                modal.remove();
+            }
+        });
+    }
+
+    exportAllData() {
+        const data = {
+            predictions: this.predictions,
+            preseasonPredictions: this.preseasonPredictions,
+            teamRecordPredictions: this.teamRecordPredictions,
+            appPreferences: this.appPreferences,
+            exportDate: new Date().toISOString(),
+            version: '1.0'
+        };
+
+        const blob = new Blob([JSON.stringify(data, null, 2)], { 
+            type: 'application/json' 
+        });
+        
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `nfl-predictions-full-backup-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
+        this.showNotification('Data exported successfully!', 'success');
+    }
+
+    async importData(file) {
+        try {
+            const text = await file.text();
+            const data = JSON.parse(text);
+
+            if (!data.version || !data.exportDate) {
+                throw new Error('Invalid backup file format');
+            }
+
+            const modal = this.createSettingsModal('Import Data', `
+                <p>Import backup from ${new Date(data.exportDate).toLocaleDateString()}?</p>
+                <p><strong>Contains:</strong></p>
+                <ul>
+                    <li>Weekly predictions: ${Object.keys(data.predictions || {}).length}</li>
+                    <li>Pre-season predictions: ${Object.keys(data.preseasonPredictions || {}).length > 0 ? 'Yes' : 'No'}</li>
+                    <li>Team record predictions: ${Object.keys(data.teamRecordPredictions || {}).length}</li>
+                    <li>App preferences: ${data.appPreferences ? 'Yes' : 'No'}</li>
+                </ul>
+                <p>How would you like to import?</p>
+            `, [
+                { text: 'Replace All', action: 'replace' },
+                { text: 'Merge', action: 'merge' },
+                { text: 'Cancel', action: 'cancel' }
+            ]);
+
+            modal.addEventListener('settings-action', (e) => {
+                if (e.detail === 'replace') {
+                    this.predictions = data.predictions || {};
+                    this.preseasonPredictions = data.preseasonPredictions || {};
+                    this.teamRecordPredictions = data.teamRecordPredictions || {};
+                    if (data.appPreferences) {
+                        this.appPreferences = { ...this.appPreferences, ...data.appPreferences };
+                    }
+                    this.saveAllData();
+                    this.refreshUI();
+                    this.showNotification('Data imported and replaced!', 'success');
+                } else if (e.detail === 'merge') {
+                    this.predictions = { ...this.predictions, ...data.predictions };
+                    this.preseasonPredictions = { ...this.preseasonPredictions, ...data.preseasonPredictions };
+                    this.teamRecordPredictions = { ...this.teamRecordPredictions, ...data.teamRecordPredictions };
+                    if (data.appPreferences) {
+                        this.appPreferences = { ...this.appPreferences, ...data.appPreferences };
+                    }
+                    this.saveAllData();
+                    this.refreshUI();
+                    this.showNotification('Data merged successfully!', 'success');
+                }
+                modal.remove();
+            });
+
+        } catch (error) {
+            console.error('Import failed:', error);
+            this.showNotification('Failed to import backup file', 'error');
+        }
+    }
+
+    showSaveIndicator() {
+        const indicator = document.createElement('div');
+        indicator.textContent = 'Unsaved changes - remember to save!';
+        indicator.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            background-color: #ffc107;
+            color: #000;
+            border-radius: 4px;
+            font-weight: bold;
+            z-index: 1000;
+        `;
+        
+        document.body.appendChild(indicator);
+        
+        setTimeout(() => {
+            indicator.remove();
+        }, 3000);
     }
 
     // Bulk prediction methods
@@ -794,6 +1262,77 @@ class NFLPredictionTracker {
         document.body.removeChild(link);
     }
 
+    // Settings functionality methods
+    connectGitHub() {
+        const modal = this.createSettingsModal('Connect to GitHub', `
+            <p>To backup your predictions to GitHub Gists, you'll need to:</p>
+            <ol>
+                <li>Create a GitHub Personal Access Token</li>
+                <li>Grant "gist" permissions to the token</li>
+                <li>Paste the token below</li>
+            </ol>
+            <div style="margin: 15px 0;">
+                <label for="github-token">GitHub Token:</label>
+                <input type="password" id="github-token" placeholder="Enter your GitHub token" style="width: 100%; padding: 8px; margin-top: 5px;">
+            </div>
+            <p style="font-size: 0.9rem; color: #666;">
+                <a href="https://github.com/settings/tokens" target="_blank">Create a token here</a> 
+                (select "gist" scope only)
+            </p>
+        `, [
+            { text: 'Connect', action: 'connect' },
+            { text: 'Cancel', action: 'cancel' }
+        ]);
+
+        modal.addEventListener('settings-action', (e) => {
+            if (e.detail === 'connect') {
+                const token = modal.querySelector('#github-token').value.trim();
+                if (token) {
+                    this.saveGitHubToken(token);
+                    this.showNotification('GitHub connected successfully!', 'success');
+                    modal.remove();
+                } else {
+                    this.showNotification('Please enter a valid GitHub token', 'error');
+                }
+            } else {
+                modal.remove();
+            }
+        });
+    }
+
+    connectFirebase() {
+        const modal = this.createSettingsModal('Connect to Firebase', `
+            <p>To sync with Firebase, you'll need your Firebase project configuration:</p>
+            <div style="margin: 15px 0;">
+                <label for="firebase-config">Firebase Config (JSON):</label>
+                <textarea id="firebase-config" placeholder='{"apiKey": "...", "authDomain": "...", ...}' 
+                         style="width: 100%; height: 120px; padding: 8px; margin-top: 5px; font-family: monospace;"></textarea>
+            </div>
+            <p style="font-size: 0.9rem; color: #666;">
+                Get your config from the Firebase Console → Project Settings → General tab
+            </p>
+        `, [
+            { text: 'Connect', action: 'connect' },
+            { text: 'Cancel', action: 'cancel' }
+        ]);
+
+        modal.addEventListener('settings-action', (e) => {
+            if (e.detail === 'connect') {
+                const config = modal.querySelector('#firebase-config').value.trim();
+                try {
+                    const firebaseConfig = JSON.parse(config);
+                    this.saveFirebaseConfig(firebaseConfig);
+                    this.showNotification('Firebase configuration saved!', 'success');
+                    modal.remove();
+                } catch (error) {
+                    this.showNotification('Invalid Firebase configuration JSON', 'error');
+                }
+            } else {
+                modal.remove();
+            }
+        });
+    }
+
     // Rendering methods
     renderStandings() {
         const teamRecords = this.calculateTeamRecords();
@@ -961,142 +1500,6 @@ class NFLPredictionTracker {
         });
     }
 
-    exportAllData() {
-        const data = {
-            predictions: this.predictions,
-            preseasonPredictions: this.preseasonPredictions,
-            teamRecordPredictions: this.teamRecordPredictions,
-            exportDate: new Date().toISOString(),
-            version: '1.0'
-        };
-
-        const blob = new Blob([JSON.stringify(data, null, 2)], { 
-            type: 'application/json' 
-        });
-        
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `nfl-predictions-full-backup-${new Date().toISOString().split('T')[0]}.json`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-
-        this.showNotification('Data exported successfully!', 'success');
-    }
-
-    async importData(file) {
-        try {
-            const text = await file.text();
-            const data = JSON.parse(text);
-
-            if (!data.version || !data.exportDate) {
-                throw new Error('Invalid backup file format');
-            }
-
-            const modal = this.createSettingsModal('Import Data', `
-                <p>Import backup from ${new Date(data.exportDate).toLocaleDateString()}?</p>
-                <p><strong>Contains:</strong></p>
-                <ul>
-                    <li>Weekly predictions: ${Object.keys(data.predictions || {}).length}</li>
-                    <li>Pre-season predictions: ${Object.keys(data.preseasonPredictions || {}).length > 0 ? 'Yes' : 'No'}</li>
-                    <li>Team record predictions: ${Object.keys(data.teamRecordPredictions || {}).length}</li>
-                </ul>
-                <p>How would you like to import?</p>
-            `, [
-                { text: 'Replace All', action: 'replace' },
-                { text: 'Merge', action: 'merge' },
-                { text: 'Cancel', action: 'cancel' }
-            ]);
-
-            modal.addEventListener('settings-action', (e) => {
-                if (e.detail === 'replace') {
-                    this.predictions = data.predictions || {};
-                    this.preseasonPredictions = data.preseasonPredictions || {};
-                    this.teamRecordPredictions = data.teamRecordPredictions || {};
-                    this.saveAllData();
-                    this.refreshUI();
-                    this.showNotification('Data imported and replaced!', 'success');
-                } else if (e.detail === 'merge') {
-                    this.predictions = { ...this.predictions, ...data.predictions };
-                    this.preseasonPredictions = { ...this.preseasonPredictions, ...data.preseasonPredictions };
-                    this.teamRecordPredictions = { ...this.teamRecordPredictions, ...data.teamRecordPredictions };
-                    this.saveAllData();
-                    this.refreshUI();
-                    this.showNotification('Data merged successfully!', 'success');
-                }
-                modal.remove();
-            });
-
-        } catch (error) {
-            console.error('Import failed:', error);
-            this.showNotification('Failed to import backup file', 'error');
-        }
-    }
-
-    clearAllData() {
-        const modal = this.createSettingsModal('Clear All Data', `
-            <p style="color: #dc3545; font-weight: bold;">⚠️ Warning: This will permanently delete ALL your data!</p>
-            <p>This includes:</p>
-            <ul>
-                <li>All weekly predictions</li>
-                <li>All pre-season predictions</li>
-                <li>All team record predictions</li>
-                <li>All settings and preferences</li>
-            </ul>
-            <p>Are you absolutely sure you want to continue?</p>
-        `, [
-            { text: 'Delete Everything', action: 'delete' },
-            { text: 'Cancel', action: 'cancel' }
-        ]);
-
-        modal.addEventListener('settings-action', (e) => {
-            if (e.detail === 'delete') {
-                this.predictions = {};
-                this.preseasonPredictions = {};
-                this.teamRecordPredictions = {};
-                localStorage.clear();
-                this.refreshUI();
-                this.showNotification('All data cleared', 'success');
-            }
-            modal.remove();
-        });
-    }
-
-    resetPredictionsOnly() {
-        if (confirm('Clear all weekly game predictions? This cannot be undone.')) {
-            this.predictions = {};
-            this.savePredictions();
-            this.updateStats();
-            this.renderGames();
-            this.showNotification('Weekly predictions cleared', 'success');
-        }
-    }
-
-    resetPreseasonOnly() {
-        if (confirm('Clear all pre-season predictions? This cannot be undone.')) {
-            this.clearPreseasonPredictions();
-            this.showNotification('Pre-season predictions cleared', 'success');
-        }
-    }
-
-    forceSyncNow() {
-        // For now, just update the display
-        this.updateSyncStatus();
-        this.showNotification('Sync status updated', 'info');
-    }
-
-    updateStorageType(type) {
-        const currentStorage = document.getElementById('current-storage');
-        if (currentStorage) {
-            currentStorage.textContent = type === 'local' ? 'Local Storage' : 
-                                       type === 'github' ? 'GitHub Gists' : 
-                                       'Firebase';
-        }
-        this.updateSyncStatus();
-    }
-
     // Helper methods
     saveGitHubToken(token) {
         localStorage.setItem('github-token', token);
@@ -1110,75 +1513,7 @@ class NFLPredictionTracker {
         this.updateStorageType('firebase');
     }
 
-    saveAllData() {
-        this.savePredictions();
-        this.savePreseasonPredictionsToStorage();
-        this.saveTeamRecordPredictions();
-    }
-
-    refreshUI() {
-        this.updateStats();
-        this.renderGames();
-        this.loadPreseasonUI();
-        this.loadTeamRecordUI();
-        this.renderComparison();
-        this.renderStandings();
-    }
-
-    updateSyncStatus() {
-        const lastSyncElement = document.getElementById('last-sync-time');
-        const dataSizeElement = document.getElementById('data-size');
-        
-        if (lastSyncElement) {
-            lastSyncElement.textContent = new Date().toLocaleString();
-        }
-        
-        if (dataSizeElement) {
-            const dataSize = JSON.stringify({
-                predictions: this.predictions,
-                preseasonPredictions: this.preseasonPredictions,
-                teamRecordPredictions: this.teamRecordPredictions
-            }).length;
-            dataSizeElement.textContent = `${Math.round(dataSize / 1024)} KB`;
-        }
-    }
-
-    createSettingsModal(title, content, buttons) {
-        const modal = document.createElement('div');
-        modal.className = 'modal settings-modal';
-        modal.style.display = 'block';
-        
-        modal.innerHTML = `
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>${title}</h3>
-                </div>
-                <div class="modal-body">
-                    ${content}
-                </div>
-                <div class="modal-actions">
-                    ${buttons.map(btn => 
-                        `<button class="btn ${btn.action === 'delete' ? 'btn-danger' : 
-                                            btn.action === 'connect' ? 'btn-primary' : 'btn-secondary'}" 
-                                data-action="${btn.action}">${btn.text}</button>`
-                    ).join('')}
-                </div>
-            </div>
-        `;
-
-        modal.querySelectorAll('button').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const event = new CustomEvent('settings-action', { 
-                    detail: btn.dataset.action 
-                });
-                modal.dispatchEvent(event);
-            });
-        });
-
-        document.body.appendChild(modal);
-        return modal;
-    }
-
+    // Notification method
     showNotification(message, type = 'info') {
         const notification = document.createElement('div');
         notification.className = `notification notification-${type}`;
@@ -1217,6 +1552,42 @@ class NFLPredictionTracker {
             notification.style.opacity = '0';
             setTimeout(() => notification.remove(), 300);
         }, 3000);
+    }
+
+    createSettingsModal(title, content, buttons) {
+        const modal = document.createElement('div');
+        modal.className = 'modal settings-modal';
+        modal.style.display = 'block';
+        
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>${title}</h3>
+                </div>
+                <div class="modal-body">
+                    ${content}
+                </div>
+                <div class="modal-actions">
+                    ${buttons.map(btn => 
+                        `<button class="btn ${btn.action === 'delete' ? 'btn-danger' : 
+                                            btn.action === 'connect' ? 'btn-primary' : 'btn-secondary'}" 
+                                data-action="${btn.action}">${btn.text}</button>`
+                    ).join('')}
+                </div>
+            </div>
+        `;
+
+        modal.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const event = new CustomEvent('settings-action', { 
+                    detail: btn.dataset.action 
+                });
+                modal.dispatchEvent(event);
+            });
+        });
+
+        document.body.appendChild(modal);
+        return modal;
     }
 }
 

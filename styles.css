@@ -1343,7 +1343,7 @@ header h1 {
     }
 }
 
-/* Settings Tab Styles */
+/* Settings Section Styles */
 .settings-container {
     background: white;
     border-radius: 10px;
@@ -1366,25 +1366,21 @@ header h1 {
     padding-bottom: 10px;
 }
 
-.storage-options {
+.storage-options,
+.backup-controls,
+.data-controls,
+.privacy-controls,
+.preference-controls {
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 
 .storage-option {
-    display: flex;
-    align-items: center;
-    gap: 10px;
     padding: 15px;
     border: 1px solid #dee2e6;
     border-radius: 6px;
     background: white;
-    transition: border-color 0.3s;
-}
-
-.storage-option:hover {
-    border-color: #007bff;
 }
 
 .storage-option input[type="radio"] {
@@ -1393,47 +1389,39 @@ header h1 {
 
 .storage-option label {
     font-weight: 500;
-    flex: 1;
+    margin-bottom: 5px;
+    display: block;
 }
 
 .storage-option p {
-    margin: 5px 0 0 0;
+    margin: 5px 0;
     color: #6c757d;
     font-size: 0.9rem;
 }
 
 .storage-btn {
+    margin-top: 10px;
     padding: 8px 16px;
     background-color: #007bff;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.3s;
 }
 
 .storage-btn:hover {
     background-color: #0056b3;
 }
 
-.backup-controls,
-.data-controls,
-.privacy-controls,
-.preference-controls {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    align-items: center;
-}
-
 .backup-controls button,
 .data-controls button {
-    padding: 10px 16px;
+    padding: 10px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-weight: 500;
-    transition: background-color 0.3s;
+    margin-right: 10px;
+    margin-bottom: 10px;
 }
 
 .backup-controls button {
@@ -1451,7 +1439,7 @@ header h1 {
 }
 
 .data-controls button:hover {
-    background-color: #5a6268;
+    background-color: #545b62;
 }
 
 .danger-btn {
@@ -1466,8 +1454,24 @@ header h1 {
 .preference-controls label {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 10px;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+}
+
+.privacy-controls label:hover,
+.preference-controls label:hover {
+    background-color: #f8f9fa;
+}
+
+.preference-controls select {
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    margin-left: 10px;
 }
 
 .sync-status {
@@ -1481,16 +1485,24 @@ header h1 {
     display: flex;
     justify-content: space-between;
     margin-bottom: 10px;
-    padding-bottom: 5px;
+    padding: 5px 0;
     border-bottom: 1px solid #f8f9fa;
 }
 
 .status-item:last-child {
     border-bottom: none;
+    margin-bottom: 15px;
+}
+
+.app-info {
+    background: white;
+    padding: 15px;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
 }
 
 .app-info p {
-    margin-bottom: 8px;
+    margin: 5px 0;
 }
 
 .app-info a {
@@ -1502,104 +1514,135 @@ header h1 {
     text-decoration: underline;
 }
 
-/* Settings Modal Styles */
-.settings-modal .modal-content {
-    max-width: 500px;
-    width: 90%;
+/* Theme System */
+.theme-dark {
+    background-color: #1a1a1a;
+    color: #e0e0e0;
 }
 
-.settings-modal .modal-body {
-    max-height: 400px;
-    overflow-y: auto;
+.theme-dark .container {
+    background-color: #1a1a1a;
 }
 
-.settings-modal input,
-.settings-modal textarea {
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    font-size: 0.9rem;
+.theme-dark header {
+    background: linear-gradient(135deg, #2c3e50, #34495e);
 }
 
-.settings-modal input:focus,
-.settings-modal textarea:focus {
-    outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+.theme-dark .game-card,
+.theme-dark .results-game-card,
+.theme-dark .standings-container,
+.theme-dark .settings-container,
+.theme-dark .comparison-dashboard {
+    background: #2d2d2d;
+    color: #e0e0e0;
 }
 
-.settings-modal .btn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.3s;
+.theme-dark .game-header {
+    border-bottom-color: #404040;
 }
 
-.settings-modal .btn-primary {
+.theme-dark .prediction-section {
+    background-color: #3a3a3a;
+}
+
+.theme-dark .prediction-controls select,
+.theme-dark .filters select,
+.theme-dark input[type="number"],
+.theme-dark textarea {
+    background-color: #404040;
+    color: #e0e0e0;
+    border-color: #555;
+}
+
+.theme-dark .settings-section,
+.theme-dark .storage-option,
+.theme-dark .privacy-controls label,
+.theme-dark .preference-controls label,
+.theme-dark .sync-status,
+.theme-dark .app-info {
+    background-color: #3a3a3a;
+    border-color: #555;
+}
+
+.theme-dark .tab-btn {
+    background-color: #404040;
+    color: #e0e0e0;
+    border-color: #555;
+}
+
+.theme-dark .tab-btn.active {
     background-color: #007bff;
     color: white;
 }
 
-.settings-modal .btn-primary:hover {
-    background-color: #0056b3;
+.theme-dark .tab-btn:hover:not(.active) {
+    background-color: #4a4a4a;
 }
 
-.settings-modal .btn-secondary {
-    background-color: #6c757d;
+.theme-dark .standings-header {
+    background: #404040;
+}
+
+.theme-dark .standings-row:hover {
+    background-color: #4a4a4a;
+}
+
+.theme-dark .modal-content {
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+}
+
+.theme-dark .modal-header {
+    border-bottom-color: #555;
+}
+
+/* Notification for preferences saved */
+.preference-saved {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #28a745;
     color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    z-index: 1000;
+    animation: slideUp 0.3s ease;
 }
 
-.settings-modal .btn-secondary:hover {
-    background-color: #5a6268;
-}
-
-.settings-modal .btn-danger {
-    background-color: #dc3545;
-    color: white;
-}
-
-.settings-modal .btn-danger:hover {
-    background-color: #c82333;
-}
-
-/* Notification Styles */
-.notification {
-    animation: slideInNotification 0.3s ease;
-}
-
-@keyframes slideInNotification {
+@keyframes slideUp {
     from {
-        transform: translateX(100%);
         opacity: 0;
+        transform: translate(-50%, 20px);
     }
     to {
-        transform: translateX(0);
         opacity: 1;
+        transform: translate(-50%, 0);
     }
 }
 
 /* Mobile Responsiveness for Settings */
 @media (max-width: 768px) {
-    .storage-option {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    
     .backup-controls,
     .data-controls {
         flex-direction: column;
-        align-items: stretch;
     }
     
     .backup-controls button,
     .data-controls button {
+        margin-right: 0;
         width: 100%;
-        margin-bottom: 5px;
     }
     
-    .settings-modal .modal-content {
-        width: 95%;
-        margin: 10% auto;
+    .preference-controls label {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+    
+    .preference-controls select {
+        margin-left: 0;
+        margin-top: 10px;
     }
 }
