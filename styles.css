@@ -1367,50 +1367,48 @@ header h1 {
 }
 
 .storage-options {
-    display: grid;
+    display: flex;
+    flex-direction: column;
     gap: 15px;
 }
 
 .storage-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     padding: 15px;
-    border: 2px solid #e9ecef;
-    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
     background: white;
-    transition: all 0.3s ease;
-    cursor: pointer;
+    transition: border-color 0.3s;
 }
 
 .storage-option:hover {
     border-color: #007bff;
 }
 
-.storage-option.active {
-    border-color: #007bff;
-    background-color: #f8f9ff;
+.storage-option input[type="radio"] {
+    margin-right: 10px;
 }
 
 .storage-option label {
-    font-weight: 600;
-    color: #495057;
-    margin-bottom: 5px;
-    display: block;
-    cursor: pointer;
+    font-weight: 500;
+    flex: 1;
 }
 
 .storage-option p {
-    margin: 5px 0 10px 0;
+    margin: 5px 0 0 0;
     color: #6c757d;
     font-size: 0.9rem;
 }
 
 .storage-btn {
+    padding: 8px 16px;
     background-color: #007bff;
     color: white;
     border: none;
-    padding: 8px 16px;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 0.9rem;
     transition: background-color 0.3s;
 }
 
@@ -1422,8 +1420,10 @@ header h1 {
 .data-controls,
 .privacy-controls,
 .preference-controls {
-    display: grid;
-    gap: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
 }
 
 .backup-controls button,
@@ -1437,12 +1437,12 @@ header h1 {
 }
 
 .backup-controls button {
-    background-color: #17a2b8;
+    background-color: #28a745;
     color: white;
 }
 
 .backup-controls button:hover {
-    background-color: #138496;
+    background-color: #218838;
 }
 
 .data-controls button {
@@ -1451,7 +1451,7 @@ header h1 {
 }
 
 .data-controls button:hover {
-    background-color: #545b62;
+    background-color: #5a6268;
 }
 
 .danger-btn {
@@ -1466,79 +1466,31 @@ header h1 {
 .preference-controls label {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 10px;
-    background: white;
-    border: 1px solid #dee2e6;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.privacy-controls label:hover,
-.preference-controls label:hover {
-    background-color: #f8f9fa;
-}
-
-.preference-controls select {
-    flex: 1;
-    padding: 5px 8px;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
+    gap: 8px;
+    margin-bottom: 10px;
 }
 
 .sync-status {
     background: white;
+    padding: 15px;
+    border-radius: 6px;
     border: 1px solid #dee2e6;
-    border-radius: 8px;
-    padding: 20px;
 }
 
 .status-item {
     display: flex;
     justify-content: space-between;
     margin-bottom: 10px;
-    padding: 5px 0;
+    padding-bottom: 5px;
     border-bottom: 1px solid #f8f9fa;
 }
 
 .status-item:last-child {
     border-bottom: none;
-    margin-bottom: 15px;
-}
-
-.status-item span:first-child {
-    font-weight: 500;
-    color: #495057;
-}
-
-.status-item span:last-child {
-    color: #6c757d;
-}
-
-#force-sync {
-    background-color: #28a745;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-#force-sync:hover {
-    background-color: #218838;
-}
-
-.app-info {
-    background: white;
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-    padding: 20px;
 }
 
 .app-info p {
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .app-info a {
@@ -1552,73 +1504,71 @@ header h1 {
 
 /* Settings Modal Styles */
 .settings-modal .modal-content {
-    max-width: 600px;
+    max-width: 500px;
+    width: 90%;
 }
 
-.github-setup,
-.firebase-setup {
-    text-align: left;
+.settings-modal .modal-body {
+    max-height: 400px;
+    overflow-y: auto;
 }
 
-.github-setup ol {
-    margin: 15px 0;
-    padding-left: 20px;
-}
-
-.github-setup input,
-.firebase-setup input {
-    width: 100%;
-    padding: 8px 12px;
+.settings-modal input,
+.settings-modal textarea {
     border: 1px solid #ced4da;
     border-radius: 4px;
-    margin: 10px 0;
+    font-size: 0.9rem;
 }
 
-.form-group {
-    margin-bottom: 15px;
+.settings-modal input:focus,
+.settings-modal textarea:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
 
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
+.settings-modal .btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
     font-weight: 500;
-}
-
-.setup-status {
-    margin-top: 10px;
-    padding: 10px;
-    border-radius: 4px;
-    text-align: center;
-}
-
-.backup-schedule .radio-group {
-    margin: 15px 0;
-}
-
-.backup-schedule .radio-group label {
-    display: block;
-    margin-bottom: 8px;
-    padding: 8px;
-    border: 1px solid #dee2e6;
-    border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s;
 }
 
-.backup-schedule .radio-group label:hover {
-    background-color: #f8f9fa;
+.settings-modal .btn-primary {
+    background-color: #007bff;
+    color: white;
 }
 
-.backup-schedule .radio-group input {
-    margin-right: 8px;
+.settings-modal .btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.settings-modal .btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.settings-modal .btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.settings-modal .btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.settings-modal .btn-danger:hover {
+    background-color: #c82333;
 }
 
 /* Notification Styles */
 .notification {
-    animation: slideIn 0.3s ease;
+    animation: slideInNotification 0.3s ease;
 }
 
-@keyframes slideIn {
+@keyframes slideInNotification {
     from {
         transform: translateX(100%);
         opacity: 0;
@@ -1629,46 +1579,23 @@ header h1 {
     }
 }
 
-/* Dark Theme */
-.dark-theme {
-    background-color: #1a1a1a;
-    color: #e0e0e0;
-}
-
-.dark-theme .settings-container,
-.dark-theme .settings-section,
-.dark-theme .storage-option,
-.dark-theme .sync-status,
-.dark-theme .app-info {
-    background-color: #2d2d2d;
-    border-color: #404040;
-    color: #e0e0e0;
-}
-
-.dark-theme .modal-content {
-    background-color: #2d2d2d;
-    color: #e0e0e0;
-}
-
-/* Mobile Responsiveness */
+/* Mobile Responsiveness for Settings */
 @media (max-width: 768px) {
-    .settings-container {
-        padding: 20px;
-    }
-    
-    .settings-section {
-        padding: 15px;
+    .storage-option {
+        flex-direction: column;
+        align-items: flex-start;
     }
     
     .backup-controls,
     .data-controls {
-        grid-template-columns: 1fr;
+        flex-direction: column;
+        align-items: stretch;
     }
     
-    .status-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 5px;
+    .backup-controls button,
+    .data-controls button {
+        width: 100%;
+        margin-bottom: 5px;
     }
     
     .settings-modal .modal-content {
