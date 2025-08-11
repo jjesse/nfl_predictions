@@ -38,8 +38,9 @@ class CloudStorageManager {
 
             if (providerName !== 'local') {
                 this.currentProvider = this.providers[providerName];
-                await this.currentProvider.configure(config);
-                await this.initialSync();
+                if (this.currentProvider) {
+                    await this.currentProvider.configure(config);
+                }
             } else {
                 this.currentProvider = null;
             }
@@ -443,10 +444,11 @@ class GitHubGistsProvider {
     async configure(config) {
         this.token = config.githubToken;
         this.gistId = config.gistId;
-        
         if (!this.token) {
-            throw new Error('GitHub token required');
+            throw new Error('GitHub token is required');
         }
+        // Optionally, test the token by making a simple API call
+        // ...could add a fetch to https://api.github.com/user with the token...
     }
 
     async save(data, type) {
@@ -573,4 +575,17 @@ class SupabaseProvider {
 let cloudStorage;
 document.addEventListener('DOMContentLoaded', () => {
     cloudStorage = new CloudStorageManager();
+
+    // Add event listener for the Connect button in settings tab
+    // This should be in the DOMContentLoaded or settings tab UI logic
+    // Example:
+    document.getElementById('connect-github')?.addEventListener('click', async () => {
+        const tokenInput = document.getElementById('github-token-input');
+        const token = tokenInput ? tokenInput.value.trim() : '';
+        if (!token) {
+            cloudStorage.showNotification('Please enter your GitHub token', 'error');
+            return;
+        }
+        await cloudStorage.setProvider('github', { githubToken: token });
+    });
 });

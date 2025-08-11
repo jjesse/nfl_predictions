@@ -8,7 +8,7 @@ A web application for tracking your NFL game predictions throughout the 2025-202
 - **Team Information**: See team records and game details
 - **Individual Game Predictions**: Select your predicted winner for each game
 - **Bulk Weekly Predictions**: Make all predictions for a week at once using the modal interface
-- **Pre-season Predictions**: 
+- **Pre-season Predictions**:
   - Make championship and playoff predictions before the season
   - **Predict Team Records**: Set your predicted win-loss record for each team
   - **Standings Comparison**: Compare your predicted records against actual standings with accuracy metrics
@@ -18,6 +18,7 @@ A web application for tracking your NFL game predictions throughout the 2025-202
 - **Filter Games**: Filter by week or team to focus on specific matchups
 - **Responsive Design**: Works perfectly on desktop and mobile devices
 - **Local Storage**: Your predictions are saved in your browser
+- **Cloud Storage**: Backup and sync predictions using GitHub Gists (and other providers in future)
 
 ## How to Use
 
@@ -41,179 +42,55 @@ A web application for tracking your NFL game predictions throughout the 2025-202
 7. **Monitor Stats**: Check your overall prediction accuracy in the header stats
 8. **Manage Data**: Use the Settings tab to backup, export, or sync your predictions
 
-## Standings Comparison Features
-
-- **Record Accuracy**: See how close your predicted records are to actual results
-- **Win Difference**: Track whether teams performed better or worse than predicted
-- **Accuracy Percentage**: Mathematical accuracy score for each team prediction
-- **Perfect Predictions**: Count of teams with exactly correct records
-- **Conference Filtering**: View AFC or NFC teams separately
-- **Summary Statistics**: Overall prediction performance metrics
-
-## Navigation Tabs
-
-- **Weekly Predictions**: Make individual and bulk predictions for games
-- **Weekly Results**: View completed games and prediction accuracy
-- **Team Standings**: See current NFL standings by division
-- **Pre-Season Predictions**: Make championship and record predictions
-- **Season Comparison**: Compare pre-season vs weekly predictions with detailed analytics
-- **Settings**: Manage data storage, backups, and app preferences
-
-## Filters
-
-- **Week Filter**: Show games from a specific week
-- **Team Filter**: Show games involving a specific team
-- **Make Week Predictions**: Bulk prediction interface for selected week
-- **Clear All Predictions**: Reset all your predictions
-
-## Data Management & Storage
+## Cloud Storage & Backup
 
 ### Local Storage (Default)
+
 - All predictions automatically saved to browser localStorage
 - Fast and works offline
 - Limited to single browser/device
 
-### Cloud Storage Options (Future)
-Access through the **Settings** tab to configure:
+### GitHub Gists Integration
 
-1. **GitHub Gists**: Backup to private GitHub repositories
-2. **Export/Import**: Manual backup via JSON/CSV files
-3. **Data Management**: Clear or reset specific prediction types
+- Go to Settings tab → Cloud Storage
+- Enter your GitHub token and click "Connect"
+- Predictions are backed up to a private GitHub Gist
+- Supports daily, weekly, or manual backup
+- Data can be restored from cloud backup on any device
 
-### Export Options
-- Export all predictions to CSV format
-- Export pre-season predictions separately
-- Full data backup in JSON format
+### Export/Import
+
+- Export all predictions to CSV or JSON
+- Import previous backups to restore your data
 
 ## Deployment to GitHub Pages
 
-### Step 1: Create GitHub Repository
-
 1. Create a new repository on GitHub (e.g., `nfl_prediction_tracker`)
-2. Initialize it as public (required for free GitHub Pages)
+2. Upload all files from this project
+3. Enable GitHub Pages in repository settings (Source: main branch, root folder)
+4. Enable GitHub Actions for automated score updates
+5. Access your app at `https://yourusername.github.io/nfl_prediction_tracker`
 
-### Step 2: Upload Files
+## Automated Score Updates
 
-1. Clone or download this repository
-2. Push all files to your GitHub repository:
+- Scores are updated automatically every Tuesday via GitHub Actions
+- The workflow fetches scores from ESPN's NFL API and updates `nfl-schedule.js`
+- You can manually trigger the workflow from the Actions tab
 
-   ```bash
-   git clone https://github.com/yourusername/nfl_prediction_tracker.git
-   cd nfl_prediction_tracker
-   # Copy all files from this project into the directory
-   git add .
-   git commit -m "Initial NFL Prediction Tracker setup"
-   git push origin main
-   ```
+## Manual Game Result Updates
 
-### Step 3: Enable GitHub Pages
-
-1. Go to your repository on GitHub
-2. Click **Settings** tab
-3. Scroll down to **Pages** section (left sidebar)
-4. Under **Source**, select **Deploy from a branch**
-5. Choose **main** branch and **/ (root)** folder
-6. Click **Save**
-
-### Step 4: Enable GitHub Actions (for automatic score updates)
-
-1. Go to **Actions** tab in your repository
-2. Click **I understand my workflows and want to enable them**
-3. The workflow will run automatically every Tuesday at 6 AM UTC
-
-### Step 5: Access Your App
-
-- Your app will be available at: `https://yourusername.github.io/nfl_prediction_tracker`
-- It may take a few minutes for the initial deployment
-
-### Step 6: Test the Setup
-
-1. Visit your deployed site
-2. Test making predictions
-3. Manually trigger the score update workflow:
-   - Go to **Actions** tab
-   - Click **Update NFL Scores**
-   - Click **Run workflow** → **Run workflow**
-
-## Local Development
-
-1. Clone the repository
-2. Open `index.html` in your web browser
-3. No build process required - it's pure HTML, CSS, and JavaScript
-
-## Data Updates
-
-The schedule data is stored in `nfl-schedule.js`. Game scores are automatically updated via GitHub Actions.
-
-### 2025-2026 NFL Schedule
-
-The app now includes the complete 2025-2026 NFL schedule:
-
-- **Regular Season**: 18 weeks (September 4, 2025 - January 5, 2026)
-- **Wild Card Round**: 6 games (January 11-13, 2026)  
-- **Divisional Round**: 4 games (January 18-19, 2026)
-- **Conference Championships**: 2 games (January 26, 2026)
-- **Super Bowl LX**: February 9, 2026 in New Orleans
-- **Total Games**: ~285 games for complete season tracking
-
-### Schedule Features
-
-- All regular season matchups with accurate dates and times
-- Playoff bracket structure (teams TBD based on regular season results)
-- Proper week numbering for easy filtering and bulk predictions
-- Ready for automated score updates via ESPN API integration
-
-### Automated Score Updates
-
-This repository includes a GitHub Actions workflow that automatically updates NFL game scores:
-
-- **Schedule**: Runs every Tuesday at 6 AM UTC (midnight CT/1 AM ET)
-- **Source**: Fetches real-time scores from ESPN's NFL API
-- **Process**: Updates game scores, status, winners, and team records
-- **Manual Trigger**: Can be manually triggered from the Actions tab
-
-### Manual Game Result Updates
-
-You can also manually update game results by editing the game objects in the `games` array:
-
-1. Edit the game objects in the `games` array
-2. Set `homeScore`, `awayScore`, `status: 'final'`, and `winner`
-3. The app will automatically calculate prediction accuracy
-
-### Example Game Result Update
-
-```javascript
-// In nfl-schedule.js, update a game like this:
-{
-    id: 1,
-    week: 1,
-    date: '2025-09-04',
-    time: '8:20 PM',
-    homeTeam: 'KC',
-    awayTeam: 'BAL',
-    homeScore: 27,
-    awayScore: 20,
-    status: 'final',
-    winner: 'KC'
-}
-```
-
-## Browser Compatibility
-
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-- Mobile browsers
-- Requires JavaScript enabled
-- Uses localStorage for saving predictions
+- You can manually update game results by editing the game objects in the `games` array in `nfl-schedule.js`
+- Set `homeScore`, `awayScore`, `status: 'final'`, and `winner` for each game
 
 ## Files Structure
 
-- `index.html` - Main application page with all tabs and modals
-- `styles.css` - Application styling and responsive design
-- `app.js` - Main application logic with prediction functionality
+- `index.html` - Main application page
+- `styles.css` - Application styling
+- `app.js` - Main application logic
 - `nfl-schedule.js` - NFL schedule and team data
+- `cloud-storage.js` - Cloud storage logic (GitHub Gists, future providers)
 - `.github/workflows/update-scores.yml` - GitHub Actions workflow for automated score updates
-- `.github/scripts/update-scores.js` - Node.js script that fetches scores from ESPN API
-- `.gitignore` - Excludes temporary files and dependencies from version control
+- `.github/scripts/update-scores.js` - Node.js script for fetching scores
 - `README.md` - This documentation
 
 ## Contributing
@@ -223,124 +100,3 @@ Feel free to submit issues or pull requests to improve the application.
 ## License
 
 This project is open source and available under the MIT License.
-
-## Cloud Storage & Long-Term Storage Options
-
-The NFL Prediction Tracker offers multiple storage solutions to ensure your predictions are never lost and can be accessed across devices.
-
-### Local Storage (Default)
-- **Automatic**: All predictions saved to browser localStorage
-- **Pros**: Fast, works offline, no setup required
-- **Cons**: Limited to single browser/device, can be cleared
-
-### Cloud Storage Options
-
-#### 1. GitHub Gists Integration (Recommended)
-- **Setup**: Connect your GitHub account for automatic backup
-- **Features**: 
-  - Version history of all predictionssu
-  - Access from any device with GitHub login
-  - Automatic daily backups
-  - Free with GitHub account
-- **Privacy**: Private gists keep your predictions secure
-
-#### 2. Firebase/Firestore Integration
-- **Setup**: Connect to Google Firebase for real-time sync
-- **Features**:
-  - Real-time synchronization across devices
-  - User authentication system
-  - Offline capability with sync when online
-  - Team sharing and collaboration features
-- **Cost**: Free tier available, paid plans for heavy usage
-
-#### 3. Supabase Integration (Open Source)
-- **Setup**: Self-hosted or managed Supabase instance
-- **Features**:
-  - PostgreSQL database backend
-  - Real-time subscriptions
-  - Row-level security
-  - Open source alternative to Firebase
-- **Cost**: Free tier available, competitive pricing
-
-#### 4. Enhanced Export/Import System
-- **Manual Backup**: Export all data to JSON/CSV files
-- **Automated Backups**: Schedule automatic exports
-- **Cross-Platform**: Import data between browsers/devices
-- **Version Control**: Track changes over time
-
-### Storage Configuration
-
-Access storage settings through the **Settings** tab:
-
-1. **Choose Storage Provider**: Select your preferred cloud service
-2. **Authenticate**: Connect your account (GitHub/Google/Supabase)
-3. **Configure Sync**: Set automatic backup frequency
-4. **Privacy Settings**: Control data sharing and visibility
-5. **Export Options**: Schedule automated backups
-
-### Data Synchronization
-
-- **Real-time Sync**: Changes sync instantly across devices (Firebase/Supabase)
-- **Periodic Backup**: Automatic backups at configurable intervals
-- **Manual Sync**: Force sync at any time
-- **Conflict Resolution**: Smart merging of predictions from multiple devices
-
-### Security & Privacy
-
-- **Encryption**: All cloud data encrypted in transit and at rest
-- **Access Control**: You control who can view your predictions
-- **Data Ownership**: Your data remains yours, easy export/deletion
-- **GDPR Compliant**: Full data portability and deletion rights
-
-### Setup Instructions
-
-#### GitHub Gists Setup (Easiest)
-1. Go to Settings tab → Cloud Storage
-2. Click "Connect GitHub Account"
-3. Authorize the application
-4. Choose backup frequency (daily recommended)
-5. Your predictions automatically sync to private gists
-
-#### Firebase Setup (Most Features)
-1. Create a Firebase project at https://console.firebase.google.com
-2. Enable Firestore and Authentication
-3. Copy your Firebase config to Settings → Cloud Storage
-4. Enable Google Authentication
-5. All predictions sync in real-time
-
-#### Supabase Setup (Open Source)
-1. Create account at https://supabase.com or self-host
-2. Create new project and database
-3. Copy connection details to Settings → Cloud Storage
-4. Configure authentication method
-5. Real-time sync activated
-
-### Migration & Backup
-
-- **Import Existing Data**: Upload previous exports or migrate from localStorage
-- **Bulk Operations**: Import/export entire seasons or specific date ranges
-- **Data Validation**: Automatic validation during import process
-- **Rollback**: Restore from any previous backup version
-
-### Offline Capabilities
-
-- **Local Cache**: All data cached locally for offline access
-- **Sync on Reconnect**: Automatic sync when internet connection restored
-- **Conflict Detection**: Smart handling of offline changes
-- **Queue Management**: Pending changes queued until sync possible
-
-### Team Features (Firebase/Supabase)
-
-- **Group Predictions**: Create prediction leagues with friends
-- **Leaderboards**: Compare accuracy across group members
-- **Shared Pools**: Collaborative playoff brackets
-- **Real-time Updates**: See friends' predictions in real-time
-- **Discussion**: Comment on predictions and games
-
-### Advanced Features
-
-- **API Access**: RESTful API for custom integrations
-- **Webhooks**: Get notified of prediction updates
-- **Analytics**: Detailed statistics across multiple seasons
-- **Machine Learning**: AI-powered prediction suggestions based on history
-- **Third-party Integrations**: Connect to ESPN, Yahoo, or other sports platforms
