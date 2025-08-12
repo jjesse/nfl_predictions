@@ -932,6 +932,25 @@
     <script>
         // Add import backup functionality
         document.addEventListener('DOMContentLoaded', function() {
+            // Remove duplicate Settings tabs - keep only the last one
+            const settingsTabs = document.querySelectorAll('button[data-tab="settings"]');
+            console.log('Found', settingsTabs.length, 'Settings tabs');
+            
+            // Remove all but the last settings tab
+            for (let i = 0; i < settingsTabs.length - 1; i++) {
+                console.log('Removing duplicate Settings tab', i);
+                settingsTabs[i].remove();
+            }
+            
+            // Also remove any duplicate nav elements
+            const navElements = document.querySelectorAll('nav.prediction-tabs');
+            if (navElements.length > 1) {
+                console.log('Found', navElements.length, 'navigation elements, removing duplicates');
+                for (let i = 1; i < navElements.length; i++) {
+                    navElements[i].remove();
+                }
+            }
+            
             const importInput = document.getElementById('import-backup');
             if (importInput) {
                 importInput.addEventListener('change', function(e) {
