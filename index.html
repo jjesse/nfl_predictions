@@ -35,6 +35,7 @@
                 <button class="tab-btn active" data-tab="weekly">Weekly Predictions</button>
                 <button class="tab-btn" data-tab="results">Weekly Results</button>
                 <button class="tab-btn" data-tab="standings">Team Standings</button>
+                <button class="tab-btn" data-tab="settings">Settings</button>
                 <button class="tab-btn" data-tab="preseason">Pre-Season Predictions</button>
                 <button class="tab-btn" data-tab="comparison">Season Comparison</button>
                 <button class="tab-btn" data-tab="settings">Settings</button>
@@ -83,66 +84,24 @@
             </div>
 
             <!-- Team Standings Tab -->
+                        <!-- Team Standings Tab -->
             <div id="standings-tab" class="tab-content">
-                <div class="standings-container">
-                    <div class="conference-standings">
-                        <div class="conference">
-                            <h3>AFC Standings</h3>
-                            <div class="divisions">
-                                <div class="division-standings">
-                                    <h4>AFC East</h4>
-                                    <div id="afc-east-standings" class="standings-table">
-                                        <!-- AFC East standings will be populated here -->
-                                    </div>
-                                </div>
-                                <div class="division-standings">
-                                    <h4>AFC North</h4>
-                                    <div id="afc-north-standings" class="standings-table">
-                                        <!-- AFC North standings will be populated here -->
-                                    </div>
-                                </div>
-                                <div class="division-standings">
-                                    <h4>AFC South</h4>
-                                    <div id="afc-south-standings" class="standings-table">
-                                        <!-- AFC South standings will be populated here -->
-                                    </div>
-                                </div>
-                                <div class="division-standings">
-                                    <h4>AFC West</h4>
-                                    <div id="afc-west-standings" class="standings-table">
-                                        <!-- AFC West standings will be populated here -->
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="conference">
-                            <h3>NFC Standings</h3>
-                            <div class="divisions">
-                                <div class="division-standings">
-                                    <h4>NFC East</h4>
-                                    <div id="nfc-east-standings" class="standings-table">
-                                        <!-- NFC East standings will be populated here -->
-                                    </div>
-                                </div>
-                                <div class="division-standings">
-                                    <h4>NFC North</h4>
-                                    <div id="nfc-north-standings" class="standings-table">
-                                        <!-- NFC North standings will be populated here -->
-                                    </div>
-                                </div>
-                                <div class="division-standings">
-                                    <h4>NFC South</h4>
-                                    <div id="nfc-south-standings" class="standings-table">
-                                        <!-- NFC South standings will be populated here -->
-                                    </div>
-                                </div>
-                                <div class="division-standings">
-                                    <h4>NFC West</h4>
-                                    <div id="nfc-west-standings" class="standings-table">
-                                        <!-- NFC West standings will be populated here -->
-                                    </div>
-                                </div>
-                            </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settings-tab" class="tab-content">
+                <div class="settings-section">
+                    <h3>Cloud Storage</h3>
+                    <div class="storage-option">
+                        <h4>GitHub Gists</h4>
+                        <p>Backup your predictions to a private GitHub Gist</p>
+                        <div class="github-setup">
+                            <input type="text" id="github-token-input" placeholder="Enter GitHub Personal Access Token" style="width: 300px; margin: 10px 0; padding: 8px;">
+                            <br>
+                            <button id="connect-github" class="btn btn-primary" style="margin: 10px 0;">Connect to GitHub</button>
+                            <p style="font-size: 12px; color: #666; margin-top: 10px;">
+                                Need a token? <a href="https://github.com/settings/tokens" target="_blank">Create one here</a> with 'gist' scope.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -945,6 +904,7 @@
     </div>
 
     <script src="nfl-schedule.js"></script>
+    <script src="cloud-storage.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

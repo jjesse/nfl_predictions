@@ -479,40 +479,68 @@ class GitHubGistsProvider {
         if (!this.token) {
             throw new Error('GitHub token is required');
         }
+        
+        // Check if token looks like a valid GitHub token (starts with ghp_, gho_, or ghu_)
+        if (!this.token.match(/^(ghp_|gho_|ghu_)/)) {
+            console.warn('Token does not match expected GitHub token format');
+        }
+        
         // Test the token by making a simple API call
         try {
+            console.log('Testing GitHub token...');
             const response = await fetch('https://api.github.com/user', {
                 headers: {
-                    'Authorization': `token ${this.token}`
+                    'Authorization': `token ${this.token}`,
+                    'Accept': 'application/vnd.github.v3+json'
                 }
             });
+            
             if (!response.ok) {
-                throw new Error('Invalid GitHub token');
+                const errorText = await response.text();
+                console.error('GitHub API error:', response.status, errorText);
+                throw new Error(`Invalid GitHub token (${response.status})`);
             }
+            
             const user = await response.json();
+            console.log('GitHub user authenticated:', user.login);
+            
             // If gistId is not set, create a new gist to get one
             if (!this.gistId) {
+                console.log('Creating new gist for backup storage...');
                 const gistData = {
                     description: 'NFL Predictions Cloud Backup',
                     public: false,
-                    files: { 'init.txt': { content: 'NFL Prediction Tracker Cloud Storage Initialized' } }
+                    files: { 
+                        'nfl-predictions-init.txt': { 
+                            content: 'NFL Prediction Tracker Cloud Storage Initialized at ' + new Date().toISOString()
+                        } 
+                    }
                 };
+                
                 const gistResponse = await fetch('https://api.github.com/gists', {
                     method: 'POST',
                     headers: {
                         'Authorization': `token ${this.token}`,
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/vnd.github.v3+json'
                     },
                     body: JSON.stringify(gistData)
                 });
+                
                 if (!gistResponse.ok) {
+                    const errorText = await gistResponse.text();
+                    console.error('Gist creation error:', gistResponse.status, errorText);
                     throw new Error('Failed to create GitHub Gist');
                 }
+                
                 const gistResult = await gistResponse.json();
                 this.gistId = gistResult.id;
+                console.log('Created new gist with ID:', this.gistId);
             }
+            
             return { username: user.login, gistId: this.gistId };
         } catch (error) {
+            console.error('GitHub configuration error:', error);
             throw new Error('Failed to connect to GitHub: ' + error.message);
         }
     }
@@ -643,18 +671,57 @@ class SupabaseProvider {
 // Initialize cloud storage manager
 let cloudStorage;
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('Initializing cloud storage manager...');
     cloudStorage = new CloudStorageManager();
 
-    // Add event listener for the Connect button in settings tab
-    // This should be in the DOMContentLoaded or settings tab UI logic
-    // Example:
-    document.getElementById('connect-github')?.addEventListener('click', async () => {
+    // Set up GitHub connection with multiple attempts
+    function setupGitHubConnection() {
+        const connectButton = document.getElementById('connect-github');
         const tokenInput = document.getElementById('github-token-input');
-        const token = tokenInput ? tokenInput.value.trim() : '';
-        if (!token) {
-            cloudStorage.showNotification('Please enter your GitHub token', 'error');
-            return;
+        
+        console.log('Setup attempt - Connect button found:', !!connectButton);
+        console.log('Setup attempt - Token input found:', !!tokenInput);
+        
+        if (connectButton && tokenInput) {
+            // Remove any existing listeners to prevent duplicates
+            connectButton.replaceWith(connectButton.cloneNode(true));
+            const newConnectButton = document.getElementById('connect-github');
+            
+            newConnectButton.addEventListener('click', async (e) => {
+                e.preventDefault();
+                console.log('Connect button clicked');
+                
+                const token = tokenInput.value.trim();
+                console.log('Token length:', token.length);
+                
+                if (!token) {
+                    cloudStorage.showNotification('Please enter your GitHub token', 'error');
+                    return;
+                }
+                
+                console.log('Attempting to connect with token...');
+                const success = await cloudStorage.setProvider('github', { githubToken: token });
+                console.log('Connection result:', success);
+                
+                if (success) {
+                    // Clear the token input for security
+                    tokenInput.value = '';
+                }
+            });
+            
+            console.log('GitHub connection handler attached successfully');
+            return true;
         }
-        await cloudStorage.setProvider('github', { githubToken: token });
-    });
+        return false;
+    }
+
+    // Try to setup immediately
+    if (!setupGitHubConnection()) {
+        // If not found, try again after a delay
+        setTimeout(() => {
+            if (!setupGitHubConnection()) {
+                console.warn('GitHub connect elements still not found after delay');
+            }
+        }, 1000);
+    }
 });
