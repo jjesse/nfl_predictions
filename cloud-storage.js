@@ -670,6 +670,9 @@ class SupabaseProvider {
 
 // Initialize cloud storage manager
 let cloudStorage;
+// Flag to prevent app.js from handling GitHub connections
+window.CLOUD_STORAGE_HANDLES_GITHUB = true;
+
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Initializing cloud storage manager...');
     cloudStorage = new CloudStorageManager();
@@ -678,8 +681,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const existingGitHubModal = document.getElementById('github-connection-modal');
     if (existingGitHubModal) {
         existingGitHubModal.style.display = 'none';
-        console.log('Disabled existing GitHub connection modal to prevent conflicts');
+        existingGitHubModal.remove(); // Remove it completely
+        console.log('Removed existing GitHub connection modal to prevent conflicts');
     }
+
+    // Override any app.js GitHub functions to prevent conflicts
+    if (window.app) {
+        window.app.saveGitHubToken = function() {
+            console.log('GitHub token saving handled by cloud storage system');
+        };
+        window.app.updateStorageType = function() {
+            console.log('Storage type updates handled by cloud storage system');
+        };
+    }
+
+    // Disable any conflicting event handlers from app.js
+    const appConnectButtons = document.querySelectorAll('[data-action="connect-github"], .github-connect-btn, button[onclick*="GitHub"]');
+    appConnectButtons.forEach(btn => {
+        if (btn.id !== 'connect-github') {
+            btn.style.display = 'none';
+            btn.disabled = true;
+            console.log('Disabled conflicting GitHub connect button:', btn);
+        }
+    });
 
     // Set up GitHub connection with multiple attempts
     function setupGitHubConnection() {
@@ -690,24 +714,32 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Setup attempt - Token input found:', !!tokenInput);
         
         if (connectButton && tokenInput) {
-            // Remove any existing listeners to prevent duplicates
-            connectButton.replaceWith(connectButton.cloneNode(true));
-            const newConnectButton = document.getElementById('connect-github');
+            // Completely replace the button to remove all event listeners
+            const newConnectButton = connectButton.cloneNode(true);
+            connectButton.parentNode.replaceChild(newConnectButton, connectButton);
             
+            // Only add our event listener
             newConnectButton.addEventListener('click', async (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('Connect button clicked');
+                e.stopImmediatePropagation();
+                console.log('Cloud storage connect button clicked');
                 
                 const token = tokenInput.value.trim();
                 console.log('Token length:', token.length);
                 
                 if (!token) {
                     cloudStorage.showNotification('Please enter your GitHub token', 'error');
-                    return;
+                    return false;
                 }
                 
-                // Disable the button during connection to prevent double-clicks
+                // Only allow one connection attempt at a time
+                if (newConnectButton.disabled) {
+                    console.log('Connection already in progress, ignoring click');
+                    return false;
+                }
+                
+                // Disable the button during connection
                 newConnectButton.disabled = true;
                 newConnectButton.textContent = 'Connecting...';
                 
@@ -719,8 +751,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (success) {
                         // Clear the token input for security
                         tokenInput.value = '';
-                        newConnectButton.textContent = 'Connected';
+                        newConnectButton.textContent = 'Connected ✓';
                         newConnectButton.style.backgroundColor = '#28a745';
+                        newConnectButton.style.color = 'white';
+                        // Keep disabled to prevent reconnection
                     } else {
                         newConnectButton.textContent = 'Connect to GitHub';
                         newConnectButton.disabled = false;
@@ -730,7 +764,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     newConnectButton.textContent = 'Connect to GitHub';
                     newConnectButton.disabled = false;
                 }
-            });
+                
+                return false;
+            }, true);
             
             console.log('GitHub connection handler attached successfully');
             return true;
