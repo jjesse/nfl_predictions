@@ -990,5 +990,24 @@
             console.log('🎉 Navigation cleanup complete!');
         });
     </script>
+    <script>
+        // Static tab switching logic
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active from all buttons and contents
+                    tabButtons.forEach(b => b.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    // Add active to clicked button and corresponding content
+                    btn.classList.add('active');
+                    const tabId = btn.getAttribute('data-tab');
+                    const content = document.getElementById(tabId);
+                    if (content) content.classList.add('active');
+                });
+            });
+        });
+    </script>
 </body>
 </html>
