@@ -669,13 +669,16 @@ class SupabaseProvider {
 }
 
 // Initialize cloud storage manager
-let cloudStorage;
+window.cloudStorage = null;
 // Flag to prevent app.js from handling GitHub connections
 window.CLOUD_STORAGE_HANDLES_GITHUB = true;
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Initializing cloud storage manager...');
-    cloudStorage = new CloudStorageManager();
+    window.cloudStorage = new CloudStorageManager();
+    
+    // Make it available globally for debugging
+    window.cs = window.cloudStorage;
 
     // Disable any existing GitHub connection modals that might conflict
     const existingGitHubModal = document.getElementById('github-connection-modal');
@@ -729,7 +732,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('Token length:', token.length);
                 
                 if (!token) {
-                    cloudStorage.showNotification('Please enter your GitHub token', 'error');
+                    window.cloudStorage.showNotification('Please enter your GitHub token', 'error');
                     return false;
                 }
                 
@@ -745,7 +748,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 try {
                     console.log('Attempting to connect with token...');
-                    const success = await cloudStorage.setProvider('github', { githubToken: token });
+                    const success = await window.cloudStorage.setProvider('github', { githubToken: token });
                     console.log('Connection result:', success);
                     
                     if (success) {

@@ -930,36 +930,64 @@
     <script src="cloud-storage.js"></script>
     <script src="app.js"></script>
     <script>
-        // Add import backup functionality
+        // Clean up navigation and fix duplicate tabs
         document.addEventListener('DOMContentLoaded', function() {
-            // Remove duplicate Settings tabs - keep only the last one
-            const settingsTabs = document.querySelectorAll('button[data-tab="settings"]');
-            console.log('Found', settingsTabs.length, 'Settings tabs');
+            console.log('🧹 Cleaning up navigation and fixing duplicates...');
             
-            // Remove all but the last settings tab
-            for (let i = 0; i < settingsTabs.length - 1; i++) {
-                console.log('Removing duplicate Settings tab', i);
-                settingsTabs[i].remove();
-            }
+            // Remove ALL existing navigation elements first
+            const allNavs = document.querySelectorAll('nav.prediction-tabs');
+            console.log('Found', allNavs.length, 'navigation elements');
+            allNavs.forEach(nav => nav.remove());
             
-            // Also remove any duplicate nav elements
-            const navElements = document.querySelectorAll('nav.prediction-tabs');
-            if (navElements.length > 1) {
-                console.log('Found', navElements.length, 'navigation elements, removing duplicates');
-                for (let i = 1; i < navElements.length; i++) {
-                    navElements[i].remove();
+            // Create ONE clean navigation
+            const mainContainer = document.querySelector('main.container');
+            const h1 = mainContainer.querySelector('h1');
+            
+            const nav = document.createElement('nav');
+            nav.className = 'prediction-tabs';
+            nav.innerHTML = `
+                <button class="tab-btn active" data-tab="weekly">Weekly Predictions</button>
+                <button class="tab-btn" data-tab="results">Weekly Results</button>
+                <button class="tab-btn" data-tab="standings">Team Standings</button>
+                <button class="tab-btn" data-tab="preseason">Pre-Season Predictions</button>
+                <button class="tab-btn" data-tab="settings">Settings</button>
+            `;
+            
+            // Insert after h1
+            h1.insertAdjacentElement('afterend', nav);
+            console.log('✅ Created clean navigation with 5 tabs');
+            
+            // Remove any duplicate tab content sections
+            const settingsContents = document.querySelectorAll('#settings');
+            if (settingsContents.length > 1) {
+                console.log('Found', settingsContents.length, 'settings content sections, keeping the one with cloud storage');
+                for (let i = 0; i < settingsContents.length - 1; i++) {
+                    if (!settingsContents[i].querySelector('.github-connection')) {
+                        settingsContents[i].remove();
+                    }
                 }
             }
             
+            const preseasonContents = document.querySelectorAll('#preseason');
+            if (preseasonContents.length > 1) {
+                console.log('Found', preseasonContents.length, 'preseason content sections, removing duplicates');
+                for (let i = 1; i < preseasonContents.length; i++) {
+                    preseasonContents[i].remove();
+                }
+            }
+            
+            // Set up import backup functionality
             const importInput = document.getElementById('import-backup');
             if (importInput) {
                 importInput.addEventListener('change', function(e) {
                     const file = e.target.files[0];
-                    if (file && cloudStorage) {
-                        cloudStorage.importFullBackup(file);
+                    if (file && window.cloudStorage) {
+                        window.cloudStorage.importFullBackup(file);
                     }
                 });
             }
+            
+            console.log('🎉 Navigation cleanup complete!');
         });
     </script>
 </body>
