@@ -674,6 +674,13 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('Initializing cloud storage manager...');
     cloudStorage = new CloudStorageManager();
 
+    // Disable any existing GitHub connection modals that might conflict
+    const existingGitHubModal = document.getElementById('github-connection-modal');
+    if (existingGitHubModal) {
+        existingGitHubModal.style.display = 'none';
+        console.log('Disabled existing GitHub connection modal to prevent conflicts');
+    }
+
     // Set up GitHub connection with multiple attempts
     function setupGitHubConnection() {
         const connectButton = document.getElementById('connect-github');
@@ -689,6 +696,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             newConnectButton.addEventListener('click', async (e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 console.log('Connect button clicked');
                 
                 const token = tokenInput.value.trim();
@@ -699,13 +707,28 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
                 
-                console.log('Attempting to connect with token...');
-                const success = await cloudStorage.setProvider('github', { githubToken: token });
-                console.log('Connection result:', success);
+                // Disable the button during connection to prevent double-clicks
+                newConnectButton.disabled = true;
+                newConnectButton.textContent = 'Connecting...';
                 
-                if (success) {
-                    // Clear the token input for security
-                    tokenInput.value = '';
+                try {
+                    console.log('Attempting to connect with token...');
+                    const success = await cloudStorage.setProvider('github', { githubToken: token });
+                    console.log('Connection result:', success);
+                    
+                    if (success) {
+                        // Clear the token input for security
+                        tokenInput.value = '';
+                        newConnectButton.textContent = 'Connected';
+                        newConnectButton.style.backgroundColor = '#28a745';
+                    } else {
+                        newConnectButton.textContent = 'Connect to GitHub';
+                        newConnectButton.disabled = false;
+                    }
+                } catch (error) {
+                    console.error('Connection error:', error);
+                    newConnectButton.textContent = 'Connect to GitHub';
+                    newConnectButton.disabled = false;
                 }
             });
             
