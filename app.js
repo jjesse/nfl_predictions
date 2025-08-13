@@ -755,6 +755,38 @@ class NFLPredictionTracker {
         document.body.appendChild(modal);
         return modal;
     }
+
+    populatePreseasonDropdowns() {
+        const conferenceSelect = document.getElementById('conference-select');
+        const divisionSelect = document.getElementById('division-select');
+        
+        if (!conferenceSelect || !divisionSelect) {
+            console.warn('Preseason dropdown elements not found');
+            return;
+        }
+
+        // Clear existing options
+        conferenceSelect.innerHTML = '<option value="">Select Conference</option>';
+        divisionSelect.innerHTML = '<option value="">Select Division</option>';
+
+        // Populate conferences
+        const conferences = ['AFC', 'NFC'];
+        conferences.forEach(conf => {
+            const option = document.createElement('option');
+            option.value = conf;
+            option.textContent = conf;
+            conferenceSelect.appendChild(option);
+        });
+
+        // Populate divisions
+        const divisions = ['North', 'South', 'East', 'West'];
+        divisions.forEach(div => {
+            const option = document.createElement('option');
+            option.value = div;
+            option.textContent = div;
+            divisionSelect.appendChild(option);
+        });
+    }
 }
 
 // Initialize the app when the page loads
