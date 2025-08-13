@@ -316,11 +316,11 @@ class NFLPredictionTracker {
         }
 
         if (game.status === 'upcoming') {
-            return `<span class="prediction-pending">Predicted: ${nflSchedule.teams[prediction].name}</span>`;
+            return `<span class="prediction-pending">Predicted: ${getTeamName(prediction)}</span>`;
         } else if (game.status === 'final' && game.winner) {
             const isCorrect = prediction === game.winner;
             return `<span class="prediction-${isCorrect ? 'correct' : 'incorrect'}">
-                Predicted: ${nflSchedule.teams[prediction].name} | 
+                Predicted: ${getTeamName(prediction)} | 
                 ${isCorrect ? '✓ Correct!' : '✗ Incorrect'}
             </span>`;
         }
@@ -409,7 +409,7 @@ class NFLPredictionTracker {
             <div class="teams-container">
                 <div class="team away-team">
                     <div class="team-name">${getTeamName(game.awayTeam)}</div>
-                    <div class="team-record">(${nflSchedule.teams[game.awayTeam].record.wins}-${nflSchedule.teams[game.awayTeam].record.losses})</div>
+                    <div class="team-record">(${getTeamRecord(game.awayTeam)})</div>
                     <div class="team-score">${game.awayScore !== null ? game.awayScore : '-'}</div>
                     ${game.winner === game.awayTeam ? '<span class="winner-badge">W</span>' : ''}
                 </div>
@@ -418,7 +418,7 @@ class NFLPredictionTracker {
                 
                 <div class="team home-team">
                     <div class="team-name">${getTeamName(game.homeTeam)}</div>
-                    <div class="team-record">(${nflSchedule.teams[game.homeTeam].record.wins}-${nflSchedule.teams[game.homeTeam].record.losses})</div>
+                    <div class="team-record">(${getTeamRecord(game.homeTeam)})</div>
                     <div class="team-score">${game.homeScore !== null ? game.homeScore : '-'}</div>
                     ${game.winner === game.homeTeam ? '<span class="winner-badge">W</span>' : ''}
                 </div>
@@ -430,10 +430,10 @@ class NFLPredictionTracker {
                     <select id="prediction-${game.id}" onchange="app.makePrediction(${game.id}, this.value)">
                         <option value="">Select Winner</option>
                         <option value="${game.awayTeam}" ${myPrediction === game.awayTeam ? 'selected' : ''}>
-                            ${nflSchedule.teams[game.awayTeam].name}
+                            ${getTeamName(game.awayTeam)}
                         </option>
                         <option value="${game.homeTeam}" ${myPrediction === game.homeTeam ? 'selected' : ''}>
-                            ${nflSchedule.teams[game.homeTeam].name}
+                            ${getTeamName(game.homeTeam)}
                         </option>
                     </select>
                 </div>
@@ -450,13 +450,13 @@ class NFLPredictionTracker {
         if (game.status === 'upcoming') {
             return {
                 class: 'pending',
-                text: `You predicted: ${nflSchedule.teams[prediction].name}`
+                text: `You predicted: ${getTeamName(prediction)}`
             };
         } else if (game.status === 'final' && game.winner) {
             const isCorrect = prediction === game.winner;
             return {
                 class: isCorrect ? 'correct' : 'incorrect',
-                text: `You predicted: ${nflSchedule.teams[prediction].name} - ${isCorrect ? 'Correct!' : 'Incorrect'}`
+                text: `You predicted: ${getTeamName(prediction)} - ${isCorrect ? 'Correct!' : 'Incorrect'}`
             };
         }
 
@@ -796,8 +796,25 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function getTeamName(teamCode) {
+    // Try nflSchedule.teams first, then fall back to window.teams
+    if (window.nflSchedule && window.nflSchedule.teams && window.nflSchedule.teams[teamCode]) {
+        return window.nflSchedule.teams[teamCode].name;
+    }
     if (window.teams && window.teams[teamCode] && window.teams[teamCode].name) {
         return window.teams[teamCode].name;
     }
     return `[Unknown: ${teamCode}]`;
+}
+
+function getTeamRecord(teamCode) {
+    // Try nflSchedule.teams first, then fall back to window.teams
+    if (window.nflSchedule && window.nflSchedule.teams && window.nflSchedule.teams[teamCode] && window.nflSchedule.teams[teamCode].record) {
+        const record = window.nflSchedule.teams[teamCode].record;
+        return `${record.wins || 0}-${record.losses || 0}`;
+    }
+    if (window.teams && window.teams[teamCode] && window.teams[teamCode].record) {
+        const record = window.teams[teamCode].record;
+        return `${record.wins || 0}-${record.losses || 0}`;
+    }
+    return '0-0';
 }
