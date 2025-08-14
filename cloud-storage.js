@@ -711,7 +711,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Set up GitHub connection with multiple attempts
     function setupGitHubConnection() {
         const connectButton = document.getElementById('connect-github');
-        const tokenInput = document.getElementById('github-token-input');
+        // Support both possible input IDs for GitHub token
+        let tokenInput = document.getElementById('github-token-input');
+        if (!tokenInput) {
+            tokenInput = document.getElementById('github-token');
+        }
+        if (!tokenInput) {
+            console.warn('GitHub token input not found. Expected id="github-token-input" or id="github-token"');
+        }
         
         console.log('Setup attempt - Connect button found:', !!connectButton);
         console.log('Setup attempt - Token input found:', !!tokenInput);
