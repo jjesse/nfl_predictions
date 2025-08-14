@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFL Season Results</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="results.css">
+</head>
+<body>
+    <header>
+        <h1>NFL Season Results</h1>
+        <div class="buttons">
+            <button id="predictionsBtn">Go to Predictions</button>
+            <button id="refreshBtn">Refresh Data</button>
+            <button id="weeklyBtn">Weekly Matchups</button>
+        </div>
+    </header>
+
+    <main>
+        <div class="loading-container" id="loadingContainer">
+            <div class="loading-spinner"></div>
+            <p>Loading NFL data...</p>
+        </div>
+        
+        <div id="errorContainer" style="display: none;">
+            <p class="error-message">Error loading NFL data. Please try again later.</p>
+        </div>
+        
+        <div id="resultsContainer" style="display: none;">
+            <section id="afc">
+                <h2>AFC</h2>
+                <div class="conference">
+                    <div class="division">
+                        <h3>AFC East</h3>
+                        <div class="teams" id="afc-east"></div>
+                    </div>
+                    <div class="division">
+                        <h3>AFC North</h3>
+                        <div class="teams" id="afc-north"></div>
+                    </div>
+                    <div class="division">
+                        <h3>AFC South</h3>
+                        <div class="teams" id="afc-south"></div>
+                    </div>
+                    <div class="division">
+                        <h3>AFC West</h3>
+                        <div class="teams" id="afc-west"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="nfc">
+                <h2>NFC</h2>
+                <div class="conference">
+                    <div class="division">
+                        <h3>NFC East</h3>
+                        <div class="teams" id="nfc-east"></div>
+                    </div>
+                    <div class="division">
+                        <h3>NFC North</h3>
+                        <div class="teams" id="nfc-north"></div>
+                    </div>
+                    <div class="division">
+                        <h3>NFC South</h3>
+                        <div class="teams" id="nfc-south"></div>
+                    </div>
+                    <div class="division">
+                        <h3>NFC West</h3>
+                        <div class="teams" id="nfc-west"></div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="playoff-results">
+                <h2>Playoff Results</h2>
+                <div class="playoff-container">
+                    <div class="playoff-section">
+                        <h3>AFC Wild Card Teams</h3>
+                        <div class="wildcard-teams" id="afc-wildcard-results"></div>
+                    </div>
+                    <div class="playoff-section">
+                        <h3>NFC Wild Card Teams</h3>
+                        <div class="wildcard-teams" id="nfc-wildcard-results"></div>
+                    </div>
+                </div>
+                
+                <div class="playoff-container">
+                    <div class="playoff-section">
+                        <h3>Conference Champions</h3>
+                        <div class="champions-results" id="conference-champions-results"></div>
+                    </div>
+                    <div class="playoff-section">
+                        <h3>Super Bowl</h3>
+                        <div class="superbowl-result" id="superbowl-result"></div>
+                    </div>
+                </div>
+            </section>
+            
+            <div class="update-info">
+                <p>Last updated: <span id="lastUpdated">Never</span></p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>NFL Results App | © 2023</p>
+    </footer>
+
+    <script src="utility.js"></script>
+    <script src="results.js"></script>
+</body>
+</html>

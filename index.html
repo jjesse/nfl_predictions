@@ -3,1005 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NFL Prediction Tracker 2025-2026</title>
+    <title>NFL Season Predictions</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>NFL Prediction Tracker 2025-2026</h1>
-            <div class="stats-summary">
-                <div class="stat">
-                    <span class="stat-label">Total Games:</span>
-                    <span id="total-games">0</span>
+    <header>
+        <h1>NFL Pre-Season Predictions</h1>
+        <div class="buttons">
+            <button id="saveBtn">Save Predictions</button>
+            <button id="compareBtn">Compare with Actual</button>
+            <button id="resultsBtn">View Real Results</button>
+            <button id="weeklyBtn">Weekly Matchups</button>
+        </div>
+    </header>
+
+    <main>
+        <section id="afc">
+            <h2>AFC</h2>
+            <div class="conference">
+                <div class="division">
+                    <h3>AFC East</h3>
+                    <div class="teams" id="afc-east"></div>
                 </div>
-                <div class="stat">
-                    <span class="stat-label">Predictions Made:</span>
-                    <span id="predictions-made">0</span>
+                <div class="division">
+                    <h3>AFC North</h3>
+                    <div class="teams" id="afc-north"></div>
                 </div>
-                <div class="stat">
-                    <span class="stat-label">Correct Predictions:</span>
-                    <span id="correct-predictions">0</span>
+                <div class="division">
+                    <h3>AFC South</h3>
+                    <div class="teams" id="afc-south"></div>
                 </div>
-                <div class="stat">
-                    <span class="stat-label">Accuracy:</span>
-                    <span id="accuracy">0%</span>
+                <div class="division">
+                    <h3>AFC West</h3>
+                    <div class="teams" id="afc-west"></div>
                 </div>
             </div>
-        </header>
+        </section>
 
-        <main class="container">
-            <h1>NFL Prediction Tracker</h1>
-            <nav class="prediction-tabs">
-                <button class="tab-btn" data-tab="preseason">Team Record Predictions</button>
-                <button class="tab-btn active" data-tab="standings">Current Standings</button>
-                <button class="tab-btn" data-tab="settings">Settings</button>
-            </nav>
-
-            <!-- Weekly Predictions Tab -->
-            <div id="weekly-tab" class="tab-content active">
-                <div class="filters">
-                    <select id="week-filter">
-                        <option value="">All Weeks</option>
-                    </select>
-                    <select id="team-filter">
-                        <option value="">All Teams</option>
-                    </select>
-                    <button id="bulk-predict-btn">Make Week Predictions</button>
-                    <button id="clear-all-predictions">Clear All Predictions</button>
-                    <button id="export-predictions-csv">Export Predictions to CSV</button>
+        <section id="nfc">
+            <h2>NFC</h2>
+            <div class="conference">
+                <div class="division">
+                    <h3>NFC East</h3>
+                    <div class="teams" id="nfc-east"></div>
                 </div>
-
-                <div class="games-container">
-                    <div id="games-list">
-                        <!-- Games will be populated here -->
-                    </div>
+                <div class="division">
+                    <h3>NFC North</h3>
+                    <div class="teams" id="nfc-north"></div>
+                </div>
+                <div class="division">
+                    <h3>NFC South</h3>
+                    <div class="teams" id="nfc-south"></div>
+                </div>
+                <div class="division">
+                    <h3>NFC West</h3>
+                    <div class="teams" id="nfc-west"></div>
                 </div>
             </div>
+        </section>
 
-            <!-- Weekly Results Tab -->
-            <div id="results-tab" class="tab-content">
-                <div class="filters">
-                    <select id="results-week-filter">
-                        <option value="">All Weeks</option>
-                    </select>
-                    <select id="results-status-filter">
-                        <option value="">All Games</option>
-                        <option value="final">Completed Games</option>
-                        <option value="live">Live Games</option>
-                        <option value="upcoming">Upcoming Games</option>
-                    </select>
-                </div>
-
-                <div class="results-container">
-                    <div id="results-list">
-                        <!-- Game results will be populated here -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Team Standings Tab -->
-            <div id="standings-tab" class="tab-content active">
-            </div>
-
-            <!-- Settings Content -->
-            <div id="settings" class="tab-content">
-                <div class="settings-container">
-                    <h2>Settings</h2>
-                    
-                    <!-- Cloud Storage Settings -->
-                    <div class="settings-section">
-                        <h3>Cloud Storage</h3>
-                        <div class="cloud-storage-options">
-                            <div class="github-gists-section">
-                                <h4>GitHub Gists Backup</h4>
-                                <p>Save your predictions to a private GitHub Gist for cloud backup and sync across devices.</p>
-                                
-                                                                <div class="github-connection">
-                                    <input type="text" id="github-token-input" placeholder="Enter GitHub Personal Access Token" class="token-input">
-                                    <button id="connect-github" class="btn btn-primary">Connect to GitHub</button>
-                                </div>
-                                
-                                <div class="github-help">
-                                    <p><small>Need a token? <a href="https://github.com/settings/tokens" target="_blank">Create one here</a> with 'gist' scope.</small></p>
-                                </div>
-                            </div>
+        <section id="playoff-predictions">
+            <h2>Playoff Predictions</h2>
+            <div class="playoff-container">
+                <div class="playoff-section">
+                    <h3>AFC Wild Card Teams</h3>
+                    <div class="wildcard-teams" id="afc-wildcards">
+                        <div class="wildcard-slot">
+                            <label>Wild Card 1:</label>
+                            <select class="team-select" id="afc-wildcard-1"></select>
+                            <span class="actual-pick" id="actual-afc-wildcard-1"></span>
+                        </div>
+                        <div class="wildcard-slot">
+                            <label>Wild Card 2:</label>
+                            <select class="team-select" id="afc-wildcard-2"></select>
+                            <span class="actual-pick" id="actual-afc-wildcard-2"></span>
+                        </div>
+                        <div class="wildcard-slot">
+                            <label>Wild Card 3:</label>
+                            <select class="team-select" id="afc-wildcard-3"></select>
+                            <span class="actual-pick" id="actual-afc-wildcard-3"></span>
                         </div>
                     </div>
-                    
-                    <!-- Data Management -->
-                    <div class="settings-section">
-                        <h3>Data Management</h3>
-                        <div class="data-actions">
-                            <button class="btn btn-secondary" onclick="cloudStorage.exportFullBackup()">Export Backup</button>
-                            <input type="file" id="import-backup" accept=".json" style="display: none;">
-                            <button class="btn btn-secondary" onclick="document.getElementById('import-backup').click()">Import Backup</button>
+                </div>
+
+                <div class="playoff-section">
+                    <h3>NFC Wild Card Teams</h3>
+                    <div class="wildcard-teams" id="nfc-wildcards">
+                        <div class="wildcard-slot">
+                            <label>Wild Card 1:</label>
+                            <select class="team-select" id="nfc-wildcard-1"></select>
+                            <span class="actual-pick" id="actual-nfc-wildcard-1"></span>
+                        </div>
+                        <div class="wildcard-slot">
+                            <label>Wild Card 2:</label>
+                            <select class="team-select" id="nfc-wildcard-2"></select>
+                            <span class="actual-pick" id="actual-nfc-wildcard-2"></span>
+                        </div>
+                        <div class="wildcard-slot">
+                            <label>Wild Card 3:</label>
+                            <select class="team-select" id="nfc-wildcard-3"></select>
+                            <span class="actual-pick" id="actual-nfc-wildcard-3"></span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Firebase Connection Modal -->
-            <div id="firebase-connection-modal" class="modal storage-modal">
-            </div>
-
-            <!-- Pre-Season Predictions Tab -->
-            <div id="preseason-tab" class="tab-content">
-                <div class="preseason-predictions">
-                    <!-- Team Record Predictions Section -->
-                    <div class="preseason-section">
-                        <h3>Team Record Predictions</h3>
-                        <div class="record-predictions-container">
-                            <div class="conference-records">
-                                <div class="conference">
-                                    <h4>AFC Teams</h4>
-                                    <div class="team-records-grid">
-                                        <div class="record-prediction-item">
-                                            <label>Baltimore Ravens:</label>
-                                            <input type="number" id="record-BAL-wins" min="0" max="17" placeholder="W">
-                                            <span>-</span>
-                                            <input type="number" id="record-BAL-losses" min="0" max="17" placeholder="L">
-                                        </div>
-                                        <div class="record-prediction-item">
-                                            <label>Buffalo Bills:</label>
-                                            <input type="number" id="record-BUF-wins" min="0" max="17" placeholder="W">
-                                            <span>-</span>
-                                            <input type="number" id="record-BUF-losses" min="0" max="17" placeholder="L">
-                                        </div>
-                                        <div class="record-prediction-item">
-                                            <label>Cincinnati Bengals:</label>
-                                            <input type="number" id="record-CIN-wins" min="0" max="17" placeholder="W">
-                                            <span>-</span>
-                                            <input type="number" id="record-CIN-losses" min="0" max="17" placeholder="L">
-                                        </div>
-                                        <div class="record-prediction-item">
-                                            <label>Cleveland Browns:</label>
-                                            <input type="number" id="record-CLE-wins" min="0" max="17" placeholder="W">
-                                            <span>-</span>
-                                            <input type="number" id="record-CLE-losses" min="0" max="17" placeholder="L">
-                                        </div>
-                                        <div class="record-prediction-item">
-                                            <label>Denver Broncos:</label>
-                                            <input type="number" id="record-DEN-wins" min="0" max="17" placeholder="W">
-                                            <span>-</span>
-                                            <input type="number" id="record-DEN-losses" min="0" max="17" placeholder="L">
-                                        </div>
-                                        <div class="record-prediction-item">
-                                            <label>Houston Texans:</label>
-                                            <input type="number" id="record-HOU-wins" min="0" max="17" placeholder="W">
-                                            <span>-</span>
-                                            <input type="number" id="record-HOU-losses" min="0" max="17" placeholder="L">
-                                        </div>
-                                        <div class="record-prediction-item">
-                                            <label>Indianapolis Colts:</label>
-                                            <input type="number" id="record-IND-wins" min="0" max="17" placeholder="W">
-                                            <span>-</span>
-                                            <input type="number" id="record-IND-losses" min="0" max="17" placeholder="L">
-                                        </div>
-                                        <div class="record-prediction-item">
-                                            <label>Jacksonville Jaguars:</label>
-                                            <input type="number" id="record-JAX-wins" min="0" max="17" placeholder="W">
-                                            <span>-</span>
-                                            <input type="number" id="record-JAX-losses" min="0" max="17" placeholder="L">
-                                        </div>
-                                        <div class="record-prediction-item">
-                                            <label>Kansas City Chiefs:</label>
-                                            <input type="number" id="record-KC-wins" min="0" max="17" placeholder="W">
-                                            <span>-</span>
-                                            <input type="number" id="record-KC-losses" min="0" max="17" placeholder="L">
-                                        </div>
-                                        <div class="record-prediction-item">
-                                            <label>Las Vegas Raiders:</label>
-                                            <input type="number" id="record-LV-wins" min="0" max="17" placeholder="W">
-                                            <span>-</span>
-                                            <input type="number" id="record-LV-losses" min="0" max="17" placeholder="L">
-                                        </div>
-                                        <div class="record-prediction-item">
-                                            <label>Los Angeles Chargers:</label>
-                                            <input type="number" id="record-LAC-wins" min="0" max="17" placeholder="W">
-                                            <span>-</span>
-                                            <input type="number" id="record-LAC-losses" min="0" max="17" placeholder="L">
-                                        </div>
-                                        <div class="record-prediction-item">
-                                            <label>Miami Dolphins:</label>
-                                            <input type="number" id="record-MIA-wins" min="0" max="17" placeholder="W">
-                                            <span>-</span>
-                                            <input type="number" id="record-MIA-losses" min="0" max="17" placeholder="L">
-                                        </div>
-                                        <div class="record-prediction-item">
-                                            <label>New England Patriots:</label>
-                                            <input type="number" id="record-NE-wins" min="0" max="17" placeholder="W">
-                                            <span>-</span>
-                                            <input type="number" id="record-NE-losses" min="0" max="17" placeholder="L">
-                                        </div>
-                                        <div class="record-prediction-item">
-                                            <label>New York Jets:</label>
-                                            <input type="number" id="record-NYJ-wins" min="0" max="17" placeholder="W">
-                                            <span>-</span>
-                                            <input type="number" id="record-NYJ-losses" min="0" max="17" placeholder="L">
-                                        </div>
-                                        <div class="record-prediction-item">
-                                            <label>Pittsburgh Steelers:</label>
-                                            <input type="number" id="record-PIT-wins" min="0" max="17" placeholder="W">
-                                            <span>-</span>
-                                            <input type="number" id="record-PIT-losses" min="0" max="17" placeholder="L">
-                                        </div>
-                                        <div class="record-prediction-item">
-                                            <label>Tennessee Titans:</label>
-                                            <input type="number" id="record-TEN-wins" min="0" max="17" placeholder="W">
-                                            <span>-</span>
-                                            <input type="number" id="record-TEN-losses" min="0" max="17" placeholder="L">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="conference">
-                                    <h4>NFC Teams</h4>
-                                    <div class="team-records-grid">
-                                        <div class="record-prediction-item">
-                                            <label>Arizona Cardinals:</label>
-                                            <input type="number" id="record-ARI-wins" min="0" max="17" placeholder="W">
-                                            <span>-</span>
-                                            <input type="number" id="record-ARI-losses" min="0" max="17" placeholder="L">
-                                        </div>
-                                        <div class="record-prediction-item">
-                                            <label>Atlanta Falcons:</label>
-                                            <input type="number" id="record-ATL-wins" min="0" max="17" placeholder="W">
-                                            <span>-</span>
-                                            <input type="number" id="record-ATL-losses" min="0" max="17" placeholder="L">
-                                        </div>
-                                        <div class="record-prediction-item">
-                                            <label>Carolina Panthers:</label>
-                                            <input type="number" id="record-CAR-wins" min="0" max="17" placeholder="W">
-                                            <span>-</span>
-                                            <input type="number" id="record-CAR-losses" min="0" max="17" placeholder="L">
-                                        </div>
-                                        <div class="record-prediction-item">
-                                            <label>Chicago Bears:</label>
-                                            <input type="number" id="record-CHI-wins" min="0" max="17" placeholder="W">
-                                            <span>-</span>
-                                            <input type="number" id="record-CHI-losses" min="0" max="17" placeholder="L">
-                                        </div>
-                                        <div class="record-prediction-item">
-                                            <label>Dallas Cowboys:</label>
-                                            <input type="number" id="record-DAL-wins" min="0" max="17" placeholder="W">
-                                            <span>-</span>
-                                            <input type="number" id="record-DAL-losses" min="0" max="17" placeholder="L">
-                                        </div>
-                                        <div class="record-prediction-item">
-                                            <label>Detroit Lions:</label>
-                                            <input type="number" id="record-DET-wins" min="0" max="17" placeholder="W">
-                                            <span>-</span>
-                                            <input type="number" id="record-DET-losses" min="0" max="17" placeholder="L">
-                                        </div>
-                                        <div class="record-prediction-item">
-                                            <label>Green Bay Packers:</label>
-                                            <input type="number" id="record-GB-wins" min="0" max="17" placeholder="W">
-                                            <span>-</span>
-                                            <input type="number" id="record-GB-losses" min="0" max="17" placeholder="L">
-                                        </div>
-                                        <div class="record-prediction-item">
-                                            <label>Los Angeles Rams:</label>
-                                            <input type="number" id="record-LAR-wins" min="0" max="17" placeholder="W">
-                                            <span>-</span>
-                                            <input type="number" id="record-LAR-losses" min="0" max="17" placeholder="L">
-                                        </div>
-                                        <div class="record-prediction-item">
-                                            <label>Minnesota Vikings:</label>
-                                            <input type="number" id="record-MIN-wins" min="0" max="17" placeholder="W">
-                                            <span>-</span>
-                                            <input type="number" id="record-MIN-losses" min="0" max="17" placeholder="L">
-                                        </div>
-                                        <div class="record-prediction-item">
-                                            <label>New Orleans Saints:</label>
-                                            <input type="number" id="record-NO-wins" min="0" max="17" placeholder="W">
-                                            <span>-</span>
-                                            <input type="number" id="record-NO-losses" min="0" max="17" placeholder="L">
-                                        </div>
-                                        <div class="record-prediction-item">
-                                            <label>New York Giants:</label>
-                                            <input type="number" id="record-NYG-wins" min="0" max="17" placeholder="W">
-                                            <span>-</span>
-                                            <input type="number" id="record-NYG-losses" min="0" max="17" placeholder="L">
-                                        </div>
-                                        <div class="record-prediction-item">
-                                            <label>Philadelphia Eagles:</label>
-                                            <input type="number" id="record-PHI-wins" min="0" max="17" placeholder="W">
-                                            <span>-</span>
-                                            <input type="number" id="record-PHI-losses" min="0" max="17" placeholder="L">
-                                        </div>
-                                        <div class="record-prediction-item">
-                                            <label>San Francisco 49ers:</label>
-                                            <input type="number" id="record-SF-wins" min="0" max="17" placeholder="W">
-                                            <span>-</span>
-                                            <input type="number" id="record-SF-losses" min="0" max="17" placeholder="L">
-                                        </div>
-                                        <div class="record-prediction-item">
-                                            <label>Seattle Seahawks:</label>
-                                            <input type="number" id="record-SEA-wins" min="0" max="17" placeholder="W">
-                                            <span>-</span>
-                                            <input type="number" id="record-SEA-losses" min="0" max="17" placeholder="L">
-                                        </div>
-                                        <div class="record-prediction-item">
-                                            <label>Tampa Bay Buccaneers:</label>
-                                            <input type="number" id="record-TB-wins" min="0" max="17" placeholder="W">
-                                            <span>-</span>
-                                            <input type="number" id="record-TB-losses" min="0" max="17" placeholder="L">
-                                        </div>
-                                        <div class="record-prediction-item">
-                                            <label>Washington Commanders:</label>
-                                            <input type="number" id="record-WAS-wins" min="0" max="17" placeholder="W">
-                                            <span>-</span>
-                                            <input type="number" id="record-WAS-losses" min="0" max="17" placeholder="L">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+            <div class="playoff-container">
+                <div class="playoff-section">
+                    <h3>Conference Champions</h3>
+                    <div class="championship-picks">
+                        <div class="championship-slot">
+                            <label>AFC Champion:</label>
+                            <select class="team-select" id="afc-champion"></select>
+                            <span class="actual-pick" id="actual-afc-champion"></span>
                         </div>
-                    </div>
-
-                    <!-- AFC Division Winners -->
-                    <div class="preseason-section">
-                        <h3>AFC Division Winners</h3>
-                        <div class="division-predictions">
-                            <div class="division">
-                                <label>AFC East Winner:</label>
-                                <select id="preseason-afc-east-winner">
-                                    <option value="">Select Team</option>
-                                    <option value="BUF">Buffalo Bills</option>
-                                    <option value="MIA">Miami Dolphins</option>
-                                    <option value="NE">New England Patriots</option>
-                                    <option value="NYJ">New York Jets</option>
-                                </select>
-                            </div>
-                            <div class="division">
-                                <label>AFC North Winner:</label>
-                                <select id="preseason-afc-north-winner">
-                                    <option value="">Select Team</option>
-                                    <option value="BAL">Baltimore Ravens</option>
-                                    <option value="CIN">Cincinnati Bengals</option>
-                                    <option value="CLE">Cleveland Browns</option>
-                                    <option value="PIT">Pittsburgh Steelers</option>
-                                </select>
-                            </div>
-                            <div class="division">
-                                <label>AFC South Winner:</label>
-                                <select id="preseason-afc-south-winner">
-                                    <option value="">Select Team</option>
-                                    <option value="HOU">Houston Texans</option>
-                                    <option value="IND">Indianapolis Colts</option>
-                                    <option value="JAX">Jacksonville Jaguars</option>
-                                    <option value="TEN">Tennessee Titans</option>
-                                </select>
-                            </div>
-                            <div class="division">
-                                <label>AFC West Winner:</label>
-                                <select id="preseason-afc-west-winner">
-                                    <option value="">Select Team</option>
-                                    <option value="DEN">Denver Broncos</option>
-                                    <option value="KC">Kansas City Chiefs</option>
-                                    <option value="LV">Las Vegas Raiders</option>
-                                    <option value="LAC">Los Angeles Chargers</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- NFC Division Winners -->
-                    <div class="preseason-section">
-                        <h3>NFC Division Winners</h3>
-                        <div class="division-predictions">
-                            <div class="division">
-                                <label>NFC East Winner:</label>
-                                <select id="preseason-nfc-east-winner">
-                                    <option value="">Select Team</option>
-                                    <option value="DAL">Dallas Cowboys</option>
-                                    <option value="NYG">New York Giants</option>
-                                    <option value="PHI">Philadelphia Eagles</option>
-                                    <option value="WAS">Washington Commanders</option>
-                                </select>
-                            </div>
-                            <div class="division">
-                                <label>NFC North Winner:</label>
-                                <select id="preseason-nfc-north-winner">
-                                    <option value="">Select Team</option>
-                                    <option value="CHI">Chicago Bears</option>
-                                    <option value="DET">Detroit Lions</option>
-                                    <option value="GB">Green Bay Packers</option>
-                                    <option value="MIN">Minnesota Vikings</option>
-                                </select>
-                            </div>
-                            <div class="division">
-                                <label>NFC South Winner:</label>
-                                <select id="preseason-nfc-south-winner">
-                                    <option value="">Select Team</option>
-                                    <option value="ATL">Atlanta Falcons</option>
-                                    <option value="CAR">Carolina Panthers</option>
-                                    <option value="NO">New Orleans Saints</option>
-                                    <option value="TB">Tampa Bay Buccaneers</option>
-                                </select>
-                            </div>
-                            <div class="division">
-                                <label>NFC West Winner:</label>
-                                <select id="preseason-nfc-west-winner">
-                                    <option value="">Select Team</option>
-                                    <option value="ARI">Arizona Cardinals</option>
-                                    <option value="LAR">Los Angeles Rams</option>
-                                    <option value="SF">San Francisco 49ers</option>
-                                    <option value="SEA">Seattle Seahawks</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Wild Card Teams -->
-                    <div class="preseason-section">
-                        <h3>Wild Card Teams (3 per conference)</h3>
-                        <div class="wildcard-predictions">
-                            <div class="conference">
-                                <h4>AFC Wild Cards</h4>
-                                <select id="preseason-afc-wildcard-1">
-                                    <option value="">AFC Wild Card #1</option>
-                                </select>
-                                <select id="preseason-afc-wildcard-2">
-                                    <option value="">AFC Wild Card #2</option>
-                                </select>
-                                <select id="preseason-afc-wildcard-3">
-                                    <option value="">AFC Wild Card #3</option>
-                                </select>
-                            </div>
-                            <div class="conference">
-                                <h4>NFC Wild Cards</h4>
-                                <select id="preseason-nfc-wildcard-1">
-                                    <option value="">NFC Wild Card #1</option>
-                                </select>
-                                <select id="preseason-nfc-wildcard-2">
-                                    <option value="">NFC Wild Card #2</option>
-                                </select>
-                                <select id="preseason-nfc-wildcard-3">
-                                    <option value="">NFC Wild Card #3</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Championship Predictions -->
-                    <div class="preseason-section">
-                        <h3>Championship Predictions</h3>
-                        <div class="championship-predictions">
-                            <div class="championship">
-                                <label>AFC Championship Winner:</label>
-                                <select id="preseason-afc-champion">
-                                    <option value="">Select AFC Team</option>
-                                </select>
-                            </div>
-                            <div class="championship">
-                                <label>NFC Championship Winner:</label>
-                                <select id="preseason-nfc-champion">
-                                    <option value="">Select NFC Team</option>
-                                </select>
-                            </div>
-                            <div class="championship">
-                                <label>Super Bowl Champion:</label>
-                                <select id="preseason-super-bowl-champion">
-                                    <option value="">Select Team</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="preseason-actions">
-                        <button id="save-preseason-predictions">Save Pre-Season Predictions</button>
-                        <button id="clear-preseason-predictions">Clear All Pre-Season Predictions</button>
-                        <button id="export-preseason-csv">Export Pre-Season to CSV</button>
-                        <button id="view-standings-comparison">View Standings Comparison</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Season Comparison Tab -->
-            <div id="comparison-tab" class="tab-content">
-                <div class="comparison-dashboard">
-                    <h3>Season Prediction Comparison</h3>
-                    <div id="comparison-content">
-                        <!-- Comparison data will be populated here -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Standings Comparison Tab -->
-            <div id="standings-comparison-tab" class="tab-content">
-                <div class="standings-comparison-container">
-                    <h3>Predicted vs Actual Standings</h3>
-                    <div class="comparison-filters">
-                        <button id="show-all-teams" class="filter-btn active">All Teams</button>
-                        <button id="show-afc-only" class="filter-btn">AFC Only</button>
-                        <button id="show-nfc-only" class="filter-btn">NFC Only</button>
-                    </div>
-                    <div id="standings-comparison-content">
-                        <!-- Standings comparison will be populated here -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Settings Tab -->
-            <div id="settings-tab" class="tab-content">
-                <div class="settings-container">
-                    <h3>Settings & Data Management</h3>
-                    
-                    <!-- Cloud Storage Section -->
-                    <div class="settings-section">
-                        <h4>Cloud Storage</h4>
-                        <div class="storage-options">
-                            <div class="storage-option">
-                                <input type="radio" id="storage-local" name="storage-type" value="local" checked>
-                                <label for="storage-local">Local Storage (Default)</label>
-                                <p>Store predictions in your browser only</p>
-                            </div>
-                            <div class="storage-option">
-                                <input type="radio" id="storage-github" name="storage-type" value="github">
-                                <label for="storage-github">GitHub Gists</label>
-                                <p>Backup to private GitHub gists</p>
-                                <button id="connect-github" class="storage-btn">Connect GitHub</button>
-                            </div>
-                            <div class="storage-option">
-                                <input type="radio" id="storage-firebase" name="storage-type" value="firebase">
-                                <label for="storage-firebase">Firebase</label>
-                                <p>Real-time sync across devices</p>
-                                <button id="connect-firebase" class="storage-btn">Configure Firebase</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Backup & Export Section -->
-                    <div class="settings-section">
-                        <h4>Backup & Export</h4>
-                        <div class="backup-controls">
-                            <button id="export-all-data">Export All Data (JSON)</button>
-                            <button id="export-predictions-backup">Export Predictions Backup</button>
-                            <button id="import-data">Import Data</button>
-                            <input type="file" id="import-file" accept=".json" style="display: none;">
-                            <button id="schedule-backup">Schedule Auto Backup</button>
-                        </div>
-                    </div>
-
-                    <!-- Data Management Section -->
-                    <div class="settings-section">
-                        <h4>Data Management</h4>
-                        <div class="data-controls">
-                            <button id="clear-all-data" class="danger-btn">Clear All Data</button>
-                            <button id="reset-predictions">Reset Predictions Only</button>
-                            <button id="reset-preseason">Reset Pre-Season Predictions</button>
-                        </div>
-                    </div>
-
-                    <!-- Privacy & Sharing Section -->
-                    <div class="settings-section">
-                        <h4>Privacy & Sharing</h4>
-                        <div class="privacy-controls">
-                            <label>
-                                <input type="checkbox" id="public-predictions">
-                                Make predictions public
-                            </label>
-                            <label>
-                                <input type="checkbox" id="allow-analytics">
-                                Allow anonymous usage analytics
-                            </label>
-                            <label>
-                                <input type="checkbox" id="share-accuracy">
-                                Share accuracy stats publicly
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- App Preferences Section -->
-                    <div class="settings-section">
-                        <h4>App Preferences</h4>
-                        <div class="preference-controls">
-                            <label>
-                                Default view:
-                                <select id="default-view">
-                                    <option value="weekly">Weekly Predictions</option>
-                                    <option value="results">Weekly Results</option>
-                                    <option value="standings">Team Standings</option>
-                                </select>
-                            </label>
-                            <label>
-                                <input type="checkbox" id="show-team-logos">
-                                Show team logos
-                            </label>
-                            <label>
-                                <input type="checkbox" id="auto-save">
-                                Auto-save predictions
-                            </label>
-                            <label>
-                                Theme:
-                                <select id="app-theme">
-                                    <option value="light">Light</option>
-                                    <option value="dark">Dark</option>
-                                    <option value="auto">Auto</option>
-                                </select>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Sync Status Section -->
-                    <div class="settings-section">
-                        <h4>Sync Status</h4>
-                        <div class="sync-status">
-                            <div class="status-item">
-                                <span>Last Sync:</span>
-                                <span id="last-sync-time">Never</span>
-                            </div>
-                            <div class="status-item">
-                                <span>Storage Provider:</span>
-                                <span id="current-storage">Local Storage</span>
-                            </div>
-                            <div class="status-item">
-                                <span>Data Size:</span>
-                                <span id="data-size">0 KB</span>
-                            </div>
-                            <button id="force-sync">Force Sync Now</button>
-                        </div>
-                    </div>
-
-                    <!-- App Information Section -->
-                    <div class="settings-section">
-                        <h4>App Information</h4>
-                        <div class="app-info">
-                            <p><strong>Version:</strong> 1.0.0</p>
-                            <p><strong>Last Updated:</strong> 2024</p>
-                            <p><strong>Developer:</strong> NFL Prediction Tracker</p>
-                            <p><strong>License:</strong> MIT</p>
-                            <a href="https://github.com/yourusername/nfl_prediction_tracker" target="_blank">View on GitHub</a>
+                        <div class="championship-slot">
+                            <label>NFC Champion:</label>
+                            <select class="team-select" id="nfc-champion"></select>
+                            <span class="actual-pick" id="actual-nfc-champion"></span>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Preseason Predictions Modal -->
-            <div id="preseason-prediction-modal" class="modal">
-                <div class="modal-content large-modal">
-                    <div class="modal-header">
-                        <h2>2025-2026 Preseason Predictions</h2>
-                        <span class="close preseason-close">&times;</span>
-                    </div>
-                    <div class="modal-body">
-                        <div class="preseason-sections">
-                            <div class="preseason-section">
-                                <h3>Super Bowl & Championships</h3>
-                                <div class="prediction-row">
-                                    <label>Super Bowl Champion:</label>
-                                    <select id="superbowl-winner">
-                                        <option value="">Select Team</option>
-                                    </select>
-                                </div>
-                                <div class="prediction-row">
-                                    <label>AFC Champion:</label>
-                                    <select id="afc-champion">
-                                        <option value="">Select Team</option>
-                                    </select>
-                                </div>
-                                <div class="prediction-row">
-                                    <label>NFC Champion:</label>
-                                    <select id="nfc-champion">
-                                        <option value="">Select Team</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="preseason-section">
-                                <h3>AFC Playoff Teams</h3>
-                                <div class="division-predictions">
-                                    <div class="division">
-                                        <h4>AFC East</h4>
-                                        <select id="afc-east-winner">
-                                            <option value="">Division Winner</option>
-                                        </select>
-                                    </div>
-                                    <div class="division">
-                                        <h4>AFC North</h4>
-                                        <select id="afc-north-winner">
-                                            <option value="">Division Winner</option>
-                                        </select>
-                                    </div>
-                                    <div class="division">
-                                        <h4>AFC South</h4>
-                                        <select id="afc-south-winner">
-                                            <option value="">Division Winner</option>
-                                        </select>
-                                    </div>
-                                    <div class="division">
-                                        <h4>AFC West</h4>
-                                        <select id="afc-west-winner">
-                                            <option value="">Division Winner</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="wildcard-section">
-                                    <h4>AFC Wild Cards</h4>
-                                    <select id="afc-wildcard-1"><option value="">Wild Card #1</option></select>
-                                    <select id="afc-wildcard-2"><option value="">Wild Card #2</option></select>
-                                    <select id="afc-wildcard-3"><option value="">Wild Card #3</option></select>
-                                </div>
-                            </div>
-
-                            <div class="preseason-section">
-                                <h3>NFC Playoff Teams</h3>
-                                <div class="division-predictions">
-                                    <div class="division">
-                                        <h4>NFC East</h4>
-                                        <select id="nfc-east-winner">
-                                            <option value="">Division Winner</option>
-                                        </select>
-                                    </div>
-                                    <div class="division">
-                                        <h4>NFC North</h4>
-                                        <select id="nfc-north-winner">
-                                            <option value="">Division Winner</option>
-                                        </select>
-                                    </div>
-                                    <div class="division">
-                                        <h4>NFC South</h4>
-                                        <select id="nfc-south-winner">
-                                            <option value="">Division Winner</option>
-                                        </select>
-                                    </div>
-                                    <div class="division">
-                                        <h4>NFC West</h4>
-                                        <select id="nfc-west-winner">
-                                            <option value="">Division Winner</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="wildcard-section">
-                                    <h4>NFC Wild Cards</h4>
-                                    <select id="nfc-wildcard-1"><option value="">Wild Card #1</option></select>
-                                    <select id="nfc-wildcard-2"><option value="">Wild Card #2</option></select>
-                                    <select id="nfc-wildcard-3"><option value="">Wild Card #3</option></select>
-                                </div>
-                            </div>
-
-                            <div class="preseason-section">
-                                <h3>Season Records</h3>
-                                <div class="prediction-row">
-                                    <label>Best Record Team:</label>
-                                    <select id="best-record-team">
-                                        <option value="">Select Team</option>
-                                    </select>
-                                </div>
-                                <div class="prediction-row">
-                                    <label>Worst Record Team:</label>
-                                    <select id="worst-record-team">
-                                        <option value="">Select Team</option>
-                                    </select>
-                                </div>
-                                <div class="prediction-row">
-                                    <label>Most Surprising Team:</label>
-                                    <select id="surprise-team">
-                                        <option value="">Select Team</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="modal-actions">
-                            <button id="save-preseason-predictions">Save Preseason Predictions</button>
-                            <button id="cancel-preseason-predictions">Cancel</button>
-                        </div>
+                <div class="playoff-section">
+                    <h3>Super Bowl</h3>
+                    <div class="superbowl-pick">
+                        <label>Super Bowl Champion:</label>
+                        <select class="team-select" id="superbowl-champion"></select>
+                        <span class="actual-pick" id="actual-superbowl-champion"></span>
                     </div>
                 </div>
             </div>
+        </section>
+    </main>
 
-            <!-- Bulk Prediction Modal -->
-            <div id="bulk-prediction-modal" class="modal">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h2>Make Predictions for Week <span id="modal-week-number"></span></h2>
-                        <span class="close">&times;</span>
-                    </div>
-                    <div class="modal-body">
-                        <div id="week-games-list">
-                            <!-- Week games will be populated here -->
-                        </div>
-                        <div class="modal-actions">
-                            <button id="save-week-predictions">Save All Predictions</button>
-                            <button id="cancel-week-predictions">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <footer>
+        <p>NFL Predictions App | © 2023</p>
+    </footer>
 
-            <!-- GitHub Connection Modal -->
-            <div id="github-connection-modal" class="modal storage-modal">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h2>Connect to GitHub Gists</h2>
-                        <span class="close github-close">&times;</span>
-                    </div>
-                    <div class="modal-body">
-                        <div class="connection-step">
-                            <h5>Step 1: Create Personal Access Token</h5>
-                            <p>Create a GitHub Personal Access Token with 'gist' permissions:</p>
-                            <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" class="auth-button">
-                                Create GitHub Token
-                            </a>
-                            <p style="margin-top: 10px; font-size: 0.9rem; color: #666;">
-                                Select only the "gist" scope when creating your token.
-                            </p>
-                        </div>
-                        
-                        <div class="connection-step">
-                            <h5>Step 2: Enter Your Token</h5>
-                            <input type="password" id="github-token" class="connection-input" 
-                                   placeholder="Enter your GitHub Personal Access Token">
-                            <input type="text" id="github-username" class="connection-input" 
-                                   placeholder="Enter your GitHub username (optional)">
-                        </div>
-
-                        <div id="github-connection-status" class="connection-status" style="display: none;">
-                            <span class="storage-status-indicator"></span>
-                            <span class="status-text"></span>
-                        </div>
-
-                        <div class="modal-actions">
-                            <button id="test-github-connection" class="btn-primary">Test Connection</button>
-                            <button id="save-github-config" class="btn-success">Save & Connect</button>
-                            <button id="cancel-github-config" class="btn-secondary">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Firebase Connection Modal -->
-            <div id="firebase-connection-modal" class="modal storage-modal">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h2>Configure Firebase</h2>
-                        <span class="close firebase-close">&times;</span>
-                    </div>
-                    <div class="modal-body">
-                        <div class="connection-step">
-                            <h5>Step 1: Create Firebase Project</h5>
-                            <p>Create a new Firebase project and enable Firestore:</p>
-                            <a href="https://console.firebase.google.com/" target="_blank" class="auth-button firebase">
-                                Open Firebase Console
-                            </a>
-                        </div>
-                        
-                        <div class="connection-step">
-                            <h5>Step 2: Firebase Configuration</h5>
-                            <p>Copy your Firebase config from Project Settings → General → Your apps:</p>
-                            
-                            <div class="config-row">
-                                <label>API Key:</label>
-                                <input type="password" id="firebase-api-key" placeholder="Your Firebase API Key">
-                            </div>
-                            
-                            <div class="config-row">
-                                <label>Project ID:</label>
-                                <input type="text" id="firebase-project-id" placeholder="your-project-id">
-                            </div>
-                            
-                            <div class="config-row">
-                                <label>Auth Domain:</label>
-                                <input type="text" id="firebase-auth-domain" placeholder="your-project-id.firebaseapp.com">
-                            </div>
-                            
-                            <div class="config-row">
-                                <label>Database URL:</label>
-                                <input type="text" id="firebase-database-url" placeholder="https://your-project-id.firebaseio.com">
-                            </div>
-                        </div>
-
-                        <div class="connection-step">
-                            <h5>Step 3: Authentication Method</h5>
-                            <div class="config-row">
-                                <label>Auth Method:</label>
-                                <select id="firebase-auth-method">
-                                    <option value="anonymous">Anonymous</option>
-                                    <option value="google">Google Sign-In</option>
-                                    <option value="email">Email/Password</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div id="firebase-connection-status" class="connection-status" style="display: none;">
-                            <span class="storage-status-indicator"></span>
-                            <span class="status-text"></span>
-                        </div>
-
-                        <div class="modal-actions">
-                            <button id="test-firebase-connection" class="btn-primary">Test Connection</button>
-                            <button id="save-firebase-config" class="btn-success">Save & Connect</button>
-                            <button id="cancel-firebase-config" class="btn-secondary">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <script src="nfl-schedule.js"></script>
-    <script src="app.js"></script>
-    <script>
-        // Clean up navigation and fix duplicate tabs
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🧹 Cleaning up navigation and fixing duplicates...');
-            
-            // Remove ALL existing navigation elements first
-            const allNavs = document.querySelectorAll('nav.prediction-tabs');
-            console.log('Found', allNavs.length, 'navigation elements');
-            allNavs.forEach(nav => nav.remove());
-            
-            // Create ONE clean navigation
-            const mainContainer = document.querySelector('main.container');
-            const h1 = mainContainer.querySelector('h1');
-            
-            const nav = document.createElement('nav');
-            nav.className = 'prediction-tabs';
-            nav.innerHTML = `
-                <button class="tab-btn active" data-tab="weekly">Weekly Predictions</button>
-                <button class="tab-btn" data-tab="results">Weekly Results</button>
-                <button class="tab-btn" data-tab="standings">Team Standings</button>
-                <button class="tab-btn" data-tab="preseason">Pre-Season Predictions</button>
-                <button class="tab-btn" data-tab="settings">Settings</button>
-            `;
-            
-            // Insert after h1
-            h1.insertAdjacentElement('afterend', nav);
-            console.log('✅ Created clean navigation with 5 tabs');
-            
-            // Remove any duplicate tab content sections
-            const settingsContents = document.querySelectorAll('#settings');
-            if (settingsContents.length > 1) {
-                console.log('Found', settingsContents.length, 'settings content sections, keeping the one with cloud storage');
-                for (let i = 0; i < settingsContents.length - 1; i++) {
-                    if (!settingsContents[i].querySelector('.github-connection')) {
-                        settingsContents[i].remove();
-                    }
-                }
-            }
-            
-            const preseasonContents = document.querySelectorAll('#preseason');
-            if (preseasonContents.length > 1) {
-                console.log('Found', preseasonContents.length, 'preseason content sections, removing duplicates');
-                for (let i = 1; i < preseasonContents.length; i++) {
-                    preseasonContents[i].remove();
-                }
-            }
-            
-            // Set up import backup functionality
-            const importInput = document.getElementById('import-backup');
-            if (importInput) {
-                importInput.addEventListener('change', function(e) {
-                    const file = e.target.files[0];
-                    if (file && window.cloudStorage) {
-                        window.cloudStorage.importFullBackup(file);
-                    }
-                });
-            }
-            
-            console.log('🎉 Navigation cleanup complete!');
-        });
-    </script>
-    <script>
-        // Static tab switching logic
-        document.addEventListener('DOMContentLoaded', function() {
-            const tabButtons = document.querySelectorAll('.tab-btn');
-            const tabContents = document.querySelectorAll('.tab-content');
-            tabButtons.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    // Remove active from all buttons and contents
-                    tabButtons.forEach(b => b.classList.remove('active'));
-                    tabContents.forEach(c => c.classList.remove('active'));
-                    // Add active to clicked button and corresponding content
-                    btn.classList.add('active');
-                    const tabId = btn.getAttribute('data-tab');
-                    const content = document.getElementById(tabId);
-                    if (content) content.classList.add('active');
-                });
-            });
-        });
-    </script>
+    <script src="utility.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
