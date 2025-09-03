@@ -1,0 +1,36 @@
+name: Update NFL Results
+
+on:
+  schedule:
+    # Run every Tuesday at 8:00 AM UTC (3:00 AM ET)
+    - cron: '0 8 * * 2'
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  update-results:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Update NFL results
+      run: node update-results.js
+        
+    - name: Commit and push changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add results.json
+        git add accuracy.json
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "Update NFL results and accuracy - $(date +'%Y-%m-%d %H:%M ET')"
+          git push
+        fi

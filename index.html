@@ -3,145 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NFL Season Predictions</title>
+    <title>NFL Season Predictions Tracker</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
-        <h1>NFL Pre-Season Predictions</h1>
-        <div class="buttons">
-            <button id="saveBtn">Save Predictions</button>
-            <button id="compareBtn">Compare with Actual</button>
-            <button id="resultsBtn">View Real Results</button>
-            <button id="weeklyBtn">Weekly Matchups</button>
+        <h1>NFL 2025-2026 Season Predictions</h1>
+        <p>Track your predictions against actual results</p>
+        <div class="data-controls">
+            <button class="export-btn">📤 Export Data</button>
+            <button class="import-btn">📥 Import Data</button>
         </div>
     </header>
 
-    <main>
-        <section id="afc">
-            <h2>AFC</h2>
-            <div class="conference">
-                <div class="division">
-                    <h3>AFC East</h3>
-                    <div class="teams" id="afc-east"></div>
-                </div>
-                <div class="division">
-                    <h3>AFC North</h3>
-                    <div class="teams" id="afc-north"></div>
-                </div>
-                <div class="division">
-                    <h3>AFC South</h3>
-                    <div class="teams" id="afc-south"></div>
-                </div>
-                <div class="division">
-                    <h3>AFC West</h3>
-                    <div class="teams" id="afc-west"></div>
-                </div>
-            </div>
+    <main id="app-container">
+        <div class="tabs">
+            <button class="tab-button active" data-tab="nfc">NFC Predictions</button>
+            <button class="tab-button" data-tab="afc">AFC Predictions</button>
+            <button class="tab-button" data-tab="postseason">Postseason</button>
+            <button class="tab-button" data-tab="comparison">View Comparison</button>
+        </div>
+
+        <section id="nfc-tab" class="tab-content active">
+            <h2>NFC Conference Predictions</h2>
+            <div id="nfc-teams-container"></div>
         </section>
 
-        <section id="nfc">
-            <h2>NFC</h2>
-            <div class="conference">
-                <div class="division">
-                    <h3>NFC East</h3>
-                    <div class="teams" id="nfc-east"></div>
-                </div>
-                <div class="division">
-                    <h3>NFC North</h3>
-                    <div class="teams" id="nfc-north"></div>
-                </div>
-                <div class="division">
-                    <h3>NFC South</h3>
-                    <div class="teams" id="nfc-south"></div>
-                </div>
-                <div class="division">
-                    <h3>NFC West</h3>
-                    <div class="teams" id="nfc-west"></div>
-                </div>
-            </div>
+        <section id="afc-tab" class="tab-content">
+            <h2>AFC Conference Predictions</h2>
+            <div id="afc-teams-container"></div>
         </section>
 
-        <section id="playoff-predictions">
-            <h2>Playoff Predictions</h2>
-            <div class="playoff-container">
-                <div class="playoff-section">
-                    <h3>AFC Wild Card Teams</h3>
-                    <div class="wildcard-teams" id="afc-wildcards">
-                        <div class="wildcard-slot">
-                            <label>Wild Card 1:</label>
-                            <select class="team-select" id="afc-wildcard-1"></select>
-                            <span class="actual-pick" id="actual-afc-wildcard-1"></span>
-                        </div>
-                        <div class="wildcard-slot">
-                            <label>Wild Card 2:</label>
-                            <select class="team-select" id="afc-wildcard-2"></select>
-                            <span class="actual-pick" id="actual-afc-wildcard-2"></span>
-                        </div>
-                        <div class="wildcard-slot">
-                            <label>Wild Card 3:</label>
-                            <select class="team-select" id="afc-wildcard-3"></select>
-                            <span class="actual-pick" id="actual-afc-wildcard-3"></span>
-                        </div>
-                    </div>
-                </div>
+        <section id="postseason-tab" class="tab-content">
+            <h2>Enter Your Postseason Predictions</h2>
+            <div id="postseason-container"></div>
+        </section>
 
-                <div class="playoff-section">
-                    <h3>NFC Wild Card Teams</h3>
-                    <div class="wildcard-teams" id="nfc-wildcards">
-                        <div class="wildcard-slot">
-                            <label>Wild Card 1:</label>
-                            <select class="team-select" id="nfc-wildcard-1"></select>
-                            <span class="actual-pick" id="actual-nfc-wildcard-1"></span>
-                        </div>
-                        <div class="wildcard-slot">
-                            <label>Wild Card 2:</label>
-                            <select class="team-select" id="nfc-wildcard-2"></select>
-                            <span class="actual-pick" id="actual-nfc-wildcard-2"></span>
-                        </div>
-                        <div class="wildcard-slot">
-                            <label>Wild Card 3:</label>
-                            <select class="team-select" id="nfc-wildcard-3"></select>
-                            <span class="actual-pick" id="actual-nfc-wildcard-3"></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="playoff-container">
-                <div class="playoff-section">
-                    <h3>Conference Champions</h3>
-                    <div class="championship-picks">
-                        <div class="championship-slot">
-                            <label>AFC Champion:</label>
-                            <select class="team-select" id="afc-champion"></select>
-                            <span class="actual-pick" id="actual-afc-champion"></span>
-                        </div>
-                        <div class="championship-slot">
-                            <label>NFC Champion:</label>
-                            <select class="team-select" id="nfc-champion"></select>
-                            <span class="actual-pick" id="actual-nfc-champion"></span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="playoff-section">
-                    <h3>Super Bowl</h3>
-                    <div class="superbowl-pick">
-                        <label>Super Bowl Champion:</label>
-                        <select class="team-select" id="superbowl-champion"></select>
-                        <span class="actual-pick" id="actual-superbowl-champion"></span>
-                    </div>
-                </div>
-            </div>
+        <section id="comparison-tab" class="tab-content">
+            <h2>Regular Season Comparison</h2>
+            <div id="comparison-container"></div>
+            <h2 class="subsection-header">Postseason Comparison</h2>
+            <div id="postseason-comparison-container"></div>
         </section>
     </main>
 
-    <footer>
-        <p>NFL Predictions App | © 2023</p>
-    </footer>
-
-    <script src="utility.js"></script>
-    <script src="script.js"></script>
+    <script type="module" src="modules/main.js"></script>
 </body>
 </html>

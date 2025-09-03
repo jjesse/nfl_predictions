@@ -1,0 +1,13 @@
+{
+  "NFC": {
+    "Wild Card": ["", "", ""],
+    "Divisional": ["", ""],
+    "Championship": [""]
+  },
+  "AFC": {
+    "Wild Card": ["", "", ""],
+    "Divisional": ["", ""],
+    "Championship": [""]
+  },
+  "Super Bowl": [""]
+}

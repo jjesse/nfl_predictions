@@ -1,0 +1,18 @@
+{
+  "Kansas City Chiefs": {
+    "wins": 1,
+    "losses": 0
+  },
+  "Detroit Lions": {
+    "wins": 0,
+    "losses": 1
+  },
+  "Buffalo Bills": {
+    "wins": 1,
+    "losses": 0
+  },
+  "Arizona Cardinals": {
+    "wins": 0,
+    "losses": 1
+  }
+}

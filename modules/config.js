@@ -1,0 +1,30 @@
+// modules/config.js
+
+export const nflTeams = {
+    "NFC": {
+        "East": ["Dallas Cowboys", "New York Giants", "Philadelphia Eagles", "Washington Commanders"],
+        "North": ["Chicago Bears", "Detroit Lions", "Green Bay Packers", "Minnesota Vikings"],
+        "South": ["Atlanta Falcons", "Carolina Panthers", "New Orleans Saints", "Tampa Bay Buccaneers"],
+        "West": ["Arizona Cardinals", "Los Angeles Rams", "San Francisco 49ers", "Seattle Seahawks"]
+    },
+    "AFC": {
+        "East": ["Buffalo Bills", "Miami Dolphins", "New England Patriots", "New York Jets"],
+        "North": ["Baltimore Ravens", "Cincinnati Bengals", "Cleveland Browns", "Pittsburgh Steelers"],
+        "South": ["Houston Texans", "Indianapolis Colts", "Jacksonville Jaguars", "Tennessee Titans"],
+        "West": ["Denver Broncos", "Kansas City Chiefs", "Las Vegas Raiders", "Los Angeles Chargers"]
+    }
+};
+
+export const postseasonStructure = {
+    "NFC": {
+        "Wild Card": ["", "", ""],
+        "Divisional": ["", ""],
+        "Championship": [""]
+    },
+    "AFC": {
+        "Wild Card": ["", "", ""],
+        "Divisional": ["", ""],
+        "Championship": [""]
+    },
+    "Super Bowl": ["", ""]
+};
