@@ -1,11 +1,13 @@
 // modules/main.js
 
-import { loadNFCTeams, loadAFCTeams, loadNFCResults, loadAFCResults, showTab, addErrorExportButton, showUserFriendlyError, showNetworkError, hideNetworkError, loadSavedPostseasonPredictions, loadAutomatedResults, loadAutomatedAccuracy, displayAutomatedComparison } from './ui.js';
+console.log('Main module loaded');
+document.title = 'NFL Predictions - Loaded';
+
+import { loadNFCTeams, loadAFCTeams, loadNFCResults, loadAFCResults, showTab, addErrorExportButton, showUserFriendlyError, showNetworkError, hideNetworkError, loadSavedPostseasonPredictions, loadAutomatedResults, loadAutomatedAccuracy, displayAutomatedComparison, logError } from './ui.js';
 import { loadExternalData, savePrediction, savePostseasonPrediction } from './api.js';
 import { setupRealTimeValidation } from './validation.js';
 
 // Global State (minimize usage)
-let errorLogs = [];
 window.criticalDataLoadFailed = false;
 
 // Error Handling
@@ -31,26 +33,6 @@ window.onunhandledrejection = function(event) {
     addErrorExportButton();
     showUserFriendlyError('An operation failed in the background. Please check your connection or try again.');
 };
-
-function logError(errorDetails) {
-    console.error("Logged Error:", errorDetails);
-    errorLogs.push({
-        timestamp: new Date().toISOString(),
-        ...errorDetails
-    });
-}
-
-export function exportErrorLogs() {
-    const blob = new Blob([JSON.stringify(errorLogs, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'nfl-predictions-error-logs.json';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-}
 
 // Data Management
 export function exportPredictions() {

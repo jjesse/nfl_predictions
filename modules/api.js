@@ -1,7 +1,5 @@
 // modules/api.js
 
-import { showUserFriendlyError, showNetworkStatus } from './ui.js';
-
 const API_REQUEST_TIMEOUT = 5000; // 5 seconds
 
 async function fetchWithTimeout(resource, options = {}) {
@@ -27,17 +25,19 @@ async function fetchWithTimeout(resource, options = {}) {
 }
 
 export async function loadExternalData(url, key) {
+    console.log('Loading external data from:', url);
     try {
         const response = await fetchWithTimeout(url);
+        console.log('Fetch response:', response);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
+        console.log('Data loaded:', data);
         localStorage.setItem(key, JSON.stringify(data));
         return data;
     } catch (error) {
         console.error(`Unable to load external data from ${url}. Error:`, error);
-        showUserFriendlyError(`Failed to load required data from the server (${url}). Please check your connection and try again.`, true);
         // Set a global flag or state to indicate critical data load failure
         window.criticalDataLoadFailed = true; 
         return null;
@@ -51,7 +51,7 @@ export function savePrediction(team) {
     let predictions = JSON.parse(localStorage.getItem('predictions')) || {};
     predictions[team] = { wins, losses };
     localStorage.setItem('predictions', JSON.stringify(predictions));
-    showNetworkStatus('Prediction saved!', 'success');
+    console.log('Prediction saved!');
 }
 
 export function savePostseasonPrediction(round, team, conference, slot) {
@@ -74,5 +74,5 @@ export function savePostseasonPrediction(round, team, conference, slot) {
     predictions[conference][round][parseInt(slot)] = team;
     
     localStorage.setItem('postseasonPredictions', JSON.stringify(predictions));
-    showNetworkStatus('Postseason prediction saved!', 'success');
+    console.log('Postseason prediction saved!');
 }

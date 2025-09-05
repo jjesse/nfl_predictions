@@ -1,9 +1,30 @@
 // modules/ui.js
 
-import { postseasonStructure } from './config.js';
-import { savePrediction, saveResult, savePostseasonPrediction, savePostseasonResult } from './api.js';
+import { savePrediction, savePostseasonPrediction } from './api.js';
 import { setupRealTimeValidation } from './validation.js';
-import { exportErrorLogs } from './main.js';
+
+// Global State (minimize usage)
+let errorLogs = [];
+
+export function logError(errorDetails) {
+    console.error("Logged Error:", errorDetails);
+    errorLogs.push({
+        timestamp: new Date().toISOString(),
+        ...errorDetails
+    });
+}
+
+export function exportErrorLogs() {
+    const blob = new Blob([JSON.stringify(errorLogs, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'nfl-predictions-error-logs.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
 
 // UI Helper Functions
 export function showUserFriendlyError(message, isRetryable = false) {
