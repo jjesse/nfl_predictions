@@ -18,9 +18,12 @@ const allNFLTeams = Object.values(nflTeamsByDivision).flat();
 // 2025-2026 NFL Schedule Data
 let nflSchedule = {};
 
+// Export the schedule for ES modules
+window.nfl2025Schedule = {};
+
 // Generate the official 2025-2026 NFL schedule that was released in May 2025
 function generateFullSchedule() {
-    const nfl2025Schedule = {
+    window.nfl2025Schedule = {
         1: [
             { home: 'Kansas City Chiefs', away: 'Baltimore Ravens', date: '2025-09-04', time: '8:20 PM ET' },
             { home: 'New York Jets', away: 'Buffalo Bills', date: '2025-09-07', time: '1:00 PM ET' },
@@ -781,3 +784,6 @@ function updatePredictionStats(elements) {
 function formatDate(dateString) {
     return dateUtil.formatDate(dateString);
 }
+
+// Initialize the NFL schedule
+generateFullSchedule();

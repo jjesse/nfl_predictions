@@ -6,6 +6,7 @@ document.title = 'NFL Predictions - Loaded';
 import { loadNFCTeams, loadAFCTeams, loadNFCResults, loadAFCResults, showTab, addErrorExportButton, showUserFriendlyError, showNetworkError, hideNetworkError, loadSavedPostseasonPredictions, loadAutomatedResults, loadAutomatedAccuracy, displayAutomatedComparison, logError } from './ui.js';
 import { loadExternalData, savePrediction, savePostseasonPrediction } from './api.js';
 import { setupRealTimeValidation } from './validation.js';
+import { initializeWeeklyPredictions, loadWeeklyGames } from './weekly.js';
 import appState from './state.js';
 import { debounce } from './utils.js';
 
@@ -168,6 +169,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         // Load automated comparison data
         await displayAutomatedComparison();
+        
+        // Initialize weekly game predictions
+        // We'll initialize this with a slight delay to ensure all other components are ready
+        setTimeout(() => {
+            initializeWeeklyPredictions();
+        }, 200);
         
         // Show default tab without relying on a click event
         showTab('nfc', document.querySelector('.tab-button[data-tab="nfc"]')); 

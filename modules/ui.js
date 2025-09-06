@@ -167,6 +167,11 @@ export function showTab(tabName, buttonElement = null) {
 
     if (tabName === 'comparison') {
         loadComparison();
+    } else if (tabName === 'weekly') {
+        // When the weekly tab is selected, ensure the weekly game predictions are initialized
+        // This is handled by the weekly.js module through event delegation
+        const event = new CustomEvent('weeklyTabShown');
+        document.dispatchEvent(event);
     } else if (tabName === 'postseason' || tabName === 'results') {
         loadPostseasonPredictions();
         loadSavedPostseasonPredictions();
