@@ -1,6 +1,5 @@
 // NFL Schedule data and weekly matchup functionality
 
-// NFL Teams by division - same as in script.js
 const nflTeamsByDivision = {
     "afc-east": ["Buffalo Bills", "Miami Dolphins", "New England Patriots", "New York Jets"],
     "afc-north": ["Baltimore Ravens", "Cincinnati Bengals", "Cleveland Browns", "Pittsburgh Steelers"],
@@ -12,7 +11,6 @@ const nflTeamsByDivision = {
     "nfc-west": ["Arizona Cardinals", "Los Angeles Rams", "San Francisco 49ers", "Seattle Seahawks"]
 };
 
-// Get all NFL teams in a flat array
 const allNFLTeams = Object.values(nflTeamsByDivision).flat();
 
 // 2025-2026 NFL Schedule Data
@@ -782,8 +780,9 @@ function updatePredictionStats(elements) {
 
 // Helper function to format date
 function formatDate(dateString) {
-    return dateUtil.formatDate(dateString);
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 }
 
-// Initialize the NFL schedule
+// Initialize the schedule
 generateFullSchedule();
