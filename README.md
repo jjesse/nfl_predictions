@@ -96,6 +96,16 @@ This project uses several development tools to maintain code quality:
 2. **Automation**: Every Tuesday, GitHub Actions fetches NFL results and updates your accuracy
 3. **Track Progress**: View your predictions vs. actual results with real-time accuracy
 
+## License
+
+This project is available under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+When using this code in your own projects, please provide attribution by including the following:
+
+```
+Based on NFL Predictions Tracker - https://github.com/yourusername/nfl_predictions
+```
+
 ## Data Storage
 
 - **Local**: All predictions stored in browser localStorage (no upload needed!)

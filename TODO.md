@@ -152,7 +152,7 @@ This file tracks the proposed improvements for the NFL Predictions application.
 - [x] **Performance:**
   - [x] Debounce or throttle event listeners on frequently triggered events, like the `input` event on number fields, to improve performance.
 
-## Phase 4: Development and Tooling
+## Phase 4: Development and Tooling ✅
 
 - [x] **Linting and Formatting:**
   - [x] Set up ESLint and Prettier to enforce a consistent code style and catch common errors.
@@ -161,33 +161,35 @@ This file tracks the proposed improvements for the NFL Predictions application.
   - [x] Integrate simple build script for managing assets and creating distribution files.
 - [x] **Expand `package.json` Scripts:**
   - [x] Add scripts for common development tasks, such as starting a development server and building the project for production.
+- [x] **Add appropriate license:**
+  - [x] Add MIT License to the repository for open source use
 
-## Phase 5: Automated Results and Comparison System
+## Phase 5: Automated Results and Comparison System ✅
 
-- [ ] **Remove Manual Results Entry:**
-  - [ ] Remove the "Enter Results" tab from the UI since results will be pulled automatically.
-  - [ ] Update navigation and ensure all functionality still works without the results tab.
-  - [ ] Clean up any unused functions related to manual results entry.
-- [ ] **Automated Results Fetching:**
-  - [ ] Implement API integration with NFL/ESPN APIs to fetch game results automatically.
-  - [ ] Create a data fetching service that runs on schedule to get finalized game results.
-  - [ ] Add error handling for API failures and data inconsistencies.
-- [ ] **Scheduled Updates:**
-  - [ ] Set up automated comparison updates every Tuesday at 3:00 AM Eastern Time.
-  - [ ] Ensure all games are finalized before fetching results (Tuesday morning after Monday night games).
-  - [ ] Implement data validation to ensure fetched results are accurate and complete.
-- [ ] **GitHub Actions Automation:**
-  - [ ] Create a GitHub Action workflow that runs every Tuesday at 3:00 AM ET.
-  - [ ] Configure the workflow to fetch latest NFL results and update comparisons.
-  - [ ] Add notifications for successful updates and error alerts.
-- [ ] **Data Persistence and Backup:**
-  - [ ] Implement proper data versioning for results and predictions.
-  - [ ] Add backup mechanisms for critical data.
-  - [ ] Create data migration scripts for any schema changes.
-- [ ] **Comparison Enhancements:**
-  - [ ] Improve comparison UI to show more detailed statistics.
-  - [ ] Add historical comparison data and trends.
-  - [ ] Implement comparison filtering and sorting options.
+- [x] **Remove Manual Results Entry:**
+  - [x] Remove the "Enter Results" tab from the UI since results will be pulled automatically.
+  - [x] Update navigation and ensure all functionality still works without the results tab.
+  - [x] Clean up any unused functions related to manual results entry.
+- [x] **Automated Results Fetching:**
+  - [x] Implement API integration with NFL/ESPN APIs to fetch game results automatically.
+  - [x] Create a data fetching service that runs on schedule to get finalized game results.
+  - [x] Add error handling for API failures and data inconsistencies.
+- [x] **Scheduled Updates:**
+  - [x] Set up automated comparison updates every Tuesday at 8:00 AM UTC (3:00 AM ET).
+  - [x] Ensure all games are finalized before fetching results (Tuesday morning after Monday night games).
+  - [x] Implement data validation to ensure fetched results are accurate and complete.
+- [x] **GitHub Actions Automation:**
+  - [x] Create a GitHub Action workflow that runs every Tuesday at 3:00 AM ET.
+  - [x] Configure the workflow to fetch latest NFL results and update comparisons.
+  - [x] Add notifications for successful updates and error alerts.
+- [x] **Data Persistence and Backup:**
+  - [x] Implement proper data versioning for results and predictions.
+  - [x] Add backup mechanisms for critical data.
+  - [x] Create data migration scripts for any schema changes.
+- [x] **Comparison Enhancements:**
+  - [x] Improve comparison UI to show more detailed statistics.
+  - [x] Add historical comparison data and trends.
+  - [x] Implement comparison filtering and sorting options.
 
 ## Phase 6: Individual Game Predictions by Week
 
