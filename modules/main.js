@@ -68,17 +68,17 @@ export function importPredictions() {
                 const content = readerEvent.target.result;
                 const data = JSON.parse(content);
                 
-                // Basic validation
-                if (data.predictions && data.results) {
+                // Basic validation - check if predictions property exists
+                if (data.predictions !== undefined) {
                     localStorage.setItem('predictions', JSON.stringify(data.predictions));
-                    localStorage.setItem('results', JSON.stringify(data.results));
+                    localStorage.setItem('results', JSON.stringify(data.results || {}));
                     localStorage.setItem('postseasonPredictions', JSON.stringify(data.postseasonPredictions || {}));
                     localStorage.setItem('postseasonResults', JSON.stringify(data.postseasonResults || {}));
                     
                     alert('Data imported successfully! The page will now reload.');
                     location.reload();
                 } else {
-                    throw new Error('Invalid backup file format.');
+                    throw new Error('Invalid backup file format: missing predictions data.');
                 }
             } catch (error) {
                 showUserFriendlyError(`Import failed: ${error.message}`);
