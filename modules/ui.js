@@ -168,11 +168,24 @@ function createTeamHTML(team, type) {
     const teamKey = team.replace(/\s+/g, '-').toLowerCase();
     const idPrefix = type === 'pred' ? 'pred' : 'actual';
 
+    // Get saved prediction data for this team
+    let savedWins = '';
+    let savedLosses = '';
+    
+    if (type === 'pred') {
+        // Load saved predictions from localStorage
+        const predictions = JSON.parse(localStorage.getItem('predictions')) || {};
+        if (predictions[team]) {
+            savedWins = predictions[team].wins || '';
+            savedLosses = predictions[team].losses || '';
+        }
+    }
+
     return `
         <div class="team-name">${team}</div>
         <div class="team-inputs">
-            <input type="number" id="${idPrefix}-wins-${teamKey}" placeholder="W" min="0" max="17">
-            <input type="number" id="${idPrefix}-losses-${teamKey}" placeholder="L" min="0" max="17">
+            <input type="number" id="${idPrefix}-wins-${teamKey}" placeholder="W" min="0" max="17" value="${savedWins}">
+            <input type="number" id="${idPrefix}-losses-${teamKey}" placeholder="L" min="0" max="17" value="${savedLosses}">
             <button class="save-button" data-team="${team}" data-type="${type}">Save</button>
             <div class="validation-feedback"></div>
         </div>
