@@ -2,6 +2,8 @@
 
 import { savePrediction, savePostseasonPrediction } from './api.js';
 import { setupRealTimeValidation } from './validation.js';
+import appState from './state.js';
+import { debounce } from './utils.js';
 
 // Global State (minimize usage)
 let errorLogs = [];
@@ -143,7 +145,14 @@ export function displayOverallAccuracy(accuracyData) {
     }
 }
 
+// Import at the top of the file (if not already there)
+import appState from './state.js';
+
 export function showTab(tabName, buttonElement = null) {
+    // Update app state with current tab
+    appState.updateUI({ currentTab: tabName });
+    
+    // Update the UI
     document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
     document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
 

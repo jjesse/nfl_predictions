@@ -20,9 +20,55 @@ The app uses GitHub Actions to automatically:
 - Calculate your prediction accuracy
 - Commit changes back to the repository
 
+## Development
+
+### Prerequisites
+
+- Node.js (v14 or higher)
+- npm (v6 or higher)
+
+### Development Tools
+
+This project uses several development tools to maintain code quality:
+
+- **ESLint** - For code linting and identifying potential errors
+- **Prettier** - For consistent code formatting
+- **http-server** - For local development server
+
+### Available Scripts
+
+- `npm run start` - Start the production server
+- `npm run dev` - Start the development server with auto-reload
+- `npm run build` - Build the project for production
+- `npm run lint` - Lint the codebase
+- `npm run lint:fix` - Lint and automatically fix issues
+- `npm run format` - Format code with Prettier
+- `npm run validate` - Run linting and formatting checks
+- `npm run update` - Update game results manually
+
 ## Setup Instructions
 
-### 1. Deploy to GitHub Pages
+### 1. Local Development
+
+1. Clone the repository
+   ```bash
+   git clone https://github.com/yourusername/nfl_predictions.git
+   cd nfl_predictions
+   ```
+
+2. Install dependencies
+   ```bash
+   npm install
+   ```
+
+3. Start the development server
+   ```bash
+   npm run dev
+   ```
+
+4. Open your browser and navigate to `http://localhost:8000`
+
+### 2. Deploy to GitHub Pages
 
 1. Create a new repository on GitHub
 2. Upload all files from this project

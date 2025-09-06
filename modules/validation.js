@@ -1,4 +1,6 @@
 // modules/validation.js
+import { debounce } from './utils.js';
+import appState from './state.js';
 
 export function showValidationError(element, message) {
     const feedbackDiv = element.parentElement.querySelector('.validation-feedback');
@@ -35,6 +37,11 @@ function validateRecord(winsInput, lossesInput) {
     }
 }
 
+// Debounced validation function to improve performance
+const debouncedValidateRecord = debounce((winsInput, lossesInput) => {
+    validateRecord(winsInput, lossesInput);
+}, 300);
+
 export function setupRealTimeValidation() {
     const inputs = document.querySelectorAll('.team-inputs input[type="number"]');
     inputs.forEach(input => {
@@ -42,7 +49,9 @@ export function setupRealTimeValidation() {
             const teamDiv = e.target.closest('.team-inputs');
             const winsInput = teamDiv.querySelector('input[id*="-wins-"]');
             const lossesInput = teamDiv.querySelector('input[id*="-losses-"]');
-            validateRecord(winsInput, lossesInput);
+            
+            // Use debounced validation for better performance
+            debouncedValidateRecord(winsInput, lossesInput);
         });
     });
 }

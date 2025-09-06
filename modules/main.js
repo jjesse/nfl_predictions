@@ -6,6 +6,8 @@ document.title = 'NFL Predictions - Loaded';
 import { loadNFCTeams, loadAFCTeams, loadNFCResults, loadAFCResults, showTab, addErrorExportButton, showUserFriendlyError, showNetworkError, hideNetworkError, loadSavedPostseasonPredictions, loadAutomatedResults, loadAutomatedAccuracy, displayAutomatedComparison, logError } from './ui.js';
 import { loadExternalData, savePrediction, savePostseasonPrediction } from './api.js';
 import { setupRealTimeValidation } from './validation.js';
+import appState from './state.js';
+import { debounce } from './utils.js';
 
 // Global State (minimize usage)
 window.criticalDataLoadFailed = false;
@@ -108,6 +110,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.querySelector('.tabs').addEventListener('click', async (e) => {
         if (e.target.matches('.tab-button')) {
             const tabName = e.target.dataset.tab;
+            
+            // Update state with current tab
+            appState.setCurrentTab(tabName);
+            
+            // Show the tab in UI
             showTab(tabName, e.target);
             
             // Refresh automated comparison when comparison tab is clicked

@@ -34,25 +34,25 @@ This file tracks the proposed improvements for the NFL Predictions application.
 
 ## Phase 3: JavaScript Logic and Features ✅
 
-- [ ] **State Management:**
-  - [ ] Implement a simple state management object to hold the application's state (e.g., current tab, predictions, results).
-  - [ ] Refactor functions to read from and update the state object instead of global variables.
+- [x] **State Management:**
+  - [x] Implement a simple state management object to hold the application's state (e.g., current tab, predictions, results).
+  - [x] Refactor functions to read from and update the state object instead of global variables.
 - [x] **Data-Driven UI:**
   - [x] Create functions that render UI components based on the application state, rather than building HTML strings directly in functions like `loadNFCTeams`.
 - [x] **Event Delegation:**
   - [x] Refactor event listeners to use event delegation. For example, add a single click listener to the `.tabs` container instead of each `.tab-button`.
-- [ ] **Performance:**
-  - [ ] Debounce or throttle event listeners on frequently triggered events, like the `input` event on number fields, to improve performance.
+- [x] **Performance:**
+  - [x] Debounce or throttle event listeners on frequently triggered events, like the `input` event on number fields, to improve performance.
 
 ## Phase 4: Development and Tooling ✅
 
-- [ ] **Linting and Formatting:**
-  - [ ] Set up ESLint and Prettier to enforce a consistent code style and catch common errors.
-  - [ ] Add a `package.json` script to run the linter and formatter.
-- [ ] **Bundler (Optional, for future growth):**
-  - [ ] Integrate a bundler like Vite or webpack to manage dependencies, minify code, and optimize assets.
-- [ ] **Expand `package.json` Scripts:**
-  - [ ] Add scripts for common development tasks, such as starting a development server and building the project for production.
+- [x] **Linting and Formatting:**
+  - [x] Set up ESLint and Prettier to enforce a consistent code style and catch common errors.
+  - [x] Add a `package.json` script to run the linter and formatter.
+- [x] **Bundler (Optional, for future growth):**
+  - [x] Integrate simple build script for managing assets and creating distribution files.
+- [x] **Expand `package.json` Scripts:**
+  - [x] Add scripts for common development tasks, such as starting a development server and building the project for production.
 
 ## Phase 5: Automated Results and Comparison System ✅
 
@@ -142,25 +142,25 @@ This file tracks the proposed improvements for the NFL Predictions application.
 
 ## Phase 3: JavaScript Logic and Features
 
-- [ ] **State Management:**
-  - [ ] Implement a simple state management object to hold the application's state (e.g., current tab, predictions, results).
-  - [ ] Refactor functions to read from and update the state object instead of global variables.
+- [x] **State Management:**
+  - [x] Implement a simple state management object to hold the application's state (e.g., current tab, predictions, results).
+  - [x] Refactor functions to read from and update the state object instead of global variables.
 - [x] **Data-Driven UI:**
   - [x] Create functions that render UI components based on the application state, rather than building HTML strings directly in functions like `loadNFCTeams`.
 - [x] **Event Delegation:**
   - [x] Refactor event listeners to use event delegation. For example, add a single click listener to the `.tabs` container instead of each `.tab-button`.
-- [ ] **Performance:**
-  - [ ] Debounce or throttle event listeners on frequently triggered events, like the `input` event on number fields, to improve performance.
+- [x] **Performance:**
+  - [x] Debounce or throttle event listeners on frequently triggered events, like the `input` event on number fields, to improve performance.
 
 ## Phase 4: Development and Tooling
 
-- [ ] **Linting and Formatting:**
-  - [ ] Set up ESLint and Prettier to enforce a consistent code style and catch common errors.
-  - [ ] Add a `package.json` script to run the linter and formatter.
-- [ ] **Bundler (Optional, for future growth):**
-  - [ ] Integrate a bundler like Vite or webpack to manage dependencies, minify code, and optimize assets.
-- [ ] **Expand `package.json` Scripts:**
-  - [ ] Add scripts for common development tasks, such as starting a development server and building the project for production.
+- [x] **Linting and Formatting:**
+  - [x] Set up ESLint and Prettier to enforce a consistent code style and catch common errors.
+  - [x] Add a `package.json` script to run the linter and formatter.
+- [x] **Bundler (Optional, for future growth):**
+  - [x] Integrate simple build script for managing assets and creating distribution files.
+- [x] **Expand `package.json` Scripts:**
+  - [x] Add scripts for common development tasks, such as starting a development server and building the project for production.
 
 ## Phase 5: Automated Results and Comparison System
 

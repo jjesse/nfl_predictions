@@ -44,35 +44,19 @@ export async function loadExternalData(url, key) {
     }
 }
 
+import appState from './state.js';
+
 export function savePrediction(team) {
     const wins = document.getElementById(`pred-wins-${team.replace(/\s+/g, '-').toLowerCase()}`).value;
     const losses = document.getElementById(`pred-losses-${team.replace(/\s+/g, '-').toLowerCase()}`).value;
     
-    let predictions = JSON.parse(localStorage.getItem('predictions')) || {};
-    predictions[team] = { wins, losses };
-    localStorage.setItem('predictions', JSON.stringify(predictions));
+    // Use state management to save the prediction
+    appState.savePrediction(team, wins, losses);
     console.log('Prediction saved!');
 }
 
 export function savePostseasonPrediction(round, team, conference, slot) {
-    let predictions = JSON.parse(localStorage.getItem('postseasonPredictions')) || {};
-    
-    // Initialize structure if it doesn't exist
-    if (!predictions[conference]) {
-        predictions[conference] = {};
-    }
-    if (!predictions[conference][round]) {
-        predictions[conference][round] = [];
-    }
-    
-    // Ensure we have enough slots
-    while (predictions[conference][round].length <= parseInt(slot)) {
-        predictions[conference][round].push('');
-    }
-    
-    // Save the team in the correct slot
-    predictions[conference][round][parseInt(slot)] = team;
-    
-    localStorage.setItem('postseasonPredictions', JSON.stringify(predictions));
+    // Use state management to save the postseason prediction
+    appState.savePostseasonPrediction(round, team, conference, slot);
     console.log('Postseason prediction saved!');
 }
