@@ -145,9 +145,6 @@ export function displayOverallAccuracy(accuracyData) {
     }
 }
 
-// Import at the top of the file (if not already there)
-import appState from './state.js';
-
 export function showTab(tabName, buttonElement = null) {
     document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
     document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
