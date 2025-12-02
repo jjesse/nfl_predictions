@@ -1,0 +1,30 @@
+{
+  "name": "nfl-predictions",
+  "version": "1.0.0",
+  "description": "A sophisticated web app to track your NFL season predictions against actual results with automated weekly updates.",
+  "main": "update-results.js",
+  "scripts": {
+    "start": "npx http-server -p 8000",
+    "dev": "npx http-server -p 8000 -c-1",
+    "build": "echo 'No build step required for static site'",
+    "lint": "npx eslint . --ext .js",
+    "lint:fix": "npx eslint . --ext .js --fix",
+    "format": "npx prettier --write \"**/*.{js,json,html,css}\"",
+    "validate": "npm run lint",
+    "update": "node update-results.js",
+    "test-api": "node test-api.js"
+  },
+  "keywords": [
+    "nfl",
+    "predictions",
+    "football",
+    "sports"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "http-server": "^14.1.1",
+    "prettier": "^3.2.5"
+  }
+}
